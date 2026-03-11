@@ -6,13 +6,17 @@
 const parser = new NACHAParser();
 const validator = new NACHAValidator();
 
-// Show welcome tip after load
+// Show welcome tip after load (only once per user)
 window.addEventListener('DOMContentLoaded', () => {
   showWelcomeTip();
-  animateOnScroll();
 });
 
 function showWelcomeTip() {
+  // Only show once per user
+  if (localStorage.getItem('nacha-viewer-welcome-shown')) {
+    return;
+  }
+  
   const tip = document.createElement('div');
   tip.className = 'welcome-tip';
   tip.innerHTML = `
@@ -27,6 +31,9 @@ function showWelcomeTip() {
   `;
   document.querySelector('.container').appendChild(tip);
 
+  // Mark as shown
+  localStorage.setItem('nacha-viewer-welcome-shown', 'true');
+
   // Auto-dismiss after 8 seconds
   setTimeout(() => {
     if (tip.parentElement) {
@@ -36,7 +43,7 @@ function showWelcomeTip() {
   }, 8000);
 }
 
-function animateOnScroll() {
+function animateRecordCards() {
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -46,10 +53,10 @@ function animateOnScroll() {
     });
   }, { threshold: 0.1 });
 
-  document.querySelectorAll('.record-card').forEach(el => {
+  document.querySelectorAll('.record-card').forEach((el, index) => {
     el.style.opacity = '0';
     el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    el.style.transition = `opacity 0.4s ease ${index * 0.05}s, transform 0.4s ease ${index * 0.05}s`;
     observer.observe(el);
   });
 }
@@ -80,6 +87,27 @@ fileInput.addEventListener('change', handleFileSelect);
 searchInput.addEventListener('input', handleSearch);
 searchType.addEventListener('change', handleSearch);
 exportBtn.addEventListener('click', handleExport);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  // Escape to reset
+  if (e.key === 'Escape' && currentData) {
+    resetApp();
+  }
+  // Cmd/Ctrl + O to open file
+  if ((e.metaKey || e.ctrlKey) && e.key === 'o') {
+    e.preventDefault();
+    if (currentData) {
+      resetApp();
+    }
+    fileInput.click();
+  }
+  // Cmd/Ctrl + S to export
+  if ((e.metaKey || e.ctrlKey) && e.key === 's' && currentData) {
+    e.preventDefault();
+    handleExport();
+  }
+});
 
 // Drag and Drop Handlers
 function handleDragOver(e) {
@@ -292,6 +320,9 @@ function renderEntries(batches) {
   });
 
   recordView.innerHTML = html || '<p>No entries to display</p>';
+  
+  // Animate cards on load
+  animateRecordCards();
 }
 
 // Show Specific Batch
