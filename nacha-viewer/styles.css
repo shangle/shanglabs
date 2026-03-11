@@ -539,6 +539,53 @@ footer kbd {
     margin: 0 2px;
 }
 
+/* SEC Badge */
+.sec-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.sec-badge.ccd {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.sec-badge.ppd {
+    background: #fce7f3;
+    color: #9d174d;
+}
+
+/* File Header Details */
+.file-header-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+}
+
+.header-item {
+    display: flex;
+    gap: 6px;
+}
+
+.header-item .label {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+.header-item .value {
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
 .performance-warning {
     background: var(--warning-light);
     border: 1px solid var(--warning);

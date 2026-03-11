@@ -168,13 +168,37 @@ function displayResults(data, validation, file) {
   uploadBox.style.display = 'none';
   resultsSection.style.display = 'block';
 
-  // Show file info
+  // Show file info with SEC code
+  const secBadge = data.fileSEC ? 
+    `<span class="sec-badge ${data.fileSEC.toLowerCase()}">${data.fileSEC}</span>` : '';
+  
   fileInfo.innerHTML = `
     <div class="file-info-content">
       <h3>📄 ${file.name}</h3>
-      <p>Size: ${formatFileSize(file.size)} • Records: ${data.totalRecords}</p>
+      <p>Size: ${formatFileSize(file.size)} • Records: ${data.totalRecords} ${secBadge}</p>
     </div>
   `;
+
+  // Show file header details if available
+  if (data.fileHeader) {
+    const header = data.fileHeader;
+    fileInfo.innerHTML += `
+      <div class="file-header-details">
+        <div class="header-item">
+          <span class="label">Origin:</span>
+          <span class="value">${header.immediateOriginName || header.immediateOrigin}</span>
+        </div>
+        <div class="header-item">
+          <span class="label">Destination:</span>
+          <span class="value">${header.immediateDestinationName || header.immediateDestination}</span>
+        </div>
+        <div class="header-item">
+          <span class="label">Created:</span>
+          <span class="value">${formatFileDate(header.fileCreationDate, header.fileCreationTime)}</span>
+        </div>
+      </div>
+    `;
+  }
 
   // Show validation status
   if (validation.isValid) {
@@ -457,6 +481,33 @@ function getBatchCreditDebit(batch) {
   if (batch.serviceClassCode === '220') return 'Credits Only';
   if (batch.serviceClassCode === '225') return 'Debits Only';
   return 'Mixed';
+}
+
+function formatFileDate(dateStr, timeStr) {
+  // NACHA dates are YYMMDD, times are HHMM
+  if (!dateStr) return 'Unknown';
+  
+  const year = parseInt(dateStr.substring(0, 2));
+  const month = parseInt(dateStr.substring(2, 4));
+  const day = parseInt(dateStr.substring(4, 6));
+  
+  // Handle Y2K - assume 2000s for years < 50
+  const fullYear = year < 50 ? 2000 + year : 1900 + year;
+  
+  const date = new Date(fullYear, month - 1, day);
+  const options = { year: 'numeric', month: 'short', day: 'numeric' };
+  
+  let result = date.toLocaleDateString('en-US', options);
+  
+  if (timeStr && timeStr.length >= 4) {
+    const hours = parseInt(timeStr.substring(0, 2));
+    const minutes = timeStr.substring(2, 4);
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    const hour12 = hours % 12 || 12;
+    result += ` at ${hour12}:${minutes} ${ampm}`;
+  }
+  
+  return result;
 }
 
 // Make functions globally available for HTML onclick handlers
