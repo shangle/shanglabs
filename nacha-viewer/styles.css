@@ -586,6 +586,26 @@ footer kbd {
     font-size: 0.85rem;
 }
 
+/* Loading State */
+.file-info-content.loading {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.loading-spinner {
+    width: 24px;
+    height: 24px;
+    border: 3px solid var(--border);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 .performance-warning {
     background: var(--warning-light);
     border: 1px solid var(--warning);

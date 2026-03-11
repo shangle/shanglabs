@@ -140,6 +140,20 @@ function handleFileSelect(e) {
 // File Processing
 function processFile(file) {
   currentFile = file;
+  
+  // Show loading state
+  uploadBox.style.display = 'none';
+  resultsSection.style.display = 'block';
+  fileInfo.innerHTML = `
+    <div class="file-info-content loading">
+      <div class="loading-spinner"></div>
+      <h3>Parsing ${file.name}...</h3>
+    </div>
+  `;
+  validationStatus.innerHTML = '';
+  statsBar.innerHTML = '';
+  treeView.innerHTML = '';
+  recordView.innerHTML = '';
 
   const reader = new FileReader();
   reader.onload = (e) => {
