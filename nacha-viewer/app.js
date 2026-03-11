@@ -325,6 +325,7 @@ function renderEntries(batches) {
             <div class="detail-row">
               <span class="detail-label">Account:</span>
               <span class="detail-value">${entry.receivingDFIAccountNumber}</span>
+              <button class="copy-btn" onclick="copyToClipboard('${entry.receivingDFIAccountNumber}', this)" title="Copy account number">📋</button>
             </div>
 
             <div class="detail-row">
@@ -335,11 +336,13 @@ function renderEntries(batches) {
             <div class="detail-row">
               <span class="detail-label">Trace Number:</span>
               <span class="detail-value">${entry.traceNumber}</span>
+              <button class="copy-btn" onclick="copyToClipboard('${entry.traceNumber}', this)" title="Copy trace number">📋</button>
             </div>
 
             <div class="detail-row">
               <span class="detail-label">DFI Routing:</span>
               <span class="detail-value">${entry.receivingDFIIdentification}-${entry.checkDigit}</span>
+              <button class="copy-btn" onclick="copyToClipboard('${entry.receivingDFIIdentification}${entry.checkDigit}', this)" title="Copy routing number">📋</button>
             </div>
 
             ${entry.addenda && entry.addenda.length > 0 ? `
@@ -527,6 +530,21 @@ function formatFileDate(dateStr, timeStr) {
   return result;
 }
 
+function copyToClipboard(text, button) {
+  navigator.clipboard.writeText(text).then(() => {
+    const originalText = button.textContent;
+    button.textContent = '✓';
+    button.classList.add('copied');
+    setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove('copied');
+    }, 1500);
+  }).catch(err => {
+    console.error('Failed to copy:', err);
+  });
+}
+
 // Make functions globally available for HTML onclick handlers
 window.showBatch = showBatch;
 window.resetApp = resetApp;
+window.copyToClipboard = copyToClipboard;

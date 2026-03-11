@@ -606,6 +606,30 @@ footer kbd {
     to { transform: rotate(360deg); }
 }
 
+/* Copy Button */
+.copy-btn {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    font-size: 0.75rem;
+    opacity: 0;
+    transition: opacity 0.2s;
+    margin-left: 8px;
+}
+
+.detail-row:hover .copy-btn {
+    opacity: 1;
+}
+
+.copy-btn:hover {
+    transform: scale(1.1);
+}
+
+.copy-btn.copied {
+    color: #059669;
+}
+
 .performance-warning {
     background: var(--warning-light);
     border: 1px solid var(--warning);
