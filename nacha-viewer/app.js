@@ -286,13 +286,29 @@ function buildTreeView(data) {
 
   data.batches.forEach((batch, batchIndex) => {
     const batchNum = batch.batchNumber || batchIndex + 1;
-    const creditDebit = getBatchCreditDebit(batch);
+    
+    // Calculate batch totals
+    let batchDebits = 0;
+    let batchCredits = 0;
+    const creditCodes = ['22', '23', '25', '26', '32', '33'];
+    
+    batch.entries.forEach(entry => {
+      if (creditCodes.includes(entry.transactionCode)) {
+        batchCredits += entry.amount;
+      } else {
+        batchDebits += entry.amount;
+      }
+    });
 
     html += `
       <div class="tree-item tree-batch" onclick="showBatch(${batchIndex})">
         <span class="tree-icon">📦</span>
         <span class="tree-label">Batch ${batchNum}: ${batch.companyName}</span>
         <span class="tree-count">${batch.entries.length} entries</span>
+        <div class="batch-summary">
+          <span class="batch-credits">+$${batchCredits.toFixed(2)}</span>
+          <span class="batch-debits">-$${batchDebits.toFixed(2)}</span>
+        </div>
       </div>
     `;
   });
@@ -301,8 +317,8 @@ function buildTreeView(data) {
 }
 
 // Render Entries
-function renderEntries(batches) {
-  let html = '';
+function renderEntries(batches, append = false) {
+  let html = append ? recordView.innerHTML : '';
 
   batches.forEach((batch, batchIndex) => {
     const batchNum = batch.batchNumber || batchIndex + 1;
@@ -372,7 +388,18 @@ function showBatch(batchIndex) {
   if (!currentData || !currentData.batches[batchIndex]) return;
 
   const batch = currentData.batches[batchIndex];
-  renderEntries([batch]);
+  
+  // Add "Show All" button
+  const showAllBtn = `<button class="btn btn-secondary btn-sm" onclick="showAllBatches()">← Show All Batches</button>`;
+  recordView.innerHTML = showAllBtn;
+  
+  renderEntries([batch], true);
+}
+
+// Show All Batches
+function showAllBatches() {
+  if (!currentData) return;
+  renderEntries(currentData.batches);
 }
 
 // Search Handler
@@ -546,5 +573,6 @@ function copyToClipboard(text, button) {
 
 // Make functions globally available for HTML onclick handlers
 window.showBatch = showBatch;
+window.showAllBatches = showAllBatches;
 window.resetApp = resetApp;
 window.copyToClipboard = copyToClipboard;
