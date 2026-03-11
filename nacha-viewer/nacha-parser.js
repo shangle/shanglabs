@@ -1,6 +1,10 @@
 /**
- * NACHA File Parser for CCD (Corporate Credit/Debit) files
+ * NACHA File Parser for CCD and PPD files
  * 100% client-side - files never leave the browser
+ *
+ * Supports:
+ * - CCD: Corporate Credit/Debit entries
+ * - PPD: Prearranged Payment and Deposits (consumer accounts)
  */
 
 class NACHAParser {
@@ -14,6 +18,7 @@ class NACHAParser {
       '8': 'Batch Control',
       '9': 'File Control'
     };
+    this.supportedSECs = ['CCD', 'PPD'];
   }
 
   /**
@@ -22,22 +27,16 @@ class NACHAParser {
    * @returns {Object} Parsed data structure
    */
   parse(content) {
-    const lines = content.split(/\r?\n/).filter(line => line.trim().length === 94);
+    const lines = content.split(/\r?\n/).filter(line => line.length === 94);
 
     if (lines.length === 0) {
       throw new Error('No valid NACHA records found. Records must be exactly 94 characters.');
     }
 
-    // Check file type (only CCD supported)
-    const firstLine = lines[0];
-    const standardEntryClassCode = firstLine.substring(50, 53);
-
-    if (standardEntryClassCode !== 'CCD') {
-      throw new Error(`Unsupported file type: ${standardEntryClassCode}. This viewer only supports CCD (Corporate Credit/Debit) files.`);
-    }
-
+    // Initialize parsed data structure
     this.parsedData = {
       fileHeader: null,
+      fileSEC: null,
       batches: [],
       fileControl: null,
       rawRecords: lines,
@@ -59,6 +58,17 @@ class NACHAParser {
         case '5':
           currentBatch = this.parseBatchHeader(line);
           this.parsedData.batches.push(currentBatch);
+          
+          // Check SEC code from Batch Header
+          if (!this.parsedData.fileSEC) {
+            this.parsedData.fileSEC = currentBatch.standardEntryClassCode;
+          }
+          
+          // Validate SEC code
+          if (!this.supportedSECs.includes(currentBatch.standardEntryClassCode)) {
+            const supportedList = this.supportedSECs.join(', ');
+            throw new Error(`Unsupported file type: ${currentBatch.standardEntryClassCode}. This viewer supports ${supportedList} files.`);
+          }
           break;
 
         case '6':
@@ -214,17 +224,27 @@ class NACHAParser {
 
   /**
    * Get human-readable transaction code description
+   * Covers both CCD (corporate) and PPD (consumer) transaction codes
    */
   getTransactionCodeDescription(code) {
     const codes = {
+      // Credit transactions
       '22': 'Credit to Checking Account',
       '23': 'Credit to Savings Account',
-      '27': 'Debit to Checking Account',
-      '28': 'Debit to Savings Account',
       '32': 'Credit to Checking - Prenote',
       '33': 'Credit to Savings - Prenote',
+
+      // Debit transactions
+      '27': 'Debit to Checking Account',
+      '28': 'Debit to Savings Account',
       '37': 'Debit to Checking - Prenote',
-      '38': 'Debit to Savings - Prenote'
+      '38': 'Debit to Savings - Prenote',
+
+      // PPD-specific codes (consumer)
+      '25': 'Credit to Loan Account - PPD',
+      '26': 'Credit to General Ledger Account - PPD',
+      '35': 'Debit to Loan Account - PPD',
+      '36': 'Debit to General Ledger Account - PPD'
     };
     return codes[code] || `Unknown code: ${code}`;
   }

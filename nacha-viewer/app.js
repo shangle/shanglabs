@@ -6,6 +6,54 @@
 const parser = new NACHAParser();
 const validator = new NACHAValidator();
 
+// Show welcome tip after load
+window.addEventListener('DOMContentLoaded', () => {
+  showWelcomeTip();
+  animateOnScroll();
+});
+
+function showWelcomeTip() {
+  const tip = document.createElement('div');
+  tip.className = 'welcome-tip';
+  tip.innerHTML = `
+    <div class="tip-content">
+      <div class="tip-icon">💡</div>
+      <div class="tip-text">
+        <strong>Pro Tip:</strong> Drag & drop your NACHA file directly, or click anywhere to browse.
+        <br><small>Supports CCD (Corporate) and PPD (Consumer) file types.</small>
+      </div>
+      <button class="tip-close" onclick="this.closest('.welcome-tip').remove()">✕</button>
+    </div>
+  `;
+  document.querySelector('.container').appendChild(tip);
+
+  // Auto-dismiss after 8 seconds
+  setTimeout(() => {
+    if (tip.parentElement) {
+      tip.style.opacity = '0';
+      setTimeout(() => tip.remove(), 300);
+    }
+  }, 8000);
+}
+
+function animateOnScroll() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.record-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+}
+
 // DOM Elements
 const uploadBox = document.getElementById('uploadBox');
 const fileInput = document.getElementById('fileInput');
@@ -103,11 +151,12 @@ function displayResults(data, validation, file) {
   // Show validation status
   if (validation.isValid) {
     validationStatus.className = 'validation-status valid';
+    const secDescription = data.fileSEC === 'PPD' ? 'PPD Consumer' : 'CCD Corporate Credit/Debit';
     validationStatus.innerHTML = `
       <div class="status-icon">✅</div>
       <div>
         <strong>File is Valid</strong>
-        <p>CCD Corporate Credit/Debit file passed all validation checks</p>
+        <p>${secDescription} file passed all validation checks</p>
       </div>
     `;
   } else {
