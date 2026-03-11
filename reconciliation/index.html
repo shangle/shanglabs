@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Reconciliation Helper</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Payment Reconciliation Helper</h1>
+            <p class="subtitle">Match payments to invoices automatically</p>
+        </header>
+
+        <main>
+            <!-- Upload Section -->
+            <section class="upload-section">
+                <div class="upload-card">
+                    <h2>Payments CSV</h2>
+                    <input type="file" id="paymentsFile" accept=".csv" />
+                    <label for="paymentsFile" class="upload-label">
+                        <span>Drop payments.csv here or click to upload</span>
+                    </label>
+                    <div class="file-info" id="paymentsInfo"></div>
+                </div>
+
+                <div class="upload-card">
+                    <h2>Invoices CSV</h2>
+                    <input type="file" id="invoicesFile" accept=".csv" />
+                    <label for="invoicesFile" class="upload-label">
+                        <span>Drop invoices.csv here or click to upload</span>
+                    </label>
+                    <div class="file-info" id="invoicesInfo"></div>
+                </div>
+            </section>
+
+            <!-- Matching Settings -->
+            <section class="settings-section" id="settingsSection" style="display: none;">
+                <h2>⚙️ Matching Settings</h2>
+                <div class="settings-grid">
+                    <div class="setting-row">
+                        <label for="dateTolerance">Date Range Tolerance (days):</label>
+                        <input type="number" id="dateTolerance" value="3" min="0" max="30" />
+                    </div>
+                    <div class="setting-row">
+                        <label for="amountTolerance">Amount Tolerance ($):</label>
+                        <input type="number" id="amountTolerance" value="0.01" min="0" max="1000" step="0.01" />
+                    </div>
+                    <div class="setting-row">
+                        <label for="matchStrategy">Match Strategy:</label>
+                        <select id="matchStrategy">
+                            <option value="strict">Strict (exact amount)</option>
+                            <option value="flexible" selected>Flexible (amount + date)</option>
+                            <option value="loose">Loose (amount within tolerance)</option>
+                        </select>
+                    </div>
+                    <button id="matchBtn" class="btn btn-primary">🔍 Run Auto-Match</button>
+                </div>
+            </section>
+
+            <!-- Performance Warning -->
+            <div class="warning-banner" id="perfWarning" style="display: none;">
+                ⚠️ Large dataset detected. Matching may take a few seconds.
+            </div>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection" style="display: none;">
+                <div class="stats-bar">
+                    <div class="stat">
+                        <span class="stat-value" id="matchedCount">0</span>
+                        <span>Matched</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="unmatchedPaymentsCount">0</span>
+                        <span>Unmatched Payments</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-value" id="unmatchedInvoicesCount">0</span>
+                        <span>Unmatched Invoices</span>
+                    </div>
+                    <button id="exportBtn" class="btn btn-success">📥 Export Report</button>
+                </div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="matched">Matched Items</button>
+                    <button class="tab" data-tab="unmatched-payments">Unmatched Payments</button>
+                    <button class="tab" data-tab="unmatched-invoices">Unmatched Invoices</button>
+                </div>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="tab-matched">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Payment Date</th>
+                                <th>Payment Amount</th>
+                                <th>Payment Ref</th>
+                                <th>Invoice #</th>
+                                <th>Invoice Date</th>
+                                <th>Invoice Amount</th>
+                                <th>Match Type</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="matchedTableBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="tab-content" id="tab-unmatched-payments" style="display: none;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Payment Date</th>
+                                <th>Payment Amount</th>
+                                <th>Payment Ref</th>
+                                <th>Description</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unmatchedPaymentsBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="tab-content" id="tab-unmatched-invoices" style="display: none;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Invoice Date</th>
+                                <th>Invoice Amount</th>
+                                <th>Customer</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="unmatchedInvoicesBody"></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Manual Match Modal -->
+            <div class="modal" id="matchModal" style="display: none;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Manual Match</h3>
+                        <button class="close-btn" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="match-source">
+                            <h4>From:</h4>
+                            <div id="matchSource"></div>
+                        </div>
+                        <div class="match-arrow">↓</div>
+                        <div class="match-target">
+                            <h4>Match To:</h4>
+                            <select id="targetSelect"></select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                        <button class="btn btn-primary" onclick="confirmManualMatch()">Match</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>💡 Tip: Click headers to sort. Export generates a full reconciliation report.</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
