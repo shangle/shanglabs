@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NACHA File Viewer — Enterprise-Grade ACH Analysis | Shanglabs</title>
+    <meta name="description" content="Parse, validate, and analyze NACHA ACH files with enterprise-grade accuracy. Detect errors before submission, export reports, and streamline your operations.">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="landing-page">
+    <div class="container">
+        <!-- Header -->
+        <header class="landing-header">
+            <a href="/index.html" class="logo">
+                <span class="logo-icon">🔬</span>
+                <span class="logo-text">Shanglabs</span>
+            </a>
+            <nav class="nav">
+                <a href="/index.html#apps" class="nav-link">All Tools</a>
+                <a href="/#subscribe" class="nav-link">Subscribe</a>
+            </nav>
+        </header>
+
+        <!-- Hero -->
+        <section class="landing-hero">
+            <div class="hero-content">
+                <span class="badge badge-primary">Most Popular</span>
+                <h1>NACHA File Viewer</h1>
+                <p class="hero-subtitle">
+                    Parse, validate, and analyze ACH files with pixel-perfect accuracy. Catch validation errors before submission, generate audit reports, and streamline your banking operations.
+                </p>
+
+                <div class="hero-actions">
+                    <a href="/nacha-viewer/index.html" class="btn btn-primary btn-large">
+                        <span class="btn-icon">▶</span>
+                        Use This Tool
+                    </a>
+                    <a href="/#subscribe" class="btn btn-secondary btn-large">
+                        <span class="btn-icon">📦</span>
+                        Download Offline Version
+                    </a>
+                </div>
+
+                <div class="hero-metrics">
+                    <div class="metric">
+                        <span class="metric-value">94</span>
+                        <span class="metric-label">Standard</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">CCD</span>
+                        <span class="metric-label">File Types</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value">100%</span>
+                        <span class="metric-label">Client-Side</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-preview">
+                <div class="preview-window">
+                    <div class="preview-header">
+                        <span class="preview-dot"></span>
+                        <span class="preview-dot"></span>
+                        <span class="preview-dot"></span>
+                    </div>
+                    <div class="preview-body">
+                        <div class="preview-file">
+                            <div class="preview-line preview-success">✅ File Header Valid</div>
+                            <div class="preview-line preview-success">✅ Batch Header Valid</div>
+                            <div class="preview-line preview-success">✅ Entry #237 Valid</div>
+                            <div class="preview-line preview-error">❌ Checksum Mismatch on Entry #238</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Problem/Solution -->
+        <section class="section">
+            <div class="section-text">
+                <h2>The Problem with ACH Files</h2>
+                <p>
+                    NACHA files are deceptively simple: 94-character records with strict positional rules. A single misplaced character causes rejection from the Federal Reserve. Traditional tools are expensive, require software installations, and force you to send financial data to third-party servers.
+                </p>
+            </div>
+
+            <div class="divider">↓</div>
+
+            <div class="section-text">
+                <h2 class="text-success">The Shanglabs Difference</h2>
+                <p>
+                    100% browser-based validation with zero data transmission. Every character of your ACH file stays on your device. Open a file, see validation results instantly, export reports, and close the browser — no installation, no subscription, no data leaving your control.
+                </p>
+            </div>
+        </section>
+
+        <!-- Features -->
+        <section class="section section-features">
+            <h2>Enterprise Features, Zero Installation</h2>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Full NACHA Rule Validation</h3>
+                    <p>
+                        Validates against complete NACHA Operating Rules: record structure, checksums, entry counts, amount balances, and field length compliance. Catches errors before Federal Reserve rejection.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔍</div>
+                    <h3>Intelligent Search</h3>
+                    <p>
+                        Search across thousands of entries by account number, amount, trace number, or recipient name. Find specific transactions in seconds, not minutes of spreadsheet scrolling.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Hierarchical Display</h3>
+                    <p>
+                        Expandable tree view shows file structure through batches to individual entries. Drill down into any batch or entry with one click. Perfect for audit documentation.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">💾</div>
+                    <h3>Export to CSV</h3>
+                    <p>
+                        One-click export of all entries to CSV format for import into Excel, Google Sheets, or your accounting system. Include all metadata: trace numbers, amounts, accounts, dates.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Zero-Data Architecture</h3>
+                    <p>
+                        Your ACH file never leaves your browser. No servers, no cloud uploads, no third-party access. Complete privacy for financial data and payment information.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Performance</h3>
+                    <p>
+                        Drag and drop any NACHA file — validation starts in milliseconds. No account creation, no login, no waiting. Open, validate, export, done.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- What's in the Download -->
+        <section class="section section-download">
+            <div class="section-header">
+                <span class="badge badge-secondary">What's Included</span>
+                <h2>Download Package Features</h2>
+                <p class="section-subtitle">The web app is free to use forever. The download unlocks offline access and advanced capabilities.</p>
+            </div>
+
+            <div class="download-card">
+                <div class="download-header">
+                    <h3>NACHA Viewer Professional Download</h3>
+                    <p class="download-sub">Everything you need for production ACH processing</p>
+                </div>
+
+                <div class="download-features">
+                    <div class="download-column">
+                        <h4>📦 Desktop Application</h4>
+                        <ul>
+                            <li>Offline executable (Windows/Mac/Linux)</li>
+                            <li>No internet connection required</li>
+                            <li>Drag-drop file association</li>
+                            <li>Built-in PDF report generator</li>
+                        </ul>
+                    </div>
+
+                    <div class="download-column">
+                        <h4>📄 Audit Documentation</h4>
+                        <ul>
+                            <li>Validation checklist template</li>
+                            <li>Exception report format specifications</li>
+                            <li>Compliance documentation pack</li>
+                            <li>Sample ACH files for testing</li>
+                        </ul>
+                    </div>
+
+                    <div class="download-column">
+                        <h4>🏷️ White-Label License</h4>
+                        <ul>
+                            <li>Remove Shanglabs branding</li>
+                            <li>Add your company logo</li>
+                            <li>Distribute to your team</li>
+                            <li>Client-facing deployment rights</li>
+                        </ul>
+                    </div>
+
+                    <div class="download-column">
+                        <h4>🎨 Customization</h4>
+                        <ul>
+                            <li>Source code access</li>
+                            <li>Custom validation rules</li>
+                            <li>Brand color customization</li>
+                            <li>Integration API documentation</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="download-cta">
+                    <a href="/#subscribe" class="btn btn-primary btn-large">
+                        <span class="btn-icon">💎</span>
+                        Subscribe & Download All Apps
+                    </a>
+                    <p class="download-note">
+                        <strong>Or purchase individually:</strong> $13 (development cost / 100)<br>
+                        <small>Subscription unlocks all apps + future updates</small>
+                    </p>
+                </div>
+
+                <div class="download-pricing-breakdown">
+                    <h4>Transparent Pricing</h4>
+                    <p>
+                        This app required <strong>4.2 hours</strong> of development time at $30/hour = <strong>$126 total cost</strong><br>
+                        Download price: <strong>$1.26</strong> (rounded to $1.30 for simplicity)<br><br>
+                        <em>All pricing is transparent. Subscriberrs see full breakdowns for every app.</em>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Use Cases -->
+        <section class="section section-use-cases">
+            <h2>Built For</h2>
+
+            <div class="use-cases-grid">
+                <div class="use-case">
+                    <span class="use-case-icon">🏛️</span>
+                    <h3>Bank Operations</h3>
+                    <p>
+                        Operations teams processing incoming ACH files from corporate clients. Validate client files before submission to eliminate return codes.
+                    </p>
+                </div>
+
+                <div class="use-case">
+                    <span class="use-case-icon">🏢</span>
+                    <h3>Corporate Treasury</h3>
+                    <p>
+                        Treasury departments initiating payroll and AP ACH transactions. Preview files before transmission to catch formatting errors.
+                    </p>
+                </div>
+
+                <div class="use-case">
+                    <span class="use-case-icon">👥</span>
+                    <h3>Accounting Firms</h3>
+                    <p>
+                        Auditors and accountants reviewing ACH activity for clients. Export transaction lists for reconciliation and compliance documentation.
+                    </p>
+                </div>
+
+                <div class="use-case">
+                    <span class="use-case-icon">💼</span>
+                    <h3>FinTech Startups</h3>
+                    <p>
+                        New payments companies building ACH infrastructure. Validate test files against production standards before going live.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Comparison -->
+        <section class="section section-comparison">
+            <h2>How We Compare</h2>
+
+            <div class="comparison-table">
+                <div class="comparison-header">
+                    <div class="comp-col">Feature</div>
+                    <div class="comp-col comp-center">Shanglabs</div>
+                    <div class="comp-col comp-center">Traditional Tools</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comp-col">Cost</div>
+                    <div class="comp-col comp-center text-success">Free to use / $1.30 download</div>
+                    <div class="comp-col comp-center">$2,000 - $10,000/year</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comp-col">Installation</div>
+                    <div class="comp-col comp-center text-success">None - browser-only</div>
+                    <div class="comp-col comp-center">Software download, license keys</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comp-col">Data Privacy</div>
+                    <div class="comp-col comp-center text-success">100% client-side</div>
+                    <div class="comp-col comp-center">Data sent to servers</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comp-col">Validation Rules</div>
+                    <div class="comp-col comp-center text-success">Full NACHA Operating Rules</div>
+                    <div class="comp-col comp-center">Varies by vendor</div>
+                </div>
+
+                <div class="comparison-row">
+                    <div class="comp-col">Implementation</div>
+                    <div class="comp-col comp-center text-success">Instant - no account required</div>
+                    <div class="comp-col comp-center">Sales demo, onboarding, training</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="section section-cta">
+            <div class="cta-box">
+                <h2>Start Validating ACH Files in Seconds</h2>
+                <p>No account. No installation. No hidden costs. Just a tool that works.</p>
+
+                <div class="cta-actions">
+                    <a href="/nacha-viewer/index.html" class="btn btn-primary btn-large">
+                        <span class="btn-icon">▶</span>
+                        Open NACHA Viewer
+                    </a>
+                    <a href="/#subscribe" class="btn btn-secondary btn-large">
+                        <span class="btn-icon">💎</span>
+                        Subscribe for Downloads
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="landing-footer">
+            <p>Part of <a href="/index.html">Shanglabs</a> — Better tools for the work that matters.</p>
+        </footer>
+    </div>
+
+    <style>
+        /* Landing page specific styles */
+        .landing-page {
+            background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+            color: #1e293b;
+        }
+
+        .landing-header {
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .landing-hero {
+            padding: 100px 24px 80px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 24px;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #64748b;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .hero-metrics {
+            display: flex;
+            gap: 40px;
+        }
+
+        .metric {
+            text-align: center;
+        }
+
+        .metric-value {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #6366f1;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .preview-window {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        .preview-header {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .preview-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #cbd5e1;
+        }
+
+        .preview-body {
+            padding: 24px;
+        }
+
+        .preview-line {
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+
+        .preview-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .preview-error {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .badge-primary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .badge-secondary {
+            background: #8b5cf6;
+            color: white;
+        }
+
+        .section {
+            padding: 80px 24px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: #64748b;
+            margin-bottom: 40px;
+        }
+
+        .section-text {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .section-text h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+        }
+
+        .section-text p {
+            font-size: 1.1rem;
+            color: #64748b;
+            line-height: 1.7;
+        }
+
+        .divider {
+            text-align: center;
+            font-size: 2rem;
+            color: #94a3b8;
+            margin: 40px 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .feature-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 32px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 16px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .feature-card p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .download-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 24px;
+            padding: 48px;
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
+        }
+
+        .download-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .download-header h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .download-sub {
+            color: #64748b;
+            font-size: 1.1rem;
+        }
+
+        .download-features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .download-column h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 16px;
+        }
+
+        .download-column ul {
+            list-style: none;
+        }
+
+        .download-column li {
+            padding: 8px 0;
+            color: #64748b;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .download-column li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #10b981;
+            font-weight: 700;
+        }
+
+        .download-cta {
+            text-align: center;
+            padding: 32px;
+            background: #f8fafc;
+            border-radius: 16px;
+            margin-bottom: 24px;
+        }
+
+        .download-note {
+            margin-top: 16px;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .download-pricing-breakdown {
+            text-align: center;
+            padding: 24px;
+            background: #fef3c7;
+            border-radius: 12px;
+        }
+
+        .download-pricing-breakdown h4 {
+            color: #92400e;
+            margin-bottom: 12px;
+        }
+
+        .download-pricing-breakdown p {
+            color: #78716c;
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+
+        .use-cases-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 32px;
+        }
+
+        .use-case {
+            text-align: center;
+        }
+
+        .use-case-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .use-case h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .use-case p {
+            color: #64748b;
+            line-height: 1.6;
+        }
+
+        .comparison-table {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .comparison-row,
+        .comparison-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 20px 32px;
+        }
+
+        .comparison-header {
+            background: #f8fafc;
+            font-weight: 700;
+        }
+
+        .comparison-row:not(:last-child) {
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .comp-center {
+            text-align: center;
+        }
+
+        .text-success {
+            color: #10b981;
+        }
+
+        .cta-box {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 24px;
+            color: white;
+        }
+
+        .cta-box h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+
+        .cta-box p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .landing-footer {
+            text-align: center;
+            padding: 40px 24px;
+            color: #64748b;
+        }
+
+        .landing-footer a {
+            color: #6366f1;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .btn-icon {
+            margin-right: 8px;
+        }
+
+        .logo .logo-text {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media (max-width: 900px) {
+            .landing-hero {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .features-grid,
+            .download-features,
+            .use-cases-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .comparison-row,
+            .comparison-header {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .hero-actions,
+            .cta-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</body>
+</html>
