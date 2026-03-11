@@ -308,7 +308,8 @@ function renderEntries(batches) {
     const batchNum = batch.batchNumber || batchIndex + 1;
 
     batch.entries.forEach((entry, entryIndex) => {
-      const transactionType = ['22', '23', '32', '33'].includes(entry.transactionCode) ? 'credit' : 'debit';
+      const creditCodes = ['22', '23', '25', '26', '32', '33'];
+      const transactionType = creditCodes.includes(entry.transactionCode) ? 'credit' : 'debit';
       const amountClass = transactionType === 'credit' ? 'amount-credit' : 'amount-debit';
       const amountPrefix = transactionType === 'credit' ? '+' : '-';
 
@@ -391,9 +392,11 @@ function handleSearch() {
   // Render search results
   let html = `<p class="search-count">Found ${results.length} matching entries</p>`;
 
+  const creditCodes = ['22', '23', '25', '26', '32', '33'];
+  
   results.forEach((result, index) => {
     const entry = result.entry;
-    const transactionType = ['22', '23', '32', '33'].includes(entry.transactionCode) ? 'credit' : 'debit';
+    const transactionType = creditCodes.includes(entry.transactionCode) ? 'credit' : 'debit';
     const amountClass = transactionType === 'credit' ? 'amount-credit' : 'amount-debit';
     const amountPrefix = transactionType === 'credit' ? '+' : '-';
 

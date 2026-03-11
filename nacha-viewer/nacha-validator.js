@@ -1,5 +1,5 @@
 /**
- * NACHA File Validator for CCD (Corporate Credit/Debit) files
+ * NACHA File Validator for CCD and PPD files
  * Validates against NACHA Operating Rules
  */
 
@@ -7,6 +7,7 @@ class NACHAValidator {
   constructor() {
     this.errors = [];
     this.warnings = [];
+    this.supportedSECs = ['CCD', 'PPD'];
   }
 
   /**
@@ -115,9 +116,9 @@ class NACHAValidator {
       this.warnings.push('Immediate Origin routing number may be invalid (should be 9 digits + 1 space)');
     }
 
-    // Validate standard entry class code
-    if (header.standardEntryClassCode !== 'CCD') {
-      this.errors.push(`Unsupported Standard Entry Class Code: ${header.standardEntryClassCode} (only CCD is supported)`);
+    // Validate standard entry class code (if present in header - usually in batch header)
+    if (header.standardEntryClassCode && !this.supportedSECs.includes(header.standardEntryClassCode)) {
+      this.errors.push(`Unsupported Standard Entry Class Code: ${header.standardEntryClassCode} (supported: ${this.supportedSECs.join(', ')})`);
     }
   }
 
@@ -148,8 +149,8 @@ class NACHAValidator {
     }
 
     // Validate standard entry class code
-    if (batch.standardEntryClassCode !== 'CCD') {
-      this.errors.push(`Batch ${batchNum}: Invalid Standard Entry Class Code: ${batch.standardEntryClassCode} (should be CCD)`);
+    if (!this.supportedSECs.includes(batch.standardEntryClassCode)) {
+      this.errors.push(`Batch ${batchNum}: Invalid Standard Entry Class Code: ${batch.standardEntryClassCode} (supported: ${this.supportedSECs.join(', ')})`);
     }
 
     // Check for entries
@@ -179,8 +180,11 @@ class NACHAValidator {
       this.errors.push(`Batch ${batchNum}, Entry ${entryIndex + 1}: Invalid record type for Entry Detail`);
     }
 
-    // Validate transaction code
-    const validTransactionCodes = ['22', '23', '27', '28', '32', '33', '37', '38'];
+    // Validate transaction code (CCD + PPD codes)
+    const validTransactionCodes = [
+      '22', '23', '27', '28', '32', '33', '37', '38',  // CCD codes
+      '25', '26', '35', '36'  // PPD codes
+    ];
     if (!validTransactionCodes.includes(entry.transactionCode)) {
       this.errors.push(`Batch ${batchNum}, Entry ${entryIndex + 1}: Invalid Transaction Code: ${entry.transactionCode}`);
     }
@@ -244,15 +248,15 @@ class NACHAValidator {
     }
 
     // Calculate actual debit and credit amounts
+    // Credit codes: 22, 23, 25, 26, 32, 33 (checking, savings, loan, GL accounts)
+    const creditCodes = ['22', '23', '25', '26', '32', '33'];
     let totalDebits = 0;
     let totalCredits = 0;
 
     batch.entries.forEach(entry => {
-      if (['22', '23', '32', '33'].includes(entry.transactionCode)) {
-        // Credit transactions
+      if (creditCodes.includes(entry.transactionCode)) {
         totalCredits += entry.amount;
       } else {
-        // Debit transactions
         totalDebits += entry.amount;
       }
     });
@@ -294,6 +298,8 @@ class NACHAValidator {
     }
 
     // Calculate totals
+    // Credit codes: 22, 23, 25, 26, 32, 33
+    const creditCodes = ['22', '23', '25', '26', '32', '33'];
     let totalDebits = 0;
     let totalCredits = 0;
 
@@ -303,7 +309,7 @@ class NACHAValidator {
         totalCredits += batch.batchControl.totalCreditEntryAmount;
       } else {
         batch.entries.forEach(entry => {
-          if (['22', '23', '32', '33'].includes(entry.transactionCode)) {
+          if (creditCodes.includes(entry.transactionCode)) {
             totalCredits += entry.amount;
           } else {
             totalDebits += entry.amount;
@@ -326,6 +332,8 @@ class NACHAValidator {
    * Generate summary statistics
    */
   generateSummary(data) {
+    // Credit codes: 22, 23, 25, 26, 32, 33
+    const creditCodes = ['22', '23', '25', '26', '32', '33'];
     let totalEntries = 0;
     let totalDebits = 0;
     let totalCredits = 0;
@@ -333,7 +341,7 @@ class NACHAValidator {
     data.batches.forEach(batch => {
       totalEntries += batch.entries.length;
       batch.entries.forEach(entry => {
-        if (['22', '23', '32', '33'].includes(entry.transactionCode)) {
+        if (creditCodes.includes(entry.transactionCode)) {
           totalCredits += entry.amount;
         } else {
           totalDebits += entry.amount;
