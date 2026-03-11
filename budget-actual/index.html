@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Budget vs Actual Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Budget vs Actual Tracker</h1>
+            <p class="subtitle">Upload your budget and actual spending files to analyze variance</p>
+        </header>
+
+        <!-- File Upload Section -->
+        <section class="upload-section">
+            <div class="upload-grid">
+                <div class="upload-card">
+                    <h2>📋 Budget File</h2>
+                    <p class="help-text">CSV file with planned amounts</p>
+                    <div class="file-drop-zone" id="budgetDropZone">
+                        <input type="file" id="budgetFile" accept=".csv" hidden>
+                        <label for="budgetFile" class="file-label">
+                            <span class="file-icon">📁</span>
+                            <span class="file-text">Click or drag to upload</span>
+                        </label>
+                    </div>
+                    <div id="budgetFileName" class="file-name"></div>
+                    <div class="sample-format">
+                        <details>
+                            <summary>View expected format</summary>
+                            <pre>Category,Department,Amount
+Marketing,Advertising,50000
+IT,Infrastructure,75000
+HR,Recruitment,30000</pre>
+                        </details>
+                    </div>
+                </div>
+
+                <div class="upload-card">
+                    <h2>💰 Actual File</h2>
+                    <p class="help-text">CSV file with actual spending</p>
+                    <div class="file-drop-zone" id="actualDropZone">
+                        <input type="file" id="actualFile" accept=".csv" hidden>
+                        <label for="actualFile" class="file-label">
+                            <span class="file-icon">📁</span>
+                            <span class="file-text">Click or drag to upload</span>
+                        </label>
+                    </div>
+                    <div id="actualFileName" class="file-name"></div>
+                    <div class="sample-format">
+                        <details>
+                            <summary>View expected format</summary>
+                            <pre>Category,Department,Amount
+Marketing,Advertising,52000
+IT,Infrastructure,71000
+HR,Recruitment,35000</pre>
+                        </details>
+                    </div>
+                </div>
+            </div>
+
+            <button id="analyzeBtn" class="btn-primary" disabled>
+                🔍 Analyze Variance
+            </button>
+        </section>
+
+        <!-- Results Section -->
+        <section id="resultsSection" class="results-section hidden">
+            <div class="results-header">
+                <h2>📈 Variance Analysis Results</h2>
+                <button id="exportBtn" class="btn-secondary">
+                    📥 Export Report
+                </button>
+            </div>
+
+            <!-- Summary Cards -->
+            <div class="summary-cards">
+                <div class="summary-card">
+                    <h3>Total Budget</h3>
+                    <p class="stat-value" id="totalBudget">$0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Total Actual</h3>
+                    <p class="stat-value" id="totalActual">$0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>Variance</h3>
+                    <p class="stat-value" id="totalVariance">$0</p>
+                </div>
+                <div class="summary-card">
+                    <h3>% Variance</h3>
+                    <p class="stat-value" id="totalPercentVariance">0%</p>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="charts-container">
+                <div class="chart-card">
+                    <h3>📊 Budget vs Actual by Category</h3>
+                    <div id="chartCategory" class="chart"></div>
+                </div>
+                <div class="chart-card">
+                    <h3>📊 Budget vs Actual by Department</h3>
+                    <div id="chartDepartment" class="chart"></div>
+                </div>
+            </div>
+
+            <!-- Detailed Table -->
+            <div class="table-section">
+                <h3>📋 Detailed Variance Report</h3>
+                <div class="table-controls">
+                    <button id="filterAll" class="filter-btn active">All</button>
+                    <button id="filterOver" class="filter-btn">Over Budget</button>
+                    <button id="filterUnder" class="filter-btn">Under Budget</button>
+                    <button id="filterMatch" class="filter-btn">On Budget</button>
+                </div>
+                <div class="table-wrapper">
+                    <table id="varianceTable">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Department</th>
+                                <th>Budget</th>
+                                <th>Actual</th>
+                                <th>Variance</th>
+                                <th>% Variance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

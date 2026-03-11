@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NACHA File Viewer | Corporate Credit/Debit</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏦 NACHA File Viewer</h1>
+            <p class="subtitle">Secure, client-side Corporate Credit/Debit file analysis</p>
+        </header>
+
+        <section class="upload-section">
+            <div class="upload-box" id="uploadBox">
+                <div class="upload-content">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    <p class="upload-text">Drop your NACHA file here</p>
+                    <p class="upload-hint">or click to browse</p>
+                    <p class="upload-info">Supports CCD (Corporate Credit/Debit) files • Files never leave your browser</p>
+                </div>
+                <input type="file" id="fileInput" accept=".txt,.ach,.nacha" hidden>
+            </div>
+        </section>
+
+        <section class="results-section" id="resultsSection" style="display: none;">
+            <div class="file-info" id="fileInfo"></div>
+
+            <div class="validation-status" id="validationStatus"></div>
+
+            <div class="controls">
+                <div class="search-box">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <circle cx="11" cy="11" r="8"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35"/>
+                    </svg>
+                    <input type="text" id="searchInput" placeholder="Search by account, amount, or trace number...">
+                    <select id="searchType">
+                        <option value="all">All Fields</option>
+                        <option value="account">Account Number</option>
+                        <option value="amount">Amount</option>
+                        <option value="trace">Trace Number</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" id="exportBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export CSV
+                </button>
+            </div>
+
+            <div class="stats-bar" id="statsBar"></div>
+
+            <div class="content-wrapper">
+                <div class="sidebar" id="sidebar">
+                    <h3>File Structure</h3>
+                    <div class="tree-view" id="treeView"></div>
+                </div>
+
+                <div class="main-content">
+                    <div class="error-messages" id="errorMessages"></div>
+                    <div class="record-view" id="recordView"></div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>🔒 100% Client-Side Processing • Your data never leaves your browser</p>
+        </footer>
+    </div>
+
+    <script src="nacha-parser.js"></script>
+    <script src="nacha-validator.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

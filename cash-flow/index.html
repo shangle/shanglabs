@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Flow Forecaster</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+
+        .btn-danger {
+            background: #fee;
+            color: #c00;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .flow-item {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr auto;
+            gap: 10px;
+            align-items: end;
+            margin-bottom: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .metric-card.warning {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .metric-card.success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 10px 0;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: right;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #f8f9fa;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        th:first-child, td:first-child {
+            text-align: left;
+        }
+
+        .row-danger {
+            background: #ffebee;
+        }
+
+        .row-danger td {
+            color: #c00;
+        }
+
+        .positive {
+            color: #38ef7d;
+        }
+
+        .negative {
+            color: #f5576c;
+        }
+
+        .chart-container {
+            height: 400px;
+            position: relative;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .flow-item {
+                grid-template-columns: 1fr;
+            }
+
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Cash Flow Forecaster</h1>
+
+        <!-- Basic Settings -->
+        <div class="card">
+            <div class="card-header">📊 Settings</div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="startingBalance">Starting Cash Balance ($)</label>
+                        <input type="number" id="startingBalance" value="50000" min="0" step="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="minThreshold">Minimum Threshold ($)</label>
+                        <input type="number" id="minThreshold" value="10000" min="0" step="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="startDate">Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recurring Cash Flows -->
+        <div class="card">
+            <div class="card-header">🔄 Recurring Cash Flows</div>
+            <div class="card-body">
+                <div id="recurringFlows"></div>
+                <button class="btn btn-secondary" onclick="addRecurringFlow()">+ Add Recurring Flow</button>
+            </div>
+        </div>
+
+        <!-- One-time Cash Flows -->
+        <div class="card">
+            <div class="card-header">💸 One-Time Cash Flows</div>
+            <div class="card-body">
+                <div id="oneTimeFlows"></div>
+                <button class="btn btn-secondary" onclick="addOneTimeFlow()">+ Add One-Time Flow</button>
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div style="text-align: center; margin: 20px 0;">
+            <button class="btn btn-primary" onclick="generateForecast()">Generate 13-Week Forecast</button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="hidden">
+            <!-- Metrics -->
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-label">Starting Balance</div>
+                    <div class="metric-value" id="metricStartingBalance">$0</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Ending Balance (Week 13)</div>
+                    <div class="metric-value" id="metricEndingBalance">$0</div>
+                </div>
+                <div class="metric-card" id="metricBurnCard">
+                    <div class="metric-label">Monthly Burn Rate</div>
+                    <div class="metric-value" id="metricBurnRate">$0</div>
+                </div>
+                <div class="metric-card" id="metricRunwayCard">
+                    <div class="metric-label">Runway</div>
+                    <div class="metric-value" id="metricRunway">0 weeks</div>
+                </div>
+            </div>
+
+            <!-- Chart -->
+            <div class="card">
+                <div class="card-header">📈 Cash Position Over Time</div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="cashChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="card">
+                <div class="card-header">📋 13-Week Forecast</div>
+                <div class="card-body">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Starting Balance</th>
+                                <th>Inflows</th>
+                                <th>Outflows</th>
+                                <th>Net Change</th>
+                                <th>Ending Balance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="forecastTable"></tbody>
+                    </table>
+                    <div class="actions">
+                        <button class="btn btn-success" onclick="exportCSV()">Export to CSV</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let chart = null;
+        let forecastData = [];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+
+            // Add sample recurring flow
+            addRecurringFlow('Monthly Revenue', 15000, 'monthly', 'inflow');
+            addRecurringFlow('Monthly Expenses', -12000, 'monthly', 'outflow');
+
+            // Add sample one-time flow
+            addOneTimeFlow('Q1 Equipment Purchase', -5000, getWeekFromDate(today, 0));
+        });
+
+        function addRecurringFlow(name = '', amount = '', frequency = 'monthly', type = 'inflow') {
+            const container = document.getElementById('recurringFlows');
+            const div = document.createElement('div');
+            div.className = 'flow-item';
+            div.innerHTML = `
+                <div>
+                    <label>Description</label>
+                    <input type="text" placeholder="e.g., Rent, Revenue" value="${name}">
+                </div>
+                <div>
+                    <label>Amount</label>
+                    <input type="number" placeholder="0" value="${amount}" step="100">
+                </div>
+                <div>
+                    <label>Frequency</label>
+                    <select>
+                        <option value="weekly" ${frequency === 'weekly' ? 'selected' : ''}>Weekly</option>
+                        <option value="monthly" ${frequency === 'monthly' ? 'selected' : ''}>Monthly</option>
+                    </select>
+                </div>
+                <button class="btn btn-danger" onclick="removeFlow(this)">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addOneTimeFlow(name = '', amount = '', week = 0) {
+            const container = document.getElementById('oneTimeFlows');
+            const div = document.createElement('div');
+            div.className = 'flow-item';
+            div.innerHTML = `
+                <div>
+                    <label>Description</label>
+                    <input type="text" placeholder="e.g., Tax Payment" value="${name}">
+                </div>
+                <div>
+                    <label>Amount</label>
+                    <input type="number" placeholder="0" value="${amount}" step="100">
+                </div>
+                <div>
+                    <label>Week (0-13)</label>
+                    <input type="number" min="0" max="13" value="${week}">
+                </div>
+                <button class="btn btn-danger" onclick="removeFlow(this)">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeFlow(btn) {
+            btn.parentElement.remove();
+        }
+
+        function getWeekFromDate(dateStr) {
+            const date = new Date(dateStr);
+            const startOfYear = new Date(date.getFullYear(), 0, 0);
+            const diff = date - startOfYear;
+            const oneWeek = 1000 * 60 * 60 * 24 * 7;
+            return Math.floor(diff / oneWeek);
+        }
+
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function getRecurringFlowsData() {
+            const flows = [];
+            const items = document.querySelectorAll('#recurringFlows .flow-item');
+            items.forEach(item => {
+                const inputs = item.querySelectorAll('input, select');
+                const amount = parseFloat(inputs[1].value) || 0;
+                flows.push({
+                    description: inputs[0].value || 'Unnamed',
+                    amount: amount,
+                    frequency: inputs[2].value
+                });
+            });
+            return flows;
+        }
+
+        function getOneTimeFlowsData() {
+            const flows = [];
+            const items = document.querySelectorAll('#oneTimeFlows .flow-item');
+            items.forEach(item => {
+                const inputs = item.querySelectorAll('input');
+                flows.push({
+                    description: inputs[0].value || 'Unnamed',
+                    amount: parseFloat(inputs[1].value) || 0,
+                    week: parseInt(inputs[2].value) || 0
+                });
+            });
+            return flows;
+        }
+
+        function generateForecast() {
+            const startingBalance = parseFloat(document.getElementById('startingBalance').value) || 0;
+            const minThreshold = parseFloat(document.getElementById('minThreshold').value) || 0;
+            const startDate = new Date(document.getElementById('startDate').value);
+
+            const recurringFlows = getRecurringFlowsData();
+            const oneTimeFlows = getOneTimeFlowsData();
+
+            forecastData = [];
+            let currentBalance = startingBalance;
+            let totalWeeksNegative = 0;
+
+            for (let week = 0; week <= 13; week++) {
+                const weekDate = new Date(startDate);
+                weekDate.setDate(weekDate.getDate() + (week * 7));
+
+                let weekInflows = 0;
+                let weekOutflows = 0;
+
+                // Calculate recurring flows for this week
+                recurringFlows.forEach(flow => {
+                    const shouldApply = flow.frequency === 'weekly' ||
+                        (flow.frequency === 'monthly' && (week === 0 || week % 4 === 0));
+
+                    if (shouldApply) {
+                        if (flow.amount > 0) {
+                            weekInflows += flow.amount;
+                        } else {
+                            weekOutflows += Math.abs(flow.amount);
+                        }
+                    }
+                });
+
+                // Add one-time flows for this week
+                oneTimeFlows.filter(f => f.week === week).forEach(flow => {
+                    if (flow.amount > 0) {
+                        weekInflows += flow.amount;
+                    } else {
+                        weekOutflows += Math.abs(flow.amount);
+                    }
+                });
+
+                const weekStartBalance = currentBalance;
+                const netChange = weekInflows - weekOutflows;
+                currentBalance += netChange;
+
+                const weekEndBalance = currentBalance;
+                const isLowCash = weekEndBalance < minThreshold;
+                if (isLowCash) totalWeeksNegative++;
+
+                forecastData.push({
+                    week,
+                    weekDate,
+                    startBalance: weekStartBalance,
+                    inflows: weekInflows,
+                    outflows: weekOutflows,
+                    netChange,
+                    endBalance: weekEndBalance,
+                    isLowCash
+                });
+            }
+
+            // Calculate metrics
+            const totalChange = forecastData[13].endBalance - forecastData[0].startBalance;
+            const monthlyBurnRate = totalChange < 0 ? Math.abs(totalChange / 3) : -totalChange / 3;
+            const weeklyAvgChange = totalChange / 13;
+
+            // Calculate runway (weeks until hitting minimum threshold)
+            let runway = Infinity;
+            if (weeklyAvgChange < 0) {
+                runway = Math.floor((startingBalance - minThreshold) / Math.abs(weeklyAvgChange));
+            }
+
+            // Display metrics
+            document.getElementById('metricStartingBalance').textContent = formatCurrency(startingBalance);
+            document.getElementById('metricEndingBalance').textContent = formatCurrency(forecastData[13].endBalance);
+            document.getElementById('metricBurnRate').textContent = formatCurrency(monthlyBurnRate);
+            document.getElementById('metricRunway').textContent = runway === Infinity ? '∞ weeks' : `${runway} weeks`;
+
+            // Style metric cards
+            const burnCard = document.getElementById('metricBurnCard');
+            burnCard.className = 'metric-card ' + (monthlyBurnRate > 0 ? 'warning' : 'success');
+
+            const runwayCard = document.getElementById('metricRunwayCard');
+            runwayCard.className = 'metric-card ' + (runway < 8 && runway !== Infinity ? 'warning' : 'success');
+
+            // Display table
+            displayTable();
+
+            // Display chart
+            displayChart();
+
+            // Show results
+            document.getElementById('results').classList.remove('hidden');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function displayTable() {
+            const tbody = document.getElementById('forecastTable');
+            tbody.innerHTML = '';
+
+            forecastData.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.className = row.isLowCash ? 'row-danger' : '';
+
+                tr.innerHTML = `
+                    <td><strong>Week ${row.week}</strong><br><small>${formatDate(row.weekDate)}</small></td>
+                    <td>${formatCurrency(row.startBalance)}</td>
+                    <td class="positive">+${formatCurrency(row.inflows)}</td>
+                    <td class="negative">-${formatCurrency(row.outflows)}</td>
+                    <td class="${row.netChange >= 0 ? 'positive' : 'negative'}">${formatCurrency(row.netChange)}</td>
+                    <td><strong>${formatCurrency(row.endBalance)}</strong></td>
+                    <td>${row.isLowCash ? '⚠️ Low Cash' : '✅ OK'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function displayChart() {
+            const ctx = document.getElementById('cashChart').getContext('2d');
+            const labels = forecastData.map(r => `Week ${r.week}`);
+            const data = forecastData.map(r => r.endBalance);
+            const minThreshold = parseFloat(document.getElementById('minThreshold').value) || 0;
+
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Cash Position',
+                            data: data,
+                            borderColor: '#667eea',
+                            backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 4,
+                            pointHoverRadius: 6
+                        },
+                        {
+                            label: 'Minimum Threshold',
+                            data: Array(14).fill(minThreshold),
+                            borderColor: '#f5576c',
+                            borderDash: [5, 5],
+                            fill: false,
+                            pointRadius: 0
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: (context) => `${context.dataset.label}: ${formatCurrency(context.raw)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: (value) => formatCurrency(value)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(value);
+        }
+
+        function exportCSV() {
+            let csv = 'Week,Date,Starting Balance,Inflows,Outflows,Net Change,Ending Balance,Status\n';
+
+            forecastData.forEach(row => {
+                csv += `${row.week},"${formatDate(row.weekDate)}",${row.startBalance},${row.inflows},${row.outflows},${row.netChange},${row.endBalance},"${row.isLowCash ? 'Low Cash' : 'OK'}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cash-forecast-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Aging Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Invoice Aging Tracker</h1>
+            <p class="subtitle">Track overdue payments by aging period</p>
+        </header>
+
+        <section class="upload-section">
+            <div class="upload-box" id="uploadBox">
+                <input type="file" id="csvInput" accept=".csv" hidden>
+                <label for="csvInput" class="upload-label">
+                    <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17,8 12,3 7,8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span class="upload-text">Drop CSV file here or click to upload</span>
+                    <span class="upload-hint">CSV should include: Invoice #, Amount, Due Date, Customer Name</span>
+                </label>
+            </div>
+        </section>
+
+        <section id="resultsSection" class="results-section hidden">
+            <div class="summary-bar">
+                <div class="total-outstanding">
+                    <span class="label">Total Outstanding</span>
+                    <span class="amount" id="totalOutstanding">$0.00</span>
+                </div>
+                <button id="exportBtn" class="export-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7,10 12,15 17,10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    Export Aging Report
+                </button>
+            </div>
+
+            <div class="aging-buckets">
+                <div class="bucket bucket-current">
+                    <div class="bucket-header">
+                        <h3>Current</h3>
+                        <span class="bucket-range">0-30 days</span>
+                    </div>
+                    <div class="bucket-stats">
+                        <div class="stat">
+                            <span class="stat-label">Amount</span>
+                            <span class="stat-value" id="currentAmount">$0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Invoices</span>
+                            <span class="stat-value" id="currentCount">0</span>
+                        </div>
+                    </div>
+                    <div class="bucket-bar">
+                        <div class="bucket-fill" id="currentFill"></div>
+                    </div>
+                </div>
+
+                <div class="bucket bucket-31-60">
+                    <div class="bucket-header">
+                        <h3>31-60 Days</h3>
+                        <span class="bucket-range">Overdue 1-2 months</span>
+                    </div>
+                    <div class="bucket-stats">
+                        <div class="stat">
+                            <span class="stat-label">Amount</span>
+                            <span class="stat-value" id="days31Amount">$0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Invoices</span>
+                            <span class="stat-value" id="days31Count">0</span>
+                        </div>
+                    </div>
+                    <div class="bucket-bar">
+                        <div class="bucket-fill" id="days31Fill"></div>
+                    </div>
+                </div>
+
+                <div class="bucket bucket-61-90">
+                    <div class="bucket-header">
+                        <h3>61-90 Days</h3>
+                        <span class="bucket-range">Overdue 2-3 months</span>
+                    </div>
+                    <div class="bucket-stats">
+                        <div class="stat">
+                            <span class="stat-label">Amount</span>
+                            <span class="stat-value" id="days61Amount">$0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Invoices</span>
+                            <span class="stat-value" id="days61Count">0</span>
+                        </div>
+                    </div>
+                    <div class="bucket-bar">
+                        <div class="bucket-fill" id="days61Fill"></div>
+                    </div>
+                </div>
+
+                <div class="bucket bucket-90plus">
+                    <div class="bucket-header">
+                        <h3>90+ Days</h3>
+                        <span class="bucket-range">Severely overdue</span>
+                    </div>
+                    <div class="bucket-stats">
+                        <div class="stat">
+                            <span class="stat-label">Amount</span>
+                            <span class="stat-value" id="days90Amount">$0.00</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-label">Invoices</span>
+                            <span class="stat-value" id="days90Count">0</span>
+                        </div>
+                    </div>
+                    <div class="bucket-bar">
+                        <div class="bucket-fill" id="days90Fill"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-section">
+                <h2>Invoice Details</h2>
+                <div class="table-container">
+                    <table id="invoiceTable">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Customer</th>
+                                <th>Amount</th>
+                                <th>Due Date</th>
+                                <th>Days Overdue</th>
+                                <th>Aging Bucket</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoiceTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

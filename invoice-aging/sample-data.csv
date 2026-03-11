@@ -1,0 +1,11 @@
+invoice_number,customer_name,amount,due_date
+INV-2024-001,Acme Corporation,2500.00,2024-01-15
+INV-2024-002,Smith & Associates,1750.50,2024-01-20
+INV-2024-003,TechStart Inc.,3200.00,2023-12-10
+INV-2024-004,Global Logistics,1250.00,2023-11-05
+INV-2024-005,Metro Services,4100.00,2023-10-15
+INV-2024-006,Digital First,2890.00,2024-02-01
+INV-2024-007,Premier Partners,950.00,2023-09-20
+INV-2024-008,Velocity Corp,1800.00,2023-08-25
+INV-2024-009,Nexus Systems,2250.00,2024-02-10
+INV-2024-010,Blue Horizon,1650.00,2023-07-30

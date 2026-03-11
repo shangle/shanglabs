@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Break-Even Analysis Tool</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Break-Even Analysis Tool</h1>
+            <p class="subtitle">Calculate pricing, margins, and profit projections</p>
+        </header>
+
+        <main>
+            <!-- Product Input Section -->
+            <section class="card input-section">
+                <h2>Add Product</h2>
+                <form id="productForm">
+                    <div class="input-group">
+                        <label for="productName">Product Name</label>
+                        <input type="text" id="productName" placeholder="e.g., Widget A" required>
+                    </div>
+                    <div class="input-row">
+                        <div class="input-group">
+                            <label for="fixedCosts">Fixed Costs ($)</label>
+                            <input type="number" id="fixedCosts" step="0.01" min="0" placeholder="5000" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="variableCost">Variable Cost per Unit ($)</label>
+                            <input type="number" id="variableCost" step="0.01" min="0" placeholder="15" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="sellingPrice">Selling Price per Unit ($)</label>
+                            <input type="number" id="sellingPrice" step="0.01" min="0" placeholder="25" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">➕ Add Product</button>
+                </form>
+            </section>
+
+            <!-- Products List -->
+            <section class="card products-section" id="productsSection" style="display: none;">
+                <div class="section-header">
+                    <h2>Products</h2>
+                    <div class="actions">
+                        <button class="btn btn-secondary" id="clearAllBtn">🗑️ Clear All</button>
+                        <button class="btn btn-secondary" id="exportBtn">📥 Export CSV</button>
+                    </div>
+                </div>
+                <div id="productsList" class="products-list"></div>
+            </section>
+
+            <!-- Analysis Results -->
+            <section class="card results-section" id="resultsSection" style="display: none;">
+                <h2>Break-Even Analysis</h2>
+                <div id="resultsContent"></div>
+
+                <!-- Chart -->
+                <div class="chart-container">
+                    <canvas id="breakEvenChart"></canvas>
+                </div>
+
+                <!-- Profit Table -->
+                <div class="table-container">
+                    <h3>Profit/Loss at Different Sales Levels</h3>
+                    <table id="profitTable">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>10% of BEP</th>
+                                <th>50% of BEP</th>
+                                <th>100% of BEP</th>
+                                <th>150% of BEP</th>
+                                <th>200% of BEP</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- Empty State -->
+            <section class="card empty-state" id="emptyState">
+                <div class="empty-icon">📈</div>
+                <h3>No Products Yet</h3>
+                <p>Add a product above to start your break-even analysis</p>
+            </section>
+        </main>
+
+        <footer>
+            <p>Client-side only • No data leaves your browser</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

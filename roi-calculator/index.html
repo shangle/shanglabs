@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROI Calculator - Business Case Analysis Tool</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧮 ROI Calculator</h1>
+            <p class="subtitle">Business Case Analysis Tool</p>
+        </header>
+
+        <!-- Mode Selection -->
+        <div id="mode-selection" class="mode-selector">
+            <div class="mode-card" onclick="selectMode('simple')">
+                <div class="mode-icon">📊</div>
+                <h2>Simple Mode</h2>
+                <p>Quick ROI calculation with basic inputs</p>
+                <ul class="mode-features">
+                    <li>Revenue & costs input</li>
+                    <li>Time period selection</li>
+                    <li>ROI percentage & profit display</li>
+                </ul>
+                <button class="btn btn-primary">Start Simple</button>
+            </div>
+            <div class="mode-card" onclick="selectMode('advanced')">
+                <div class="mode-icon">📈</div>
+                <h2>Advanced Mode</h2>
+                <p>Comprehensive analysis with multi-scenario comparison</p>
+                <ul class="mode-features">
+                    <li>Multi-scenario comparison</li>
+                    <li>NPV & IRR calculations</li>
+                    <li>Sensitivity analysis sliders</li>
+                    <li>Detailed visualizations</li>
+                </ul>
+                <button class="btn btn-secondary">Start Advanced</button>
+            </div>
+        </div>
+
+        <!-- Simple Mode Wizard -->
+        <div id="simple-wizard" class="wizard hidden">
+            <div class="wizard-header">
+                <button class="btn-back" onclick="goBack()">← Back</button>
+                <div class="step-indicator">
+                    <span id="simple-step-1" class="step active">1</span>
+                    <span id="simple-step-2" class="step">2</span>
+                    <span id="simple-step-3" class="step">3</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Revenue Input -->
+            <div id="simple-step-1-content" class="wizard-step active">
+                <h2>Step 1: Enter Revenue</h2>
+                <p class="step-desc">What's your expected revenue or savings?</p>
+                <div class="form-group">
+                    <label for="simple-revenue">Revenue / Savings ($)</label>
+                    <input type="number" id="simple-revenue" placeholder="e.g., 50000" min="0" step="0.01">
+                    <span class="input-hint">Total revenue or savings over the period</span>
+                </div>
+            </div>
+
+            <!-- Step 2: Costs Input -->
+            <div id="simple-step-2-content" class="wizard-step">
+                <h2>Step 2: Enter Costs</h2>
+                <p class="step-desc">What are your total costs or investments?</p>
+                <div class="form-group">
+                    <label for="simple-costs">Total Costs / Investment ($)</label>
+                    <input type="number" id="simple-costs" placeholder="e.g., 20000" min="0" step="0.01">
+                    <span class="input-hint">Include all costs: setup, licensing, training, etc.</span>
+                </div>
+            </div>
+
+            <!-- Step 3: Time Period -->
+            <div id="simple-step-3-content" class="wizard-step">
+                <h2>Step 3: Select Time Period</h2>
+                <p class="step-desc">What period does this analysis cover?</p>
+                <div class="form-group">
+                    <label for="simple-period">Time Period</label>
+                    <select id="simple-period">
+                        <option value="1">1 Month</option>
+                        <option value="3">3 Months</option>
+                        <option value="6" selected>6 Months</option>
+                        <option value="12">1 Year</option>
+                        <option value="24">2 Years</option>
+                        <option value="36">3 Years</option>
+                        <option value="60">5 Years</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Simple Results -->
+            <div id="simple-results" class="wizard-step results-step">
+                <h2>📊 Your ROI Results</h2>
+                <div class="results-grid">
+                    <div class="result-card primary">
+                        <div class="result-label">ROI Percentage</div>
+                        <div class="result-value" id="simple-roi-percent">0%</div>
+                    </div>
+                    <div class="result-card success">
+                        <div class="result-label">Net Profit</div>
+                        <div class="result-value" id="simple-profit">$0</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Total Revenue</div>
+                        <div class="result-value" id="simple-revenue-display">$0</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Total Costs</div>
+                        <div class="result-value" id="simple-costs-display">$0</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Payback Period</div>
+                        <div class="result-value" id="simple-payback">0 months</div>
+                    </div>
+                    <div class="result-card">
+                        <div class="result-label">Annualized ROI</div>
+                        <div class="result-value" id="simple-annualized">0%</div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="simple-chart"></canvas>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-outline" onclick="exportSimple('csv')">Export CSV</button>
+                    <button class="btn btn-outline" onclick="exportSimple('pdf')">Export PDF</button>
+                    <button class="btn btn-primary" onclick="resetSimple()">Start Over</button>
+                </div>
+            </div>
+
+            <div class="wizard-footer">
+                <button id="simple-prev-btn" class="btn btn-secondary" onclick="prevSimpleStep()">Previous</button>
+                <button id="simple-next-btn" class="btn btn-primary" onclick="nextSimpleStep()">Next</button>
+            </div>
+        </div>
+
+        <!-- Advanced Mode Wizard -->
+        <div id="advanced-wizard" class="wizard hidden">
+            <div class="wizard-header">
+                <button class="btn-back" onclick="goBack()">← Back</button>
+                <div class="step-indicator">
+                    <span id="adv-step-1" class="step active">1</span>
+                    <span id="adv-step-2" class="step">2</span>
+                    <span id="adv-step-3" class="step">3</span>
+                    <span id="adv-step-4" class="step">4</span>
+                    <span id="adv-step-5" class="step">5</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Base Scenario -->
+            <div id="adv-step-1-content" class="wizard-step active">
+                <h2>Step 1: Base Scenario</h2>
+                <p class="step-desc">Define your base case assumptions</p>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="adv-investment">Initial Investment ($)</label>
+                        <input type="number" id="adv-investment" placeholder="e.g., 100000" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="adv-period">Analysis Period (Years)</label>
+                        <select id="adv-period">
+                            <option value="1">1 Year</option>
+                            <option value="2">2 Years</option>
+                            <option value="3" selected>3 Years</option>
+                            <option value="5">5 Years</option>
+                            <option value="10">10 Years</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="adv-annual-revenue">Annual Revenue / Savings ($)</label>
+                        <input type="number" id="adv-annual-revenue" placeholder="e.g., 50000" min="0" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="adv-annual-costs">Annual Operating Costs ($)</label>
+                        <input type="number" id="adv-annual-costs" placeholder="e.g., 10000" min="0" step="0.01">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="adv-discount-rate">Discount Rate (%)</label>
+                        <input type="number" id="adv-discount-rate" placeholder="e.g., 10" min="0" max="100" step="0.1">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Alternative Scenarios -->
+            <div id="adv-step-2-content" class="wizard-step">
+                <h2>Step 2: Alternative Scenarios</h2>
+                <p class="step-desc">Compare different scenarios side by side</p>
+                <div id="scenarios-container">
+                    <div class="scenario-card" id="scenario-base">
+                        <h3>📊 Base Scenario</h3>
+                        <p class="scenario-note">Defined in Step 1</p>
+                    </div>
+                </div>
+                <button class="btn btn-outline" onclick="addScenario()">+ Add Scenario</button>
+            </div>
+
+            <!-- Step 3: Multi-Year Cash Flows -->
+            <div id="adv-step-3-content" class="wizard-step">
+                <h2>Step 3: Multi-Year Cash Flow Details</h2>
+                <p class="step-desc">Adjust cash flows by year (optional - uses averages if blank)</p>
+                <div id="cash-flows-table">
+                    <!-- Generated dynamically -->
+                </div>
+            </div>
+
+            <!-- Step 4: Sensitivity Analysis -->
+            <div id="adv-step-4-content" class="wizard-step">
+                <h2>Step 4: Sensitivity Analysis</h2>
+                <p class="step-desc">See how changes affect your ROI</p>
+                <div class="sensitivity-section">
+                    <div class="form-group">
+                        <label for="sens-revenue-rev">Revenue Variation: <span id="sens-revenue-val">100%</span></label>
+                        <input type="range" id="sens-revenue-rev" min="50" max="150" value="100" oninput="updateSensitivity()">
+                    </div>
+                    <div class="form-group">
+                        <label for="sens-costs-rev">Costs Variation: <span id="sens-costs-val">100%</span></label>
+                        <input type="range" id="sens-costs-rev" min="50" max="150" value="100" oninput="updateSensitivity()">
+                    </div>
+                    <div class="form-group">
+                        <label for="sens-discount-rev">Discount Rate: <span id="sens-discount-val">10%</span></label>
+                        <input type="range" id="sens-discount-rev" min="0" max="30" value="10" oninput="updateSensitivity()">
+                    </div>
+                </div>
+                <div class="sensitivity-result">
+                    <div class="sens-card">
+                        <div class="sens-label">ROI Impact</div>
+                        <div class="sens-value" id="sens-impact">0%</div>
+                    </div>
+                    <div class="sens-card">
+                        <div class="sens-label">NPV Impact</div>
+                        <div class="sens-value" id="sens-npv">$0</div>
+                    </div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="sensitivity-chart"></canvas>
+                </div>
+            </div>
+
+            <!-- Step 5: Results -->
+            <div id="adv-step-5-content" class="wizard-step results-step">
+                <h2>📈 Advanced Analysis Results</h2>
+
+                <h3>Scenario Comparison</h3>
+                <div class="table-container">
+                    <table id="scenarios-table">
+                        <thead>
+                            <tr>
+                                <th>Scenario</th>
+                                <th>NVP</th>
+                                <th>IRR</th>
+                                <th>ROI</th>
+                                <th>Payback</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Generated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Cash Flow Over Time</h3>
+                <div class="chart-container">
+                    <canvas id="cashflow-chart"></canvas>
+                </div>
+
+                <h3>ROI by Scenario</h3>
+                <div class="chart-container">
+                    <canvas id="roi-chart"></canvas>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-outline" onclick="exportAdvanced('csv')">Export CSV</button>
+                    <button class="btn btn-outline" onclick="exportAdvanced('pdf')">Export PDF</button>
+                    <button class="btn btn-primary" onclick="resetAdvanced()">Start Over</button>
+                </div>
+            </div>
+
+            <div class="wizard-footer">
+                <button id="adv-prev-btn" class="btn btn-secondary" onclick="prevAdvStep()">Previous</button>
+                <button id="adv-next-btn" class="btn btn-primary" onclick="nextAdvStep()">Next</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Built for ShangLabs | Client-side only - Your data stays in your browser</p>
+    </footer>
+
+    <script src="js/calculator.js"></script>
+    <script src="js/visualization.js"></script>
+    <script src="js/export.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
