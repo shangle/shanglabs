@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Analysis Suite — ROI, Break-Even & Budget Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --primary-light: #818cf8;
+            --success: #10b981;
+            --success-light: #d1fae5;
+            --warning: #f59e0b;
+            --warning-light: #fef3c7;
+            --error: #ef4444;
+            --error-light: #fee2e2;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            min-height: 100vh;
+            color: var(--gray-800);
+        }
+        
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .back-link:hover { opacity: 1; }
+        
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: white;
+            padding: 0 24px;
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .nav-tab {
+            padding: 16px 24px;
+            border: none;
+            background: transparent;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.15s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-tab:hover {
+            color: var(--gray-700);
+            background: var(--gray-50);
+        }
+        
+        .nav-tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+        
+        .nav-tab .badge {
+            background: var(--gray-200);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+        }
+        
+        /* Main Content */
+        .main-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        .tool-panel {
+            display: none;
+        }
+        
+        .tool-panel.active {
+            display: block;
+        }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+        
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* Form Elements */
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 4px;
+        }
+        
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.95rem;
+            transition: border-color 0.15s, box-shadow 0.15s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .input-hint {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+        
+        .btn:hover { transform: translateY(-1px); }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, var(--success) 100%);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: white;
+            border: 1px solid var(--gray-300);
+            color: var(--gray-700);
+        }
+        
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+        
+        /* Metrics */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .metric-card {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .metric-card.primary {
+            background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .metric-card.success { border-left: 4px solid var(--success); }
+        .metric-card.warning { border-left: 4px solid var(--warning); }
+        .metric-card.error { border-left: 4px solid var(--error); }
+        
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+        
+        .metric-card.primary .metric-label { color: rgba(255,255,255,0.8); }
+        
+        .metric-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+        
+        .metric-card.primary .metric-value { color: white; }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+        
+        .text-success { color: var(--success); }
+        .text-error { color: var(--error); }
+        .text-warning { color: var(--warning); }
+        .text-muted { color: var(--gray-500); }
+        
+        /* Charts */
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        
+        /* Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: var(--gray-50);
+            padding: 12px 16px;
+            text-align: right;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .data-table th:first-child { text-align: left; }
+        
+        .data-table td {
+            padding: 12px 16px;
+            text-align: right;
+            font-size: 0.9rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .data-table td:first-child { text-align: left; font-weight: 500; }
+        
+        .data-table tr:hover { background: var(--gray-50); }
+        .data-table tr.warning { background: var(--warning-light); }
+        .data-table tr.error { background: var(--error-light); }
+        
+        /* Scenario Cards */
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .scenario-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 16px;
+        }
+        
+        .scenario-card h4 {
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        /* Status Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .status-badge.success { background: var(--success-light); color: #065f46; }
+        .status-badge.warning { background: var(--warning-light); color: #92400e; }
+        .status-badge.error { background: var(--error-light); color: #991b1b; }
+        
+        /* Two Column Layout */
+        .two-col {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+        
+        @media (max-width: 900px) {
+            .two-col { grid-template-columns: 1fr; }
+        }
+        
+        /* Product List */
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .product-item {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 8px;
+        }
+        
+        .product-item .name { font-weight: 600; }
+        .product-item .details { font-size: 0.85rem; color: var(--gray-600); }
+        
+        .product-item .remove-btn {
+            background: none;
+            border: none;
+            color: var(--error);
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        /* File Upload */
+        .upload-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .upload-zone.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-tabs {
+                overflow-x: auto;
+                padding: 0 16px;
+            }
+            
+            .nav-tab {
+                padding: 12px 16px;
+                white-space: nowrap;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media print {
+            .app-header, .nav-tabs, .btn { display: none !important; }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span>📊 Financial Analysis Suite</span>
+        </h1>
+        <div>
+            <button class="btn btn-outline" onclick="exportAll()" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: white;">
+                📥 Export Report
+            </button>
+        </div>
+    </header>
+    
+    <nav class="nav-tabs">
+        <button class="nav-tab active" data-tab="roi">
+            💰 ROI Calculator
+            <span class="badge">NPV/IRR</span>
+        </button>
+        <button class="nav-tab" data-tab="breakeven">
+            ⚖️ Break-Even Analysis
+            <span class="badge">Multi-Product</span>
+        </button>
+        <button class="nav-tab" data-tab="budget">
+            📊 Budget vs Actual
+            <span class="badge">Variance</span>
+        </button>
+    </nav>
+    
+    <main class="main-content">
+        <!-- ROI Calculator Panel -->
+        <div class="tool-panel active" id="roi-panel">
+            <div class="metrics-grid">
+                <div class="metric-card primary">
+                    <div class="metric-label">ROI</div>
+                    <div class="metric-value" id="roi-roi">--</div>
+                </div>
+                <div class="metric-card success">
+                    <div class="metric-label">NPV</div>
+                    <div class="metric-value" id="roi-npv">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">IRR</div>
+                    <div class="metric-value" id="roi-irr">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Payback Period</div>
+                    <div class="metric-value" id="roi-payback">--</div>
+                </div>
+            </div>
+            
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Investment Details</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label>Initial Investment ($)</label>
+                            <input type="number" id="roi-investment" value="100000" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Time Horizon (Years)</label>
+                            <select id="roi-years">
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3" selected>3 Years</option>
+                                <option value="5">5 Years</option>
+                                <option value="10">10 Years</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Rate (%)</label>
+                            <input type="number" id="roi-discount" value="10" min="0" max="100" step="0.5">
+                            <span class="input-hint">WACC or required return</span>
+                        </div>
+                        
+                        <h4 style="margin: 20px 0 12px; font-size: 0.9rem;">Annual Cash Flows</h4>
+                        <div id="roi-cashflows">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Year 1</label>
+                                    <input type="number" class="roi-cf" data-year="1" value="30000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Year 2</label>
+                                    <input type="number" class="roi-cf" data-year="2" value="40000">
+                                </div>
+                                <div class="form-group">
+                                    <label>Year 3</label>
+                                    <input type="number" class="roi-cf" data-year="3" value="50000">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="calculateROI()" style="width: 100%; margin-top: 16px;">
+                            📊 Calculate ROI
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Cash Flow Visualization</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="roi-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Cash Flow Details</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Cash Flow</th>
+                                        <th>Discounted</th>
+                                        <th>Cumulative</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="roi-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Break-Even Panel -->
+        <div class="tool-panel" id="breakeven-panel">
+            <div class="metrics-grid">
+                <div class="metric-card primary">
+                    <div class="metric-label">Break-Even Units</div>
+                    <div class="metric-value" id="be-units">--</div>
+                </div>
+                <div class="metric-card success">
+                    <div class="metric-label">Break-Even Revenue</div>
+                    <div class="metric-value" id="be-revenue">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Contribution Margin</div>
+                    <div class="metric-value" id="be-margin">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Margin Ratio</div>
+                    <div class="metric-value" id="be-ratio">--</div>
+                </div>
+            </div>
+            
+            <div class="two-col">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Products</h2>
+                        <button class="btn btn-secondary btn-sm" onclick="addProduct()">+ Add Product</button>
+                    </div>
+                    <div class="card-body">
+                        <div id="products-list" class="product-list">
+                            <!-- Products will be added here -->
+                        </div>
+                        
+                        <div class="form-group" style="margin-top: 20px;">
+                            <label>Total Fixed Costs ($)</label>
+                            <input type="number" id="be-fixed" value="50000" min="0">
+                        </div>
+                        
+                        <button class="btn btn-primary" onclick="calculateBreakEven()" style="width: 100%; margin-top: 16px;">
+                            📊 Calculate Break-Even
+                        </button>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Break-Even Chart</h2>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-container">
+                                <canvas id="be-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card-header">
+                            <h2>Product Analysis</h2>
+                        </div>
+                        <div class="card-body">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Price</th>
+                                        <th>Variable Cost</th>
+                                        <th>Margin</th>
+                                        <th>B-E Units</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="be-table"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Budget vs Actual Panel -->
+        <div class="tool-panel" id="budget-panel">
+            <div class="metrics-grid">
+                <div class="metric-card primary">
+                    <div class="metric-label">Total Budget</div>
+                    <div class="metric-value" id="budget-total">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total Actual</div>
+                    <div class="metric-value" id="actual-total">--</div>
+                </div>
+                <div class="metric-card" id="variance-card">
+                    <div class="metric-label">Variance</div>
+                    <div class="metric-value" id="variance-total">--</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">% Variance</div>
+                    <div class="metric-value" id="variance-percent">--</div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header">
+                    <h2>Import Data</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-row">
+                        <div>
+                            <h4 style="margin-bottom: 12px;">📋 Budget File</h4>
+                            <div class="upload-zone" id="budget-upload">
+                                <input type="file" id="budget-file" accept=".csv" hidden>
+                                <p>Drop CSV or click to upload</p>
+                                <span class="input-hint">Category, Department, Amount</span>
+                            </div>
+                            <p id="budget-filename" class="text-muted" style="margin-top: 8px;"></p>
+                        </div>
+                        <div>
+                            <h4 style="margin-bottom: 12px;">💰 Actual File</h4>
+                            <div class="upload-zone" id="actual-upload">
+                                <input type="file" id="actual-file" accept=".csv" hidden>
+                                <p>Drop CSV or click to upload</p>
+                                <span class="input-hint">Category, Department, Amount</span>
+                            </div>
+                            <p id="actual-filename" class="text-muted" style="margin-top: 8px;"></p>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" onclick="analyzeVariance()" style="margin-top: 16px;">
+                        🔍 Analyze Variance
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card" id="variance-results" style="display: none;">
+                <div class="card-header">
+                    <h2>Variance by Category</h2>
+                    <button class="btn btn-secondary btn-sm" onclick="exportVariance()">📥 Export CSV</button>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 250px; margin-bottom: 20px;">
+                        <canvas id="variance-chart"></canvas>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Department</th>
+                                <th>Budget</th>
+                                <th>Actual</th>
+                                <th>Variance</th>
+                                <th>%</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="variance-table"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Tab Navigation
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab + '-panel').classList.add('active');
+            });
+        });
+        
+        // ========== ROI CALCULATOR ==========
+        let roiChart = null;
+        
+        function calculateROI() {
+            const investment = parseFloat(document.getElementById('roi-investment').value) || 0;
+            const years = parseInt(document.getElementById('roi-years').value);
+            const discountRate = parseFloat(document.getElementById('roi-discount').value) / 100;
+            
+            // Get cash flows
+            const cashFlows = [-investment];
+            document.querySelectorAll('.roi-cf').forEach(input => {
+                cashFlows.push(parseFloat(input.value) || 0);
+            });
+            
+            // Ensure we have enough cash flows
+            while (cashFlows.length <= years) {
+                cashFlows.push(cashFlows[cashFlows.length - 1] || 0);
+            }
+            cashFlows.length = years + 1;
+            
+            // Calculate NPV
+            let npv = 0;
+            for (let i = 0; i < cashFlows.length; i++) {
+                npv += cashFlows[i] / Math.pow(1 + discountRate, i);
+            }
+            
+            // Calculate IRR (Newton-Raphson)
+            let irr = 0.1;
+            for (let iter = 0; iter < 100; iter++) {
+                let npvAtIRR = 0;
+                let dnpv = 0;
+                for (let i = 0; i < cashFlows.length; i++) {
+                    npvAtIRR += cashFlows[i] / Math.pow(1 + irr, i);
+                    dnpv -= i * cashFlows[i] / Math.pow(1 + irr, i + 1);
+                }
+                const newIRR = irr - npvAtIRR / dnpv;
+                if (Math.abs(newIRR - irr) < 0.0001) break;
+                irr = newIRR;
+            }
+            
+            // Calculate ROI
+            const totalReturns = cashFlows.slice(1).reduce((a, b) => a + b, 0);
+            const roi = ((totalReturns - investment) / investment) * 100;
+            
+            // Calculate payback period
+            let cumulative = -investment;
+            let payback = Infinity;
+            for (let i = 1; i < cashFlows.length; i++) {
+                cumulative += cashFlows[i];
+                if (cumulative >= 0 && payback === Infinity) {
+                    const prevCumulative = cumulative - cashFlows[i];
+                    const fraction = -prevCumulative / cashFlows[i];
+                    payback = i - 1 + fraction;
+                }
+            }
+            
+            // Update metrics
+            document.getElementById('roi-roi').textContent = roi.toFixed(1) + '%';
+            document.getElementById('roi-npv').textContent = formatCurrency(npv);
+            document.getElementById('roi-irr').textContent = (irr * 100).toFixed(1) + '%';
+            document.getElementById('roi-payback').textContent = payback === Infinity ? 'Never' : payback.toFixed(1) + ' yrs';
+            
+            // Update table
+            const tbody = document.getElementById('roi-table');
+            let cumulativeCF = 0;
+            let cumulativeDCF = 0;
+            tbody.innerHTML = cashFlows.map((cf, i) => {
+                const dcf = cf / Math.pow(1 + discountRate, i);
+                cumulativeCF += cf;
+                cumulativeDCF += dcf;
+                return `
+                    <tr>
+                        <td>Year ${i}</td>
+                        <td class="${cf >= 0 ? 'text-success' : 'text-error'}">${formatCurrency(cf)}</td>
+                        <td class="${dcf >= 0 ? 'text-success' : 'text-error'}">${formatCurrency(dcf)}</td>
+                        <td class="${cumulativeDCF >= 0 ? 'text-success' : 'text-error'}">${formatCurrency(cumulativeDCF)}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Update chart
+            updateROIChart(cashFlows, discountRate);
+        }
+        
+        function updateROIChart(cashFlows, discountRate) {
+            const ctx = document.getElementById('roi-chart').getContext('2d');
+            const labels = cashFlows.map((_, i) => 'Year ' + i);
+            
+            const cumulative = [];
+            let sum = 0;
+            cashFlows.forEach(cf => {
+                sum += cf;
+                cumulative.push(sum);
+            });
+            
+            if (roiChart) roiChart.destroy();
+            
+            roiChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Cash Flow',
+                            data: cashFlows,
+                            backgroundColor: cashFlows.map(cf => cf >= 0 ? '#10b981' : '#ef4444'),
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Cumulative',
+                            data: cumulative,
+                            type: 'line',
+                            borderColor: '#4f46e5',
+                            fill: false,
+                            tension: 0.3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: { callback: v => '$' + v.toLocaleString() }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // ========== BREAK-EVEN ==========
+        let products = [
+            { id: 1, name: 'Product A', price: 50, variableCost: 30 }
+        ];
+        let beChart = null;
+        
+        function renderProducts() {
+            document.getElementById('products-list').innerHTML = products.map(p => `
+                <div class="product-item">
+                    <div>
+                        <div class="name">${p.name}</div>
+                        <div class="details">
+                            Price: $${p.price} | Variable Cost: $${p.variableCost}
+                        </div>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline" onclick="editProduct(${p.id})">Edit</button>
+                        <button class="remove-btn" onclick="removeProduct(${p.id})">Remove</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function addProduct() {
+            const id = Date.now();
+            products.push({
+                id,
+                name: 'Product ' + (products.length + 1),
+                price: 50,
+                variableCost: 30
+            });
+            renderProducts();
+        }
+        
+        function removeProduct(id) {
+            products = products.filter(p => p.id !== id);
+            renderProducts();
+        }
+        
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            const name = prompt('Product name:', product.name);
+            const price = parseFloat(prompt('Selling price ($):', product.price));
+            const cost = parseFloat(prompt('Variable cost ($):', product.variableCost));
+            if (name) product.name = name;
+            if (!isNaN(price)) product.price = price;
+            if (!isNaN(cost)) product.variableCost = cost;
+            renderProducts();
+        }
+        
+        function calculateBreakEven() {
+            const fixedCosts = parseFloat(document.getElementById('be-fixed').value) || 0;
+            
+            // Weighted average contribution margin
+            let totalMargin = 0;
+            let totalUnits = 0;
+            
+            products.forEach(p => {
+                const margin = p.price - p.variableCost;
+                totalMargin += margin * 100; // Assume 100 units each for simplicity
+                totalUnits += 100;
+            });
+            
+            const avgMargin = totalMargin / totalUnits;
+            const marginRatio = avgMargin / (products[0]?.price || 1);
+            
+            const breakEvenUnits = Math.ceil(fixedCosts / avgMargin);
+            const breakEvenRevenue = breakEvenUnits * (products[0]?.price || 0);
+            
+            // Update metrics
+            document.getElementById('be-units').textContent = breakEvenUnits.toLocaleString();
+            document.getElementById('be-revenue').textContent = formatCurrency(breakEvenRevenue);
+            document.getElementById('be-margin').textContent = formatCurrency(avgMargin);
+            document.getElementById('be-ratio').textContent = (marginRatio * 100).toFixed(1) + '%';
+            
+            // Update table
+            const tbody = document.getElementById('be-table');
+            tbody.innerHTML = products.map(p => {
+                const margin = p.price - p.variableCost;
+                const beUnits = Math.ceil(fixedCosts / margin);
+                return `
+                    <tr>
+                        <td>${p.name}</td>
+                        <td>$${p.price}</td>
+                        <td>$${p.variableCost}</td>
+                        <td class="${margin > 0 ? 'text-success' : 'text-error'}">$${margin}</td>
+                        <td>${beUnits.toLocaleString()}</td>
+                    </tr>
+                `;
+            }).join('');
+            
+            // Update chart
+            updateBreakEvenChart(fixedCosts, avgMargin);
+        }
+        
+        function updateBreakEvenChart(fixedCosts, margin) {
+            const ctx = document.getElementById('be-chart').getContext('2d');
+            const price = products[0]?.price || 50;
+            
+            const maxUnits = Math.ceil(fixedCosts / margin * 2);
+            const labels = [];
+            const revenueData = [];
+            const costData = [];
+            
+            for (let units = 0; units <= maxUnits; units += maxUnits / 10) {
+                labels.push(Math.round(units));
+                revenueData.push(units * price);
+                costData.push(fixedCosts + units * (price - margin));
+            }
+            
+            if (beChart) beChart.destroy();
+            
+            beChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Revenue',
+                            data: revenueData,
+                            borderColor: '#10b981',
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Total Costs',
+                            data: costData,
+                            borderColor: '#ef4444',
+                            fill: false,
+                            tension: 0.3
+                        },
+                        {
+                            label: 'Fixed Costs',
+                            data: Array(labels.length).fill(fixedCosts),
+                            borderColor: '#f59e0b',
+                            borderDash: [5, 5],
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: { callback: v => '$' + v.toLocaleString() }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // ========== BUDGET VS ACTUAL ==========
+        let budgetData = [];
+        let actualData = [];
+        let varianceChart = null;
+        
+        // File upload handlers
+        ['budget', 'actual'].forEach(type => {
+            const zone = document.getElementById(type + '-upload');
+            const input = document.getElementById(type + '-file');
+            
+            zone.addEventListener('click', () => input.click());
+            zone.addEventListener('dragover', e => {
+                e.preventDefault();
+                zone.classList.add('dragover');
+            });
+            zone.addEventListener('dragleave', () => zone.classList.remove('dragover'));
+            zone.addEventListener('drop', e => {
+                e.preventDefault();
+                zone.classList.remove('dragover');
+                handleFile(e.dataTransfer.files[0], type);
+            });
+            input.addEventListener('change', e => handleFile(e.target.files[0], type));
+        });
+        
+        function handleFile(file, type) {
+            const reader = new FileReader();
+            reader.onload = e => {
+                const data = parseCSV(e.target.result);
+                if (type === 'budget') {
+                    budgetData = data;
+                    document.getElementById('budget-filename').textContent = `✓ ${file.name} (${data.length} rows)`;
+                } else {
+                    actualData = data;
+                    document.getElementById('actual-filename').textContent = `✓ ${file.name} (${data.length} rows)`;
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function parseCSV(content) {
+            const lines = content.trim().split('\n');
+            const headers = lines[0].split(',').map(h => h.trim());
+            return lines.slice(1).map(line => {
+                const values = line.split(',');
+                const row = {};
+                headers.forEach((h, i) => {
+                    const val = values[i]?.trim() || '';
+                    row[h] = isNaN(val) ? val : parseFloat(val);
+                });
+                return row;
+            });
+        }
+        
+        function analyzeVariance() {
+            if (budgetData.length === 0 || actualData.length === 0) {
+                alert('Please upload both budget and actual files');
+                return;
+            }
+            
+            // Merge data
+            const merged = {};
+            budgetData.forEach(row => {
+                const key = (row.Category || '') + '-' + (row.Department || '');
+                merged[key] = {
+                    category: row.Category || 'Unknown',
+                    department: row.Department || 'Unknown',
+                    budget: parseFloat(row.Amount) || 0,
+                    actual: 0
+                };
+            });
+            
+            actualData.forEach(row => {
+                const key = (row.Category || '') + '-' + (row.Department || '');
+                if (merged[key]) {
+                    merged[key].actual = parseFloat(row.Amount) || 0;
+                } else {
+                    merged[key] = {
+                        category: row.Category || 'Unknown',
+                        department: row.Department || 'Unknown',
+                        budget: 0,
+                        actual: parseFloat(row.Amount) || 0
+                    };
+                }
+            });
+            
+            const results = Object.values(merged).map(r => ({
+                ...r,
+                variance: r.actual - r.budget,
+                percent: r.budget !== 0 ? ((r.actual - r.budget) / r.budget * 100) : 0,
+                status: r.actual > r.budget ? 'over' : r.actual < r.budget ? 'under' : 'match'
+            }));
+            
+            // Calculate totals
+            const totals = results.reduce((acc, r) => {
+                acc.budget += r.budget;
+                acc.actual += r.actual;
+                acc.variance += r.variance;
+                return acc;
+            }, { budget: 0, actual: 0, variance: 0 });
+            
+            totals.percent = totals.budget !== 0 ? (totals.variance / totals.budget * 100) : 0;
+            
+            // Update metrics
+            document.getElementById('budget-total').textContent = formatCurrency(totals.budget);
+            document.getElementById('actual-total').textContent = formatCurrency(totals.actual);
+            
+            const varianceEl = document.getElementById('variance-total');
+            varianceEl.textContent = (totals.variance >= 0 ? '+' : '') + formatCurrency(totals.variance);
+            varianceEl.className = totals.variance > 0 ? 'text-error' : totals.variance < 0 ? 'text-success' : '';
+            
+            document.getElementById('variance-percent').textContent = totals.percent.toFixed(1) + '%';
+            
+            // Update table
+            const tbody = document.getElementById('variance-table');
+            tbody.innerHTML = results.map(r => `
+                <tr class="${r.status === 'over' ? 'warning' : ''}">
+                    <td>${r.category}</td>
+                    <td>${r.department}</td>
+                    <td>${formatCurrency(r.budget)}</td>
+                    <td>${formatCurrency(r.actual)}</td>
+                    <td class="${r.variance > 0 ? 'text-error' : r.variance < 0 ? 'text-success' : ''}">
+                        ${r.variance >= 0 ? '+' : ''}${formatCurrency(r.variance)}
+                    </td>
+                    <td>${r.percent.toFixed(1)}%</td>
+                    <td>
+                        <span class="status-badge ${r.status === 'under' ? 'success' : r.status === 'over' ? 'error' : 'warning'}">
+                            ${r.status === 'under' ? 'Under' : r.status === 'over' ? 'Over' : 'Match'}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+            
+            // Show results
+            document.getElementById('variance-results').style.display = 'block';
+            
+            // Update chart
+            updateVarianceChart(results);
+        }
+        
+        function updateVarianceChart(results) {
+            const ctx = document.getElementById('variance-chart').getContext('2d');
+            
+            // Group by category
+            const byCategory = {};
+            results.forEach(r => {
+                if (!byCategory[r.category]) {
+                    byCategory[r.category] = { budget: 0, actual: 0 };
+                }
+                byCategory[r.category].budget += r.budget;
+                byCategory[r.category].actual += r.actual;
+            });
+            
+            const labels = Object.keys(byCategory);
+            const budgetArr = labels.map(l => byCategory[l].budget);
+            const actualArr = labels.map(l => byCategory[l].actual);
+            
+            if (varianceChart) varianceChart.destroy();
+            
+            varianceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Budget',
+                            data: budgetArr,
+                            backgroundColor: '#6366f1',
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Actual',
+                            data: actualArr,
+                            backgroundColor: '#10b981',
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: { callback: v => '$' + v.toLocaleString() }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function exportVariance() {
+            alert('Export functionality coming soon!');
+        }
+        
+        function exportAll() {
+            window.print();
+        }
+        
+        // Utility
+        function formatCurrency(value) {
+            const abs = Math.abs(value);
+            const formatted = abs >= 1000000 ? '$' + (abs / 1000000).toFixed(1) + 'M' :
+                             abs >= 1000 ? '$' + (abs / 1000).toFixed(0) + 'K' :
+                             '$' + abs.toFixed(0);
+            return value < 0 ? '-' + formatted : formatted;
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            calculateROI();
+            calculateBreakEven();
+        });
+    </script>
+</body>
+</html>
