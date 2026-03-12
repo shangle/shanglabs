@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage Mockup - Option 3: Minimalist Clean</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --black: #0a0a0a;
+            --white: #ffffff;
+            --gray-100: #f5f5f5;
+            --gray-200: #e8e8e8;
+            --gray-400: #a1a1a1;
+            --gray-600: #737373;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--white);
+            color: var(--black);
+            line-height: 1.6;
+            font-weight: 400;
+        }
+
+        /* Header */
+        header {
+            padding: 24px 48px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.25rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo .dot {
+            width: 8px;
+            height: 8px;
+            background: var(--blue);
+            border-radius: 50%;
+        }
+
+        nav a {
+            color: var(--gray-600);
+            text-decoration: none;
+            margin-left: 32px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        nav a:hover { color: var(--black); }
+
+        /* Hero */
+        .hero {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 180px 48px 120px;
+        }
+
+        .hero h1 {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            margin-bottom: 32px;
+        }
+
+        .hero p {
+            font-size: 1.3rem;
+            color: var(--gray-600);
+            max-width: 600px;
+            margin-bottom: 48px;
+            line-height: 1.7;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+        }
+
+        .btn {
+            padding: 14px 28px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--blue);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--gray-100);
+            color: var(--black);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-200);
+            transform: translateY(-2px);
+        }
+
+        /* Trust Section */
+        .trust {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 48px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 32px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .trust-item {
+            text-align: center;
+        }
+
+        .trust-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 4px;
+        }
+
+        .trust-label {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Apps Section */
+        .apps {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 48px;
+        }
+
+        .apps-header {
+            margin-bottom: 64px;
+        }
+
+        .apps-header h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .apps-header p {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+        }
+
+        .apps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 32px;
+        }
+
+        .app-card {
+            border: 1px solid var(--gray-200);
+            padding: 40px;
+            transition: all 0.3s;
+        }
+
+        .app-card:hover {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 1px var(--blue);
+            transform: translateY(-4px);
+        }
+
+        .app-header {
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+        }
+
+        .app-icon {
+            font-size: 2rem;
+        }
+
+        .app-category {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray-600);
+        }
+
+        .app-card h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .app-card p {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .app-meta {
+            display: flex;
+            gap: 16px;
+            padding-top: 24px;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .app-meta-item {
+            font-size: 0.85rem;
+            color: var(--gray-400);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .app-link {
+            color: var(--blue);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: gap 0.2s;
+        }
+
+        .app-link:hover {
+            gap: 10px;
+        }
+
+        /* Coming Soon */
+        .app-card.coming-soon {
+            opacity: 0.5;
+        }
+
+        .app-card.coming-soon:hover {
+            border-color: var(--gray-200);
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Features */
+        .features {
+            background: var(--gray-100);
+            padding: 120px 48px;
+        }
+
+        .features-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 64px;
+        }
+
+        .feature {
+            display: flex;
+            gap: 24px;
+        }
+
+        .feature-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--blue);
+            line-height: 1;
+            flex-shrink: 0;
+        }
+
+        .feature-content h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: -0.01em;
+        }
+
+        .feature-content p {
+            color: var(--gray-600);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* Pricing */
+        .pricing {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 48px;
+        }
+
+        .pricing h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .pricing > p {
+            color: var(--gray-600);
+            font-size: 1.1rem;
+            margin-bottom: 64px;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 48px;
+        }
+
+        .price-card {
+            border: 1px solid var(--gray-200);
+            padding: 48px;
+        }
+
+        .price-card.primary {
+            border: 2px solid var(--blue);
+            background: var(--gray-100);
+        }
+
+        .price-card h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 24px;
+            color: var(--gray-600);
+        }
+
+        .price-amount {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+        }
+
+        .price-period {
+            color: var(--gray-600);
+            font-size: 1rem;
+            margin-bottom: 32px;
+        }
+
+        .price-features {
+            list-style: none;
+            margin-bottom: 32px;
+        }
+
+        .price-features li {
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-200);
+            font-size: 0.95rem;
+            color: var(--black);
+        }
+
+        .price-features li::before {
+            content: '✓ ';
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .price-btn {
+            display: block;
+            padding: 14px 32px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .price-card.primary .price-btn {
+            background: var(--black);
+            color: var(--white);
+        }
+
+        .price-card.primary .price-btn:hover {
+            background: var(--blue);
+            transform: translateY(-2px);
+        }
+
+        .price-card:not(.primary) .price-btn {
+            background: var(--gray-200);
+            color: var(--black);
+        }
+
+        .price-card:not(.primary) .price-btn:hover {
+            background: var(--gray-100);
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            padding: 48px;
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        footer .links {
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        footer a {
+            color: var(--gray-600);
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        footer a:hover { color: var(--black); }
+
+        footer p {
+            color: var(--gray-400);
+            font-size: 0.85rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 3rem; }
+            .hero p { font-size: 1.1rem; }
+            .trust { grid-template-columns: repeat(2, 1fr); }
+            .apps-grid { grid-template-columns: 1fr; }
+            .features-content { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            header { padding: 20px 24px; }
+            .hero { padding: 120px 24px 80px; }
+            nav { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <div class="dot"></div>
+            Shanglabs
+        </div>
+        <nav>
+            <a href="#">Tools</a>
+            <a href="#">How It Works</a>
+            <a href="#">About</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Professional tools.<br>Better economics.</h1>
+        <p>Enterprise-grade banking and financial tools built for professionals who value efficiency, privacy, and simplicity.</p>
+        <div class="hero-actions">
+            <a href="#" class="btn btn-primary">Browse Tools</a>
+            <a href="#" class="btn btn-secondary">Learn More</a>
+        </div>
+    </section>
+
+    <div class="trust">
+        <div class="trust-item">
+            <div class="trust-value">7</div>
+            <div class="trust-label">Tools</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-value">0</div>
+            <div class="trust-label">Data Points</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-value">100%</div>
+            <div class="trust-label">Private</div>
+        </div>
+        <div class="trust-item">
+            <div class="trust-value">$0</div>
+            <div class="trust-label">To Start</div>
+        </div>
+    </div>
+
+    <section class="apps">
+        <div class="apps-header">
+            <h2>Available Tools</h2>
+            <p>Free web applications for banking, finance, and operations</p>
+        </div>
+
+        <div class="apps-grid">
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">🏦</span>
+                    <span class="app-category">Banking</span>
+                </div>
+                <h3>NACHA File Viewer</h3>
+                <p>Parse, validate, and search ACH files with instant error detection and CSV export.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">✓ Validated</span>
+                    <span class="app-meta-item">✓ CCD + PPD</span>
+                </div>
+                <a href="#" class="app-link">Try Free →</a>
+            </div>
+
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📊</span>
+                    <span class="app-category">Finance</span>
+                </div>
+                <h3>Financial Analysis</h3>
+                <p>ROI, NPV, IRR, break-even, and budget variance analysis in one unified suite.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">✓ 3 Calculators</span>
+                    <span class="app-meta-item">✓ Visual Reports</span>
+                </div>
+                <a href="#" class="app-link">Try Free →</a>
+            </div>
+
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">💵</span>
+                    <span class="app-category">Finance</span>
+                </div>
+                <h3>Cash Flow Forecaster</h3>
+                <p>13-week rolling cash flow projections with burn rate tracking and runway risk alerts.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">✓ 13-Week View</span>
+                    <span class="app-meta-item">✓ Scenario Plans</span>
+                </div>
+                <a href="#" class="app-link">Try Free →</a>
+            </div>
+
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📱</span>
+                    <span class="app-category">Utilities</span>
+                </div>
+                <h3>QR Code Generator</h3>
+                <p>Advanced QR code generation with colors, logos, 8 data types, and batch export.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">✓ 8 Formats</span>
+                    <span class="app-meta-item">✓ Custom Design</span>
+                </div>
+                <a href="#" class="app-link">Try Free →</a>
+            </div>
+
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📋</span>
+                    <span class="app-category">Finance</span>
+                </div>
+                <h3>Budget vs Actual</h3>
+                <p>Upload budget and actual data to see variance analysis with category breakdowns.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">✓ CSV Import</span>
+                    <span class="app-meta-item">✓ Export Reports</span>
+                </div>
+                <a href="#" class="app-link">Try Free →</a>
+            </div>
+
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">📄</span>
+                    <span class="app-category">Operations</span>
+                </div>
+                <h3>Invoice Aging</h3>
+                <p>Track overdue invoices with aging buckets, dunning email templates, and payment status.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">✓ Aging Buckets</span>
+                    <span class="app-meta-item">✓ Templates</span>
+                </div>
+                <a href="#" class="app-link">Try Free →</a>
+            </div>
+
+            <div class="app-card">
+                <div class="app-header">
+                    <span class="app-icon">✅</span>
+                    <span class="app-category">Operations</span>
+                </div>
+                <h3>Payment Reconciliation</h3>
+                <p>Auto-match payments to invoices with smart algorithms and exportable reports.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">✓ Auto-Match</span>
+                    <span class="app-meta-item">✓ Export Reports</span>
+                </div>
+                <a href="#" class="app-link">Try Free →</a>
+            </div>
+
+            <div class="app-card coming-soon">
+                <div class="app-header">
+                    <span class="app-icon">🎲</span>
+                    <span class="app-category">Risk</span>
+                </div>
+                <h3>Monte Carlo Simulator</h3>
+                <p>Risk modeling with 10,000+ scenario simulations and sensitivity analysis for banking metrics.</p>
+                <div class="app-meta">
+                    <span class="app-meta-item">Coming Soon</span>
+                </div>
+                <span class="app-link" style="color: var(--gray-600);">Notify Me →</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="features-content">
+            <div class="feature">
+                <div class="feature-number">01</div>
+                <div class="feature-content">
+                    <h3>Your Data Stays Private</h3>
+                    <p>100% client-side processing. Your files never leave your browser. No accounts. No tracking. No data collection. Pure privacy.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-number">02</div>
+                <div class="feature-content">
+                    <h3>Instant Performance</h3>
+                    <p>No signup. No loading screens. No waiting. Just results. Open any tool and get going in seconds. Pure client-side speed with zero latency.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-number">03</div>
+                <div class="feature-content">
+                    <h3>Fair, Transparent Economics</h3>
+                    <p>Free web tools forever. Optional downloads at transparent prices. $13/mo unlocks everything. No hidden fees. Cancel anytime.</p>
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-number">04</div>
+                <div class="feature-content">
+                    <h3>Professional Quality</h3>
+                    <p>Built with enterprise standards. Accurate calculations, beautiful visualizations, robust validation. Production-ready code that you can trust.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="pricing">
+        <h2>Simple Pricing</h2>
+        <p>Choose what works for you. Free tools forever. Optional upgrades for teams who need more.</p>
+
+        <div class="pricing-grid">
+            <div class="price-card">
+                <h3>Free Web Tools</h3>
+                <div class="price-amount">$0</div>
+                <div class="price-period">Forever</div>
+                <ul class="price-features">
+                    <li>All 7 tools included</li>
+                    <li>No signup required</li>
+                    <li>No data tracking</li>
+                    <li>Unlimited usage</li>
+                    <li>Regular updates</li>
+                </ul>
+                <a href="#" class="price-btn">Start Using Free</a>
+            </div>
+
+            <div class="price-card primary">
+                <h3>All-Access Pass</h3>
+                <div class="price-amount">$13</div>
+                <div class="price-period">per month</div>
+                <ul class="price-features">
+                    <li>Everything in Free</li>
+                    <li>Offline desktop apps</li>
+                    <li>Priority feature requests</li>
+                    <li>Direct support channel</li>
+                    <li>Early access to new tools</li>
+                    <li>Cancel anytime</li>
+                </ul>
+                <a href="#" class="price-btn">Subscribe Now</a>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="links">
+            <a href="#">Tools</a>
+            <a href="#">How It Works</a>
+            <a href="#">About</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+        </div>
+        <p>© 2026 Shanglabs. Better tools for work that matters.</p>
+    </footer>
+</body>
+</html>
