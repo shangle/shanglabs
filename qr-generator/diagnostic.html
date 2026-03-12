@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Generator - Diagnostic Test</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        .status.success { background: #d1fae5; color: #065f46; }
+        .status.error { background: #fee2e2; color: #991b1b; }
+        .status.info { background: #dbeafe; color: #1e40af; }
+
+        .test-section {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .test-section h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px 10px 0;
+            border-radius: 6px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        button.primary { background: #4f46e5; color: white; }
+        button.secondary { background: #e5e7eb; color: #374151; }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        #qr-output {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+            min-height: 350px;
+            background: white;
+        }
+
+        #qr-output canvas {
+            max-width: 100%;
+        }
+
+        .color-row {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        .color-row label {
+            flex: 0 0 auto;
+        }
+
+        input[type="color"] {
+            width: 60px;
+            height: 40px;
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+    <h1>QR Code Generator - Diagnostic Test</h1>
+    <p>This page tests all components step by step to identify the issue.</p>
+
+    <div id="library-status" class="status info">Checking QRCode library...</div>
+
+    <div class="test-section">
+        <h3>Test 1: Basic QR Generation</h3>
+        <input type="text" id="test-url" value="https://shangle.me">
+        <button class="primary" onclick="testBasicGeneration()">Generate QR</button>
+        <div id="test1-status" class="status info"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 2: Color Changes</h3>
+        <div class="color-row">
+            <label>Foreground:</label>
+            <input type="color" id="fg-color" value="#000000" onchange="testColors()">
+        </div>
+        <div class="color-row">
+            <label>Background:</label>
+            <input type="color" id="bg-color" value="#ffffff" onchange="testColors()">
+        </div>
+        <div id="test2-status" class="status info"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 3: QR Output</h3>
+        <div id="qr-output">
+            <p style="color: #9ca3af;">QR code will appear here...</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>Test 4: Download</h3>
+        <button class="secondary" onclick="testDownload()">Test Download PNG</button>
+        <div id="test4-status" class="status info"></div>
+    </div>
+
+    <script>
+        // Check if QRCode library loaded
+        setTimeout(() => {
+            if (typeof QRCode !== 'undefined') {
+                document.getElementById('library-status').innerHTML = '✅ QRCode library loaded successfully';
+                document.getElementById('library-status').className = 'status success';
+                console.log('QRCode library:', QRCode);
+                console.log('QRCode methods:', Object.getOwnPropertyNames(QRCode));
+            } else {
+                document.getElementById('library-status').innerHTML = '❌ QRCode library NOT loaded';
+                document.getElementById('library-status').className = 'status error';
+                console.error('QRCode is undefined');
+            }
+        }, 1000);
+
+        function testBasicGeneration() {
+            const url = document.getElementById('test-url').value;
+            const status = document.getElementById('test1-status');
+
+            console.log('Testing basic generation with URL:', url);
+
+            if (typeof QRCode === 'undefined') {
+                status.innerHTML = '❌ QRCode library not loaded';
+                status.className = 'status error';
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            const output = document.getElementById('qr-output');
+
+            QRCode.toCanvas(canvas, url, {
+                width: 300,
+                margin: 4,
+                errorCorrectionLevel: 'M',
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                }
+            }, (error) => {
+                if (error) {
+                    console.error('QR generation error:', error);
+                    status.innerHTML = '❌ Error generating QR: ' + error.message;
+                    status.className = 'status error';
+                } else {
+                    console.log('QR generated successfully');
+                    status.innerHTML = '✅ QR code generated';
+                    status.className = 'status success';
+                    output.innerHTML = '';
+                    output.appendChild(canvas);
+                }
+            });
+        }
+
+        function testColors() {
+            const fg = document.getElementById('fg-color').value;
+            const bg = document.getElementById('bg-color').value;
+            const status = document.getElementById('test2-status');
+
+            console.log('Testing colors - FG:', fg, 'BG:', bg);
+
+            if (typeof QRCode === 'undefined') {
+                status.innerHTML = '❌ QRCode library not loaded';
+                status.className = 'status error';
+                return;
+            }
+
+            const canvas = document.createElement('canvas');
+            const output = document.getElementById('qr-output');
+
+            QRCode.toCanvas(canvas, document.getElementById('test-url').value, {
+                width: 300,
+                margin: 4,
+                errorCorrectionLevel: 'M',
+                color: {
+                    dark: fg,
+                    light: bg
+                }
+            }, (error) => {
+                if (error) {
+                    console.error('QR generation error:', error);
+                    status.innerHTML = '❌ Error: ' + error.message;
+                    status.className = 'status error';
+                } else {
+                    console.log('QR generated with colors:', fg, bg);
+                    status.innerHTML = '✅ QR generated with colors ' + fg + ' / ' + bg;
+                    status.className = 'status success';
+                    output.innerHTML = '';
+                    output.appendChild(canvas);
+                }
+            });
+        }
+
+        function testDownload() {
+            const status = document.getElementById('test4-status');
+            const canvas = document.querySelector('#qr-output canvas');
+
+            if (!canvas) {
+                status.innerHTML = '❌ No QR code to download - generate one first';
+                status.className = 'status error';
+                return;
+            }
+
+            console.log('Testing download...');
+
+            try {
+                const link = document.createElement('a');
+                link.download = 'test-qr.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                status.innerHTML = '✅ Download initiated';
+                status.className = 'status success';
+            } catch (error) {
+                console.error('Download error:', error);
+                status.innerHTML = '❌ Download failed: ' + error.message;
+                status.className = 'status error';
+            }
+        }
+
+        // Log page load
+        console.log('=== QR Diagnostic Page Loaded ===');
+        console.log('QRCode available:', typeof QRCode !== 'undefined');
+        console.log('Window location:', window.location.href);
+        console.log('User agent:', navigator.userAgent);
+    </script>
+</body>
+</html>
