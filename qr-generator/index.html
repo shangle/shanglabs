@@ -7,7 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
+
         :root {
             --primary: #4f46e5;
             --primary-dark: #3730a3;
@@ -31,14 +31,14 @@
             --radius: 8px;
             --radius-lg: 12px;
         }
-        
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: var(--gray-100);
             min-height: 100vh;
             color: var(--gray-800);
         }
-        
+
         /* Header */
         .app-header {
             background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%);
@@ -52,7 +52,7 @@
             z-index: 100;
             box-shadow: var(--shadow-lg);
         }
-        
+
         .app-header h1 {
             font-size: 1.4rem;
             font-weight: 600;
@@ -60,23 +60,23 @@
             align-items: center;
             gap: 10px;
         }
-        
+
         .back-link {
             color: white;
             text-decoration: none;
             opacity: 0.9;
             font-size: 0.9rem;
         }
-        
+
         .back-link:hover { opacity: 1; }
-        
+
         /* Main Layout */
         .main-container {
             display: grid;
             grid-template-columns: 380px 1fr;
             min-height: calc(100vh - 70px);
         }
-        
+
         /* Sidebar */
         .sidebar {
             background: white;
@@ -85,11 +85,11 @@
             overflow-y: auto;
             max-height: calc(100vh - 70px);
         }
-        
+
         .sidebar-section {
             margin-bottom: 24px;
         }
-        
+
         .sidebar-section h3 {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -99,7 +99,7 @@
             padding-bottom: 8px;
             border-bottom: 1px solid var(--gray-200);
         }
-        
+
         /* Content Type Tabs */
         .content-type-tabs {
             display: grid;
@@ -107,7 +107,7 @@
             gap: 4px;
             margin-bottom: 16px;
         }
-        
+
         .type-tab {
             padding: 8px 4px;
             border: none;
@@ -119,15 +119,15 @@
             transition: all 0.15s;
             text-align: center;
         }
-        
+
         .type-tab:hover { background: var(--gray-200); }
         .type-tab.active { background: var(--primary); color: white; }
-        
+
         /* Form Elements */
         .form-group {
             margin-bottom: 16px;
         }
-        
+
         .form-group label {
             display: block;
             font-size: 0.85rem;
@@ -135,7 +135,7 @@
             color: var(--gray-700);
             margin-bottom: 4px;
         }
-        
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -146,12 +146,12 @@
             font-size: 0.9rem;
             transition: border-color 0.15s, box-shadow 0.15s;
         }
-        
+
         .form-group textarea {
             resize: vertical;
             min-height: 80px;
         }
-        
+
         .form-group input:focus,
         .form-group select:focus,
         .form-group textarea:focus {
@@ -159,13 +159,13 @@
             border-color: var(--primary);
             box-shadow: 0 0 0 3px var(--primary-light);
         }
-        
+
         .input-hint {
             font-size: 0.75rem;
             color: var(--gray-500);
             margin-top: 4px;
         }
-        
+
         /* Buttons */
         .btn {
             padding: 10px 20px;
@@ -179,34 +179,34 @@
             gap: 6px;
             transition: all 0.15s;
         }
-        
+
         .btn:hover { transform: translateY(-1px); }
-        
+
         .btn-primary {
             background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
             color: white;
         }
-        
+
         .btn-secondary {
             background: var(--gray-200);
             color: var(--gray-700);
         }
-        
+
         .btn-success {
             background: linear-gradient(135deg, #059669 0%, var(--success) 100%);
             color: white;
         }
-        
+
         .btn-block { width: 100%; justify-content: center; }
         .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
-        
+
         /* Color Picker */
         .color-input-group {
             display: flex;
             gap: 8px;
             align-items: center;
         }
-        
+
         .color-input-group input[type="color"] {
             width: 50px;
             height: 38px;
@@ -215,18 +215,18 @@
             border-radius: var(--radius);
             cursor: pointer;
         }
-        
+
         .color-input-group input[type="text"] {
             flex: 1;
         }
-        
+
         .color-presets {
             display: flex;
             gap: 4px;
             margin-top: 8px;
             flex-wrap: wrap;
         }
-        
+
         .color-preset {
             width: 24px;
             height: 24px;
@@ -235,17 +235,17 @@
             border: 2px solid transparent;
             transition: all 0.15s;
         }
-        
+
         .color-preset:hover { transform: scale(1.1); }
         .color-preset.active { border-color: var(--primary); }
-        
+
         /* Range Slider */
         .range-group {
             display: flex;
             align-items: center;
             gap: 12px;
         }
-        
+
         .range-group input[type="range"] {
             flex: 1;
             height: 6px;
@@ -254,7 +254,7 @@
             outline: none;
             -webkit-appearance: none;
         }
-        
+
         .range-group input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             width: 18px;
@@ -263,7 +263,7 @@
             background: var(--primary);
             cursor: pointer;
         }
-        
+
         .range-value {
             min-width: 40px;
             text-align: right;
@@ -271,7 +271,7 @@
             font-weight: 500;
             color: var(--gray-700);
         }
-        
+
         /* Content Area */
         .content {
             padding: 24px;
@@ -279,7 +279,7 @@
             flex-direction: column;
             align-items: center;
         }
-        
+
         /* QR Preview */
         .qr-preview-card {
             background: white;
@@ -290,25 +290,25 @@
             margin-bottom: 24px;
             text-align: center;
         }
-        
+
         .qr-preview-card h2 {
             margin-bottom: 24px;
             font-size: 1.2rem;
             color: var(--gray-700);
         }
-        
+
         #qr-preview {
             display: inline-block;
             padding: 20px;
             background: white;
             border-radius: var(--radius);
         }
-        
+
         #qr-preview canvas {
             display: block;
             max-width: 100%;
         }
-        
+
         /* Logo Upload */
         .logo-upload {
             margin-top: 16px;
@@ -319,22 +319,22 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-        
+
         .logo-upload:hover {
             border-color: var(--primary);
             background: var(--primary-light);
         }
-        
+
         .logo-preview {
             margin-top: 12px;
         }
-        
+
         .logo-preview img {
             max-width: 80px;
             max-height: 80px;
             border-radius: var(--radius);
         }
-        
+
         /* Download Options */
         .download-options {
             display: flex;
@@ -343,14 +343,14 @@
             flex-wrap: wrap;
             justify-content: center;
         }
-        
+
         /* History */
         .history-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
-        
+
         .history-item {
             display: flex;
             align-items: center;
@@ -361,46 +361,46 @@
             cursor: pointer;
             transition: all 0.15s;
         }
-        
+
         .history-item:hover {
             background: var(--gray-100);
         }
-        
+
         .history-item canvas {
             width: 40px;
             height: 40px;
             border-radius: 4px;
         }
-        
+
         .history-item .info {
             flex: 1;
             min-width: 0;
         }
-        
+
         .history-item .type {
             font-size: 0.75rem;
             color: var(--gray-500);
         }
-        
+
         .history-item .data {
             font-size: 0.85rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        
+
         /* Batch Mode */
         .batch-input {
             font-family: monospace;
             font-size: 0.85rem;
         }
-        
+
         /* Responsive */
         @media (max-width: 900px) {
             .main-container {
                 grid-template-columns: 1fr;
             }
-            
+
             .sidebar {
                 max-height: none;
                 border-right: none;
@@ -421,7 +421,7 @@
             </button>
         </div>
     </header>
-    
+
     <div class="main-container">
         <!-- Sidebar -->
         <aside class="sidebar">
@@ -438,7 +438,7 @@
                     <button class="type-tab" data-type="crypto">Crypto</button>
                     <button class="type-tab" data-type="event">Event</button>
                 </div>
-                
+
                 <!-- URL Input -->
                 <div id="input-url" class="content-input">
                     <div class="form-group">
@@ -446,7 +446,7 @@
                         <input type="url" id="url-input" placeholder="https://example.com" value="https://shangle.me">
                     </div>
                 </div>
-                
+
                 <!-- Text Input -->
                 <div id="input-text" class="content-input" style="display: none;">
                     <div class="form-group">
@@ -454,7 +454,7 @@
                         <textarea id="text-input" placeholder="Enter any text..."></textarea>
                     </div>
                 </div>
-                
+
                 <!-- WiFi Input -->
                 <div id="input-wifi" class="content-input" style="display: none;">
                     <div class="form-group">
@@ -479,7 +479,7 @@
                         </label>
                     </div>
                 </div>
-                
+
                 <!-- vCard Input -->
                 <div id="input-vcard" class="content-input" style="display: none;">
                     <div class="form-group">
@@ -507,7 +507,7 @@
                         <input type="text" id="vcard-address" placeholder="123 Main St, City, State">
                     </div>
                 </div>
-                
+
                 <!-- Email Input -->
                 <div id="input-email" class="content-input" style="display: none;">
                     <div class="form-group">
@@ -523,7 +523,7 @@
                         <textarea id="email-body" placeholder="Email content..."></textarea>
                     </div>
                 </div>
-                
+
                 <!-- SMS Input -->
                 <div id="input-sms" class="content-input" style="display: none;">
                     <div class="form-group">
@@ -535,7 +535,7 @@
                         <textarea id="sms-message" placeholder="Your message..."></textarea>
                     </div>
                 </div>
-                
+
                 <!-- Crypto Input -->
                 <div id="input-crypto" class="content-input" style="display: none;">
                     <div class="form-group">
@@ -556,7 +556,7 @@
                         <input type="number" id="crypto-amount" placeholder="0.001" step="0.0001">
                     </div>
                 </div>
-                
+
                 <!-- Event Input -->
                 <div id="input-event" class="content-input" style="display: none;">
                     <div class="form-group">
@@ -581,11 +581,11 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Styling Options -->
             <div class="sidebar-section">
                 <h3>Styling</h3>
-                
+
                 <div class="form-group">
                     <label>Foreground Color</label>
                     <div class="color-input-group">
@@ -601,7 +601,7 @@
                         <div class="color-preset" style="background: #7c3aed" data-color="#7c3aed" data-target="fg"></div>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Background Color</label>
                     <div class="color-input-group">
@@ -617,7 +617,7 @@
                         <div class="color-preset" style="background: #f3f4f6" data-color="#f3f4f6" data-target="bg"></div>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Size</label>
                     <div class="range-group">
@@ -625,7 +625,7 @@
                         <span class="range-value" id="size-value">300px</span>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Error Correction Level</label>
                     <select id="error-correction">
@@ -636,7 +636,7 @@
                     </select>
                     <span class="input-hint">Higher = more redundant data</span>
                 </div>
-                
+
                 <div class="form-group">
                     <label>Margin</label>
                     <div class="range-group">
@@ -644,13 +644,13 @@
                         <span class="range-value" id="margin-value">4</span>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label>
                         <input type="checkbox" id="add-logo"> Add Logo/Image
                     </label>
                 </div>
-                
+
                 <div id="logo-section" style="display: none;">
                     <div class="logo-upload" id="logo-upload">
                         <input type="file" id="logo-file" accept="image/*" hidden>
@@ -670,7 +670,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Batch Mode -->
             <div class="sidebar-section" id="batch-section" style="display: none;">
                 <h3>Batch Generation</h3>
@@ -684,13 +684,13 @@ https://example3.com"></textarea>
                     📦 Generate All
                 </button>
             </div>
-            
+
             <!-- Generate Button -->
-            <button class="btn btn-primary btn-block" onclick="generateQR()" style="margin-top: 20px;">
+            <button class="btn btn-primary btn-block" id="generate-btn" onclick="generateQR()" style="margin-top: 20px;">
                 ✨ Generate QR Code
             </button>
         </aside>
-        
+
         <!-- Content -->
         <main class="content">
             <div class="qr-preview-card">
@@ -698,11 +698,11 @@ https://example3.com"></textarea>
                 <div id="qr-preview">
                     <canvas id="qr-canvas"></canvas>
                 </div>
-                
+
                 <div id="logo-overlay" style="display: none; position: relative;">
                     <!-- Logo overlay will be rendered here -->
                 </div>
-                
+
                 <div class="download-options">
                     <button class="btn btn-success" onclick="downloadQR('png')">
                         📥 Download PNG
@@ -715,7 +715,7 @@ https://example3.com"></textarea>
                     </button>
                 </div>
             </div>
-            
+
             <!-- History -->
             <div class="qr-preview-card" style="width: 100%; max-width: 600px;">
                 <h2>Recent QR Codes</h2>
@@ -727,41 +727,50 @@ https://example3.com"></textarea>
             </div>
         </main>
     </div>
-    
+
     <script>
         // State
         let currentType = 'url';
         let currentLogo = null;
         let history = [];
-        
+
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
+            console.log('QR Generator initializing...');
+
+            // Check if QRCode library loaded
+            if (typeof QRCode === 'undefined') {
+                console.error('QRCode library not loaded!');
+                document.querySelector('#qr-preview').innerHTML = '<p style="color: red;">QRCode library failed to load. Please refresh the page.</p>';
+                return;
+            }
+
             // Content type tabs
             document.querySelectorAll('.type-tab').forEach(tab => {
                 tab.addEventListener('click', () => {
                     document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
                     tab.classList.add('active');
                     currentType = tab.dataset.type;
-                    
+
                     document.querySelectorAll('.content-input').forEach(input => {
                         input.style.display = 'none';
                     });
                     document.getElementById('input-' + currentType).style.display = 'block';
-                    
+
                     generateQR();
                 });
             });
-            
+
             // Color inputs sync
             ['fg', 'bg'].forEach(type => {
                 const colorInput = document.getElementById(type + '-color');
                 const textInput = document.getElementById(type + '-color-text');
-                
+
                 colorInput.addEventListener('input', () => {
                     textInput.value = colorInput.value;
                     generateQR();
                 });
-                
+
                 textInput.addEventListener('input', () => {
                     if (/^#[0-9A-Fa-f]{6}$/.test(textInput.value)) {
                         colorInput.value = textInput.value;
@@ -769,34 +778,34 @@ https://example3.com"></textarea>
                     }
                 });
             });
-            
+
             // Color presets
             document.querySelectorAll('.color-preset').forEach(preset => {
                 preset.addEventListener('click', () => {
                     const color = preset.dataset.color;
                     const target = preset.dataset.target;
-                    
+
                     document.getElementById(target + '-color').value = color;
                     document.getElementById(target + '-color-text').value = color;
                     generateQR();
                 });
             });
-            
+
             // Size slider
             document.getElementById('qr-size').addEventListener('input', (e) => {
                 document.getElementById('size-value').textContent = e.target.value + 'px';
                 generateQR();
             });
-            
+
             // Margin slider
             document.getElementById('qr-margin').addEventListener('input', (e) => {
                 document.getElementById('margin-value').textContent = e.target.value;
                 generateQR();
             });
-            
+
             // Error correction
             document.getElementById('error-correction').addEventListener('change', generateQR);
-            
+
             // Logo toggle
             document.getElementById('add-logo').addEventListener('change', (e) => {
                 document.getElementById('logo-section').style.display = e.target.checked ? 'block' : 'none';
@@ -804,12 +813,12 @@ https://example3.com"></textarea>
                     removeLogo();
                 }
             });
-            
+
             // Logo upload
             document.getElementById('logo-upload').addEventListener('click', () => {
                 document.getElementById('logo-file').click();
             });
-            
+
             document.getElementById('logo-file').addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if (file) {
@@ -828,22 +837,23 @@ https://example3.com"></textarea>
                     reader.readAsDataURL(file);
                 }
             });
-            
+
             // Logo size slider
             document.getElementById('logo-size').addEventListener('input', (e) => {
                 document.getElementById('logo-size-value').textContent = e.target.value + '%';
                 generateQR();
             });
-            
+
             // Input changes trigger regenerate
-            document.querySelectorAll('input, textarea, select').forEach(input => {
+            const contentInputs = document.querySelectorAll('#input-url input, #input-text textarea, #input-wifi input, #input-wifi select, #input-vcard input, #input-email input, #input-email textarea, #input-sms input, #input-sms textarea, #input-crypto input, #input-crypto select, #input-event input, #input-event textarea');
+            contentInputs.forEach(input => {
                 input.addEventListener('input', debounce(generateQR, 300));
             });
-            
+
             // Initial generation
             generateQR();
         });
-        
+
         function debounce(fn, delay) {
             let timeout;
             return function(...args) {
@@ -851,22 +861,22 @@ https://example3.com"></textarea>
                 timeout = setTimeout(() => fn.apply(this, args), delay);
             };
         }
-        
+
         function getContent() {
             switch (currentType) {
                 case 'url':
                     return document.getElementById('url-input').value || 'https://shangle.me';
-                    
+
                 case 'text':
                     return document.getElementById('text-input').value || 'Hello World';
-                    
+
                 case 'wifi':
                     const ssid = document.getElementById('wifi-ssid').value || 'WiFi';
                     const pass = document.getElementById('wifi-password').value;
                     const security = document.getElementById('wifi-security').value;
                     const hidden = document.getElementById('wifi-hidden').checked;
                     return `WIFI:T:${security};S:${ssid};P:${pass};H:${hidden};;`;
-                    
+
                 case 'vcard':
                     const name = document.getElementById('vcard-name').value || 'John Doe';
                     const phone = document.getElementById('vcard-phone').value;
@@ -883,18 +893,18 @@ ORG:${company}
 URL:${url}
 ADR:;;${address};;;
 END:VCARD`;
-                    
+
                 case 'email':
                     const to = document.getElementById('email-to').value;
                     const subject = document.getElementById('email-subject').value;
                     const body = document.getElementById('email-body').value;
                     return `mailto:${to}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                    
+
                 case 'sms':
                     const smsPhone = document.getElementById('sms-phone').value;
                     const smsMessage = document.getElementById('sms-message').value;
                     return `sms:${smsPhone}?body=${encodeURIComponent(smsMessage)}`;
-                    
+
                 case 'crypto':
                     const cryptoType = document.getElementById('crypto-type').value;
                     const address = document.getElementById('crypto-address').value;
@@ -908,14 +918,14 @@ END:VCARD`;
                     let uri = prefixes[cryptoType] + address;
                     if (amount) uri += `?amount=${amount}`;
                     return uri;
-                    
+
                 case 'event':
                     const title = document.getElementById('event-title').value || 'Event';
                     const location = document.getElementById('event-location').value;
                     const start = document.getElementById('event-start').value;
                     const end = document.getElementById('event-end').value;
                     const desc = document.getElementById('event-desc').value;
-                    
+
                     const formatDate = (d) => d ? d.replace(/[-:]/g, '').replace('T', 'T') : '';
                     return `BEGIN:VEVENT
 SUMMARY:${title}
@@ -924,22 +934,26 @@ DTSTART:${formatDate(start)}
 DTEND:${formatDate(end)}
 DESCRIPTION:${desc}
 END:VEVENT`;
-                    
+
                 default:
                     return 'https://shangle.me';
             }
         }
-        
+
         function generateQR() {
+            console.log('Generating QR code...');
+
             const content = getContent();
             const size = parseInt(document.getElementById('qr-size').value);
             const margin = parseInt(document.getElementById('qr-margin').value);
             const errorCorrection = document.getElementById('error-correction').value;
             const fgColor = document.getElementById('fg-color').value;
             const bgColor = document.getElementById('bg-color').value;
-            
+
             const canvas = document.getElementById('qr-canvas');
-            
+
+            console.log('QR parameters:', { content, size, margin, errorCorrection, fgColor, bgColor });
+
             QRCode.toCanvas(canvas, content, {
                 width: size,
                 margin: margin,
@@ -950,17 +964,19 @@ END:VEVENT`;
                 }
             }, (error) => {
                 if (error) {
-                    console.error(error);
+                    console.error('QR generation error:', error);
                     return;
                 }
-                
+
+                console.log('QR code generated successfully!');
+
                 // Add logo if present
                 if (currentLogo && document.getElementById('add-logo').checked) {
                     addLogoToCanvas(canvas);
                 }
             });
         }
-        
+
         function addLogoToCanvas(canvas) {
             const ctx = canvas.getContext('2d');
             const logoSize = parseInt(document.getElementById('logo-size').value) / 100;
@@ -969,19 +985,19 @@ END:VEVENT`;
             const logoHeight = size * logoSize;
             const x = (size - logoWidth) / 2;
             const y = (size - logoHeight) / 2;
-            
+
             const img = new Image();
             img.onload = () => {
                 // Draw white background for logo
                 ctx.fillStyle = document.getElementById('bg-color').value;
                 ctx.fillRect(x - 5, y - 5, logoWidth + 10, logoHeight + 10);
-                
+
                 // Draw logo
                 ctx.drawImage(img, x, y, logoWidth, logoHeight);
             };
             img.src = currentLogo;
         }
-        
+
         function removeLogo() {
             currentLogo = null;
             document.getElementById('logo-preview').style.display = 'none';
@@ -989,11 +1005,11 @@ END:VEVENT`;
             document.getElementById('logo-file').value = '';
             generateQR();
         }
-        
+
         function downloadQR(format) {
             const canvas = document.getElementById('qr-canvas');
             const link = document.createElement('a');
-            
+
             if (format === 'png') {
                 link.download = `qrcode-${Date.now()}.png`;
                 link.href = canvas.toDataURL('image/png');
@@ -1005,7 +1021,7 @@ END:VEVENT`;
                 const errorCorrection = document.getElementById('error-correction').value;
                 const fgColor = document.getElementById('fg-color').value;
                 const bgColor = document.getElementById('bg-color').value;
-                
+
                 QRCode.toString(content, {
                     type: 'svg',
                     width: size,
@@ -1027,55 +1043,60 @@ END:VEVENT`;
                 });
                 return;
             }
-            
+
             link.click();
-            
+
             // Add to history
             addToHistory();
         }
-        
+
         function copyToClipboard() {
             const canvas = document.getElementById('qr-canvas');
             canvas.toBlob((blob) => {
-                const item = new ClipboardItem({ 'image/png': blob });
-                navigator.clipboard.write([item]).then(() => {
-                    alert('QR code copied to clipboard!');
-                });
+                try {
+                    const item = new ClipboardItem({ 'image/png': blob });
+                    navigator.clipboard.write([item]).then(() => {
+                        alert('QR code copied to clipboard!');
+                    });
+                } catch (err) {
+                    console.error('Clipboard error:', err);
+                    alert('Could not copy to clipboard. Your browser may not support this feature.');
+                }
             });
         }
-        
+
         function addToHistory() {
             const content = getContent();
             const canvas = document.getElementById('qr-canvas');
-            
+
             // Create thumbnail
             const thumb = document.createElement('canvas');
             thumb.width = 40;
             thumb.height = 40;
             const ctx = thumb.getContext('2d');
             ctx.drawImage(canvas, 0, 0, 40, 40);
-            
+
             history.unshift({
                 type: currentType,
                 content: content.substring(0, 50) + (content.length > 50 ? '...' : ''),
                 thumbnail: thumb.toDataURL(),
                 timestamp: Date.now()
             });
-            
+
             // Keep only last 10
             history = history.slice(0, 10);
-            
+
             renderHistory();
         }
-        
+
         function renderHistory() {
             const list = document.getElementById('history-list');
-            
+
             if (history.length === 0) {
                 list.innerHTML = '<p class="text-muted" style="text-align: center; padding: 20px;">Your generated QR codes will appear here</p>';
                 return;
             }
-            
+
             list.innerHTML = history.map((item, i) => `
                 <div class="history-item">
                     <img src="${item.thumbnail}" alt="QR">
@@ -1086,26 +1107,26 @@ END:VEVENT`;
                 </div>
             `).join('');
         }
-        
+
         function toggleBatch() {
             const batchSection = document.getElementById('batch-section');
             batchSection.style.display = batchSection.style.display === 'none' ? 'block' : 'none';
         }
-        
+
         function generateBatch() {
             const input = document.getElementById('batch-input').value;
             const urls = input.split('\n').filter(url => url.trim());
-            
+
             if (urls.length === 0) {
                 alert('Please enter at least one URL');
                 return;
             }
-            
+
             if (urls.length > 50) {
                 alert('Maximum 50 QR codes at once');
                 return;
             }
-            
+
             alert(`Batch generation of ${urls.length} QR codes coming soon!\n\nFor now, generate them one at a time.`);
         }
     </script>
