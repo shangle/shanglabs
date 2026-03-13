@@ -416,7 +416,7 @@
             <div class="sidebar-section">
                 <h3>Data Import</h3>
                 <div class="file-upload" onclick="document.getElementById('call-report-file').click()">
-                    <input type="file" id="call-report-file" accept=".csv,.xbrl,.xml" hidden>
+                    <input type="file" id="call-report-file" accept=".csv,.xbrl,.XBRL,.xml,.XML" hidden>
                     <p style="font-weight: 600; margin-bottom: 4px;">Upload Call Report</p>
                     <p class="input-hint">CSV, XBRL, or XML formats supported</p>
                 </div>
@@ -659,7 +659,7 @@
             const fileName = file.name.toLowerCase();
             const fileExtension = fileName.split('.').pop();
 
-            if (fileExtension === 'xbrl' || fileExtension === 'xml') {
+            if (fileExtension.toLowerCase() === 'xbrl' || fileExtension.toLowerCase() === 'xml') {
                 // Parse XBRL/XML file
                 const reader = new FileReader();
                 reader.onload = function(e) {
