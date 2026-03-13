@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liquidity Risk Dashboard — Shanglabs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .metric-sub {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-error { color: var(--error); }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+        }
+
+        .chart-container h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+
+        .chart-inner {
+            height: 350px;
+            position: relative;
+        }
+
+        .alert-banner {
+            background: linear-gradient(135deg, var(--error) 0%, var(--warning) 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: var(--radius);
+            margin-bottom: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        .alert-banner h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+        }
+
+        .table-container h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        @media (max-width: 900px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+            .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span>💧 Liquidity Risk Dashboard</span>
+        </h1>
+    </header>
+
+    <div class="container">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Liquidity Coverage Ratio</div>
+                <div class="metric-value" id="lcr">135%</div>
+                <div class="metric-sub">HQLA / Net Cash Outflows</div>
+                <div class="metric-change text-success">Above 100% minimum ✅</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Net Stable Funding Ratio</div>
+                <div class="metric-value" id="nsfr">118%</div>
+                <div class="metric-sub">Available Stable / Required Stable</div>
+                <div class="metric-change text-success">Above 100% minimum ✅</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Cash Position</div>
+                <div class="metric-value" id="cash-position">$425M</div>
+                <div class="metric-sub">Current cash and reserves</div>
+                <div class="metric-change text-warning">-15% this month ⚠️</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Liquidity Gap</div>
+                <div class="metric-value" id="liquidity-gap">-$28M</div>
+                <div class="metric-sub">30-day projected shortfall</div>
+                <div class="metric-change text-error">Negative gap ⚠️</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Daily Cash Flow</div>
+                <div class="metric-value" id="daily-flow">$8.5M</div>
+                <div class="metric-sub">Average net daily position</div>
+                <div class="metric-change">Stable</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">30-Day Outflows</div>
+                <div class="metric-value" id="30day-outflow">$1.2B</div>
+                <div class="metric-sub">Total projected outflows</div>
+                <div class="metric-change">+5% vs last month</div>
+            </div>
+        </div>
+
+        <div id="alert-banner" style="display: none;" class="alert-banner">
+            <h2>⚠️ Liquidity Alert</h2>
+            <span id="alert-message">LCR below 100% threshold</span>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3>Liquidity Ratios Trend (90 Days)</h3>
+                <div class="chart-inner">
+                    <canvas id="ratios-trend-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Cash Position Projection (30 Days)</h3>
+                <div class="chart-inner">
+                    <canvas id="cash-projection-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3>Funding Sources Breakdown</h3>
+                <div class="chart-inner">
+                    <canvas id="funding-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Liquidity Stress Test</h3>
+                <div class="chart-inner">
+                    <canvas id="stress-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <h3>Liquidity Risk Factors</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Risk Factor</th>
+                        <th>Current Value</th>
+                        <th>Threshold</th>
+                        <th>Status</th>
+                        <th>Impact</th>
+                    </tr>
+                </thead>
+                <tbody id="risk-table">
+                    <tr>
+                        <td>Liquidity Coverage Ratio</td>
+                        <td id="lcr-table">135%</td>
+                        <td>≥ 100%</td>
+                        <td>✅ Pass</td>
+                        <td>Normal</td>
+                    </tr>
+                    <tr>
+                        <td>Net Stable Funding Ratio</td>
+                        <td id="nsfr-table">118%</td>
+                        <td>≥ 100%</td>
+                        <td>✅ Pass</td>
+                        <td>Normal</td>
+                    </tr>
+                    <tr>
+                        <td>Cash Position Trend</td>
+                        <td>-15%</td>
+                        <td>> -20%</td>
+                        <td>⚠️ Warning</td>
+                        <td>Monitor</td>
+                    </tr>
+                    <tr>
+                        <td>Outflow Growth</td>
+                        <td>+5%</td>
+                        <td>< 10%</td>
+                        <td>✅ Pass</td>
+                        <td>Normal</td>
+                    </tr>
+                    <tr>
+                        <td>Concentration Risk</td>
+                        <td>Low</td>
+                        <td>Low-Medium</td>
+                        <td>✅ Pass</td>
+                        <td>Normal</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let ratiosChart = null;
+        let cashChart = null;
+        let fundingChart = null;
+        let stressChart = null;
+
+        function initCharts() {
+            // Historical data (simulated)
+            const days = Array.from({ length: 90 }, (_, i) => 'Day ' + (i + 1));
+            const lcrData = [145, 142, 140, 138, 135, 132, 130, 128, 125, 123];
+            const nsfrData = [125, 124, 122, 120, 118, 115, 112, 110, 108, 106];
+            const cashData = [480, 475, 470, 465, 460, 455, 450, 445, 440, 435, 425];
+
+            // Extend to 90 days with trends
+            const lcr90 = [...lcrData];
+            const nsfr90 = [...nsfrData];
+            const cash90 = [...cashData];
+
+            for (let i = 10; i < 90; i++) {
+                lcr90.push(Math.max(100, lcr90[i-1] - (Math.random() * 2 - 1)));
+                nsfr90.push(Math.max(100, nsfr90[i-1] - (Math.random() * 1.5 - 0.75)));
+                cash90.push(Math.max(350, cash90[i-1] - (Math.random() * 8 - 4)));
+            }
+
+            // Ratios trend chart
+            ratiosChart = new Chart(document.getElementById('ratios-trend-chart'), {
+                type: 'line',
+                data: {
+                    labels: days.slice(0, 30),
+                    datasets: [{
+                        label: 'LCR (%)',
+                        data: lcr90.slice(0, 30),
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'NSFR (%)',
+                        data: nsfr90.slice(0, 30),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            min: 90,
+                            max: 160
+                        }
+                    }
+                }
+            });
+
+            // Cash projection chart
+            cashChart = new Chart(document.getElementById('cash-projection-chart'), {
+                type: 'line',
+                data: {
+                    labels: days.slice(0, 30),
+                    datasets: [{
+                        label: 'Cash Position ($M)',
+                        data: cash90.slice(0, 30),
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: '100% LCR Minimum',
+                        data: Array(30).fill(400),
+                        borderColor: '#f59e0b',
+                        borderDash: [5],
+                        type: 'line',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' }
+                    },
+                    scales: {
+                        y: {
+                            min: 300,
+                            max: 500
+                        }
+                    }
+                }
+            });
+
+            // Funding sources chart
+            fundingChart = new Chart(document.getElementById('funding-chart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['Deposits', 'Wholesale', 'Securities', 'Capital'],
+                    datasets: [{
+                        data: [65, 20, 10, 5],
+                        backgroundColor: [
+                            '#6366f1',
+                            '#8b5cf6',
+                            '#10b981',
+                            '#f59e0b'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            // Stress test chart
+            stressChart = new Chart(document.getElementById('stress-chart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Baseline', '5% Outflow Shock', '10% Outflow Shock', '15% Outflow Shock'],
+                    datasets: [{
+                        label: 'LCR (%)',
+                        data: [135, 122, 108, 95],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ]
+                    }, {
+                        label: '100% Threshold',
+                        data: [100, 100, 100, 100],
+                        borderColor: '#ef4444',
+                        borderDash: [5],
+                        type: 'line',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            min: 0,
+                            max: 160
+                        }
+                    }
+                }
+            });
+
+            checkAlerts();
+        }
+
+        function checkAlerts() {
+            const lcr = parseFloat(document.getElementById('lcr').textContent) || 0;
+            const nsfr = parseFloat(document.getElementById('nsfr').textContent) || 0;
+            const cashChange = parseFloat(document.querySelector('#cash-position .metric-change').textContent.match(/-?\d+/)[0]) || 0;
+            const liquidityGap = document.getElementById('liquidity-gap').textContent;
+
+            let alertBanner = document.getElementById('alert-banner');
+            let alertMessage = document.getElementById('alert-message');
+
+            const alerts = [];
+            if (lcr < 100) alerts.push('LCR below 100%');
+            if (nsfr < 100) alerts.push('NSFR below 100%');
+            if (cashChange < -20) alerts.push('Cash declining > 20%');
+            if (liquidityGap.startsWith('-')) alerts.push('Liquidity gap projected');
+
+            if (alerts.length > 0) {
+                alertBanner.style.display = 'flex';
+                alertMessage.textContent = alerts.join(' | ');
+                alertBanner.style.background = 'linear-gradient(135deg, var(--warning) 0%, var(--error) 100%)';
+            } else {
+                alertBanner.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', initCharts);
+    </script>
+</body>
+</html>
