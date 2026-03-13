@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stress Test Scenarios — Shanglabs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .content {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+        }
+
+        .card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+        }
+
+        .scenario-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .scenario-toggle:hover {
+            background: var(--gray-50);
+        }
+
+        .scenario-toggle input {
+            margin: 0;
+        }
+
+        .scenario-toggle.active {
+            background: var(--primary-light);
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border-radius: var(--radius);
+            padding: 16px;
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .text-success { color: var(--success); }
+        .text-error { color: var(--error); }
+        .text-warning { color: var(--warning); }
+
+        .chart-container {
+            height: 350px;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .scenario-comparison {
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 2px solid var(--gray-200);
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span>⚡ Stress Test Scenarios</span>
+        </h1>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Input Data</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Assets ($M)</label>
+                    <input type="number" id="total-assets" value="2500" step="100">
+                </div>
+
+                <div class="form-group">
+                    <label>Capital Ratio (%)</label>
+                    <input type="number" id="capital-ratio" value="12.5" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label>NPL Ratio (%)</label>
+                    <input type="number" id="npl-ratio" value="1.2" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label>Net Interest Margin (%)</label>
+                    <input type="number" id="nim" value="3.25" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label>Return on Assets (%)</label>
+                    <input type="number" id="roa" value="1.1" step="0.1">
+                </div>
+
+                <div class="form-group">
+                    <label>Efficiency Ratio (%)</label>
+                    <input type="number" id="efficiency-ratio" value="55" step="1">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Stress Shocks</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Adverse GDP Change (%)</label>
+                    <input type="number" id="adverse-gdp" value="-2" step="0.5">
+                </div>
+
+                <div class="form-group">
+                    <label>Loan Growth Adverse (%)</label>
+                    <input type="number" id="adverse-loan-growth" value="0" step="0.5">
+                </div>
+
+                <div class="form-group">
+                    <label>NPL Increase Adverse (%)</label>
+                    <input type="number" id="adverse-npl-inc" value="1.0" step="0.25">
+                </div>
+
+                <div class="form-group">
+                    <label>Interest Rate Rise (bps)</label>
+                    <input type="number" id="adverse-rate-rise" value="150" step="25">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Scenarios</h3>
+                </div>
+
+                <div class="scenario-toggle active" onclick="toggleScenario('baseline')" id="scenario-baseline">
+                    <input type="checkbox" checked disabled>
+                    <span>Baseline</span>
+                </div>
+
+                <div class="scenario-toggle active" onclick="toggleScenario('adverse')" id="scenario-adverse">
+                    <input type="checkbox" checked disabled>
+                    <span>Adverse</span>
+                </div>
+
+                <div class="scenario-toggle" onclick="toggleScenario('severe')" id="scenario-severe">
+                    <input type="checkbox" checked disabled>
+                    <span>Severely Adverse</span>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="runStressTest()" style="width: 100%;">
+                Run Stress Test
+            </button>
+        </aside>
+
+        <main class="content">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Tier 1 Ratio</div>
+                    <div class="metric-value" id="tier1-ratio">10.5%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">LCR</div>
+                    <div class="metric-value" id="lcr">135%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Adjusted ROA</div>
+                    <div class="metric-value" id="adjusted-roa">1.10%</div>
+                    <div class="metric-change text-success">+0.00%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Capital Gap</div>
+                    <div class="metric-value" id="capital-gap">$125M</div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Capital Adequacy Under Stress</h3>
+                <div class="chart-container">
+                    <canvas id="capital-chart"></canvas>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Asset Quality Under Stress</h3>
+                <div class="chart-container">
+                    <canvas id="npl-chart"></canvas>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Profitability Under Stress</h3>
+                <div class="chart-container">
+                    <canvas id="profitability-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="scenario-comparison">
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Scenario Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="comparison-chart"></canvas>
+                </div>
+            </div>
+
+            <button class="btn btn-secondary" onclick="exportPDF()" style="margin-top: 24px;">
+                📤 Export Report
+            </button>
+        </main>
+    </div>
+
+    <script>
+        let capitalChart = null;
+        let nplChart = null;
+        let profitabilityChart = null;
+        let comparisonChart = null;
+
+        function toggleScenario(scenario) {
+            const toggle = document.getElementById('scenario-' + scenario);
+            toggle.classList.toggle('active');
+        }
+
+        function runStressTest() {
+            const baseline = getScenarioData('baseline');
+            const adverse = getScenarioData('adverse');
+            const severe = getScenarioData('severe');
+
+            updateMetrics(baseline, adverse, severe);
+            renderCharts(baseline, adverse, severe);
+        }
+
+        function getScenarioData(type) {
+            const totalAssets = parseFloat(document.getElementById('total-assets').value) * 1000000;
+            const capitalRatio = parseFloat(document.getElementById('capital-ratio').value) / 100;
+            const nplRatio = parseFloat(document.getElementById('npl-ratio').value) / 100;
+            const nim = parseFloat(document.getElementById('nim').value) / 100;
+            const roa = parseFloat(document.getElementById('roa').value) / 100;
+            const efficiencyRatio = parseFloat(document.getElementById('efficiency-ratio').value) / 100;
+
+            const adverseGDP = parseFloat(document.getElementById('adverse-gdp').value) / 100;
+            const adverseLoanGrowth = parseFloat(document.getElementById('adverse-loan-growth').value) / 100;
+            const adverseNplInc = parseFloat(document.getElementById('adverse-npl-inc').value) / 100;
+            const adverseRateRise = parseFloat(document.getElementById('adverse-rate-rise').value) / 10000;
+
+            let adjustedCapitalRatio = capitalRatio;
+            let adjustedNPLRatio = nplRatio;
+            let adjustedNIM = nim;
+            let adjustedROA = roa;
+
+            if (type === 'baseline') {
+                // No changes
+            } else if (type === 'adverse') {
+                adjustedCapitalRatio -= 0.005;
+                adjustedNPLRatio += adverseNplInc;
+                adjustedNIM -= adverseRateRise;
+                adjustedROA -= 0.002;
+            } else if (type === 'severe') {
+                adjustedCapitalRatio -= 0.01;
+                adjustedNPLRatio += adverseNplInc * 2;
+                adjustedNIM -= adverseRateRise * 2;
+                adjustedROA -= 0.005;
+            }
+
+            const tier1Ratio = adjustedCapitalRatio * 0.85;
+            const lcr = Math.min(135, (adjustedCapitalRatio * 1000));
+
+            return {
+                type,
+                totalAssets,
+                adjustedCapitalRatio,
+                adjustedNPLRatio,
+                adjustedNIM,
+                adjustedROA,
+                tier1Ratio,
+                lcr,
+                capitalGap: totalAssets * (0.08 - adjustedCapitalRatio)
+            };
+        }
+
+        function updateMetrics(baseline, adverse, severe) {
+            document.getElementById('tier1-ratio').textContent = (baseline.tier1Ratio * 100).toFixed(1) + '%';
+            document.getElementById('lcr').textContent = baseline.lcr.toFixed(0) + '%';
+            document.getElementById('adjusted-roa').textContent = (baseline.adjustedROA * 100).toFixed(2) + '%';
+            document.getElementById('capital-gap').textContent = formatCurrency(baseline.capitalGap);
+
+            const roaChange = adverse.adjustedROA - baseline.adjustedROA;
+            const roaChangeEl = document.querySelector('#adjusted-roa .metric-change');
+            roaChangeEl.textContent = (roaChange > 0 ? '+' : '') + (roaChange * 100).toFixed(2) + '%';
+            roaChangeEl.className = 'metric-change ' + (roaChange >= 0 ? 'text-success' : 'text-error');
+        }
+
+        function formatCurrency(value) {
+            if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(1) + 'M';
+            }
+            return '$' + value.toLocaleString();
+        }
+
+        function renderCharts(baseline, adverse, severe) {
+            const scenarios = [baseline, adverse, severe];
+
+            if (capitalChart) capitalChart.destroy();
+            capitalChart = new Chart(document.getElementById('capital-chart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Baseline', 'Adverse', 'Severely Adverse'],
+                    datasets: [{
+                        label: 'Capital Ratio',
+                        data: scenarios.map(s => s.adjustedCapitalRatio * 100),
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ]
+                    }, {
+                        label: 'Min Required',
+                        data: [8, 8, 8],
+                        borderColor: '#ef4444',
+                        borderDash: [5, 5],
+                        type: 'line',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Capital Ratio vs Requirement (8% minimum)' }
+                    }
+                }
+            });
+
+            if (nplChart) nplChart.destroy();
+            nplChart = new Chart(document.getElementById('npl-chart'), {
+                type: 'line',
+                data: {
+                    labels: ['Baseline', 'Adverse', 'Severely Adverse'],
+                    datasets: [{
+                        label: 'NPL Ratio',
+                        data: scenarios.map(s => s.adjustedNPLRatio * 100),
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Warning Threshold (3%)',
+                        data: [3, 3, 3],
+                        borderColor: '#f59e0b',
+                        borderDash: [5, 5],
+                        type: 'line',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Non-Performing Loan Ratio' }
+                    }
+                }
+            });
+
+            if (profitabilityChart) profitabilityChart.destroy();
+            profitabilityChart = new Chart(document.getElementById('profitability-chart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Baseline', 'Adverse', 'Severely Adverse'],
+                    datasets: [{
+                        label: 'ROA',
+                        data: scenarios.map(s => s.adjustedROA * 100),
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ]
+                    }, {
+                        label: 'NIM',
+                        data: scenarios.map(s => s.adjustedNIM * 100),
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.5)',
+                            'rgba(139, 92, 246, 0.5)',
+                            'rgba(239, 68, 68, 0.5)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: { display: true, text: 'Profitability Metrics' }
+                    }
+                }
+            });
+
+            if (comparisonChart) comparisonChart.destroy();
+            comparisonChart = new Chart(document.getElementById('comparison-chart'), {
+                type: 'radar',
+                data: {
+                    labels: ['Capital Ratio', 'NPL Ratio', 'ROA', 'NIM', 'LCR'],
+                    datasets: [{
+                        label: 'Baseline',
+                        data: [
+                            baseline.adjustedCapitalRatio * 100,
+                            baseline.adjustedNPLRatio * 100,
+                            baseline.adjustedROA * 100,
+                            baseline.adjustedNIM * 100,
+                            baseline.lcr
+                        ],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.2)'
+                    }, {
+                        label: 'Adverse',
+                        data: [
+                            adverse.adjustedCapitalRatio * 100,
+                            adverse.adjustedNPLRatio * 100,
+                            adverse.adjustedROA * 100,
+                            adverse.adjustedNIM * 100,
+                            adverse.lcr
+                        ],
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.2)'
+                    }, {
+                        label: 'Severely Adverse',
+                        data: [
+                            severe.adjustedCapitalRatio * 100,
+                            severe.adjustedNPLRatio * 100,
+                            severe.adjustedROA * 100,
+                            severe.adjustedNIM * 100,
+                            severe.lcr
+                        ],
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.2)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.text('Stress Test Scenarios Report', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Generated on: ' + new Date().toLocaleDateString(), 20, 30);
+
+            const baseline = getScenarioData('baseline');
+            const adverse = getScenarioData('adverse');
+            const severe = getScenarioData('severe');
+
+            let y = 45;
+
+            doc.setFontSize(14);
+            doc.text('Baseline Scenario', 20, y); y += 8;
+            doc.setFontSize(11);
+            doc.text(`Capital Ratio: ${(baseline.adjustedCapitalRatio * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`NPL Ratio: ${(baseline.adjustedNPLRatio * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`ROA: ${(baseline.adjustedROA * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`Capital Gap: ${formatCurrency(baseline.capitalGap)}`, 25, y); y += 12;
+
+            doc.setFontSize(14);
+            doc.text('Adverse Scenario', 20, y); y += 8;
+            doc.setFontSize(11);
+            doc.text(`Capital Ratio: ${(adverse.adjustedCapitalRatio * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`NPL Ratio: ${(adverse.adjustedNPLRatio * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`ROA: ${(adverse.adjustedROA * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`Capital Gap: ${formatCurrency(adverse.capitalGap)}`, 25, y); y += 12;
+
+            doc.setFontSize(14);
+            doc.text('Severely Adverse Scenario', 20, y); y += 8;
+            doc.setFontSize(11);
+            doc.text(`Capital Ratio: ${(severe.adjustedCapitalRatio * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`NPL Ratio: ${(severe.adjustedNPLRatio * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`ROA: ${(severe.adjustedROA * 100).toFixed(2)}%`, 25, y); y += 6;
+            doc.text(`Capital Gap: ${formatCurrency(severe.capitalGap)}`, 25, y);
+
+            doc.save('stress-test-report.pdf');
+        }
+
+        runStressTest();
+    </script>
+</body>
+</html>
