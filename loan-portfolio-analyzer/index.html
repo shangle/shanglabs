@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Portfolio Analyzer — Shanglabs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .upload-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border-radius: var(--radius);
+            padding: 16px;
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef9c3; color: #854d0e; }
+        .badge-error { background: #fee2e2; color: #991b1b; }
+
+        #data-section, #analysis-section {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span>📊 Loan Portfolio Analyzer</span>
+        </h1>
+    </header>
+
+    <div class="container">
+        <div class="card" id="upload-section">
+            <div class="card-header">
+                <h2>Upload Portfolio Data</h2>
+            </div>
+            <div class="card-body">
+                <div class="upload-zone" onclick="document.getElementById('file-input').click()">
+                    <input type="file" id="file-input" accept=".csv,.xlsx,.xls" hidden>
+                    <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 8px;">Drop file here or click to upload</p>
+                    <p style="color: var(--gray-500);">Supports CSV and Excel files</p>
+                </div>
+                <button class="btn btn-secondary" onclick="loadSampleData()" style="margin-top: 16px;">
+                    Load Sample Portfolio
+                </button>
+            </div>
+        </div>
+
+        <div class="card" id="data-section">
+            <div class="card-header">
+                <h2>Portfolio Overview</h2>
+                <button class="btn btn-primary" onclick="exportPDF()">📤 Export Report</button>
+            </div>
+            <div class="card-body">
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-label">Total Loans</div>
+                        <div class="metric-value" id="total-loans">0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Portfolio Value</div>
+                        <div class="metric-value" id="total-value">$0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Average Interest Rate</div>
+                        <div class="metric-value" id="avg-rate">0%</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Default Rate</div>
+                        <div class="metric-value" id="default-rate">0%</div>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 20px; margin-bottom: 24px;">
+                    <div>
+                        <h3 style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Portfolio Value by Risk Grade</h3>
+                        <div class="chart-container">
+                            <canvas id="risk-chart"></canvas>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Loan Status Distribution</h3>
+                        <div class="chart-container">
+                            <canvas id="status-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 style="font-size: 0.9rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Portfolio Performance Over Time</h3>
+                    <div class="chart-container">
+                        <canvas id="performance-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" id="analysis-section">
+            <div class="card-header">
+                <h2>Loan Details</h2>
+            </div>
+            <div class="card-body">
+                <div class="table-container">
+                    <table id="loans-table">
+                        <thead>
+                            <tr>
+                                <th>Loan ID</th>
+                                <th>Borrower</th>
+                                <th>Amount</th>
+                                <th>Interest Rate</th>
+                                <th>Risk Grade</th>
+                                <th>Status</th>
+                                <th>Origination Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="loans-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let portfolioData = [];
+        let riskChart = null;
+        let statusChart = null;
+        let performanceChart = null;
+
+        function loadSampleData() {
+            portfolioData = [
+                { loanId: 'LN001', borrower: 'ABC Corp', amount: 500000, interestRate: 6.5, riskGrade: 'A', status: 'Active', originationDate: '2024-01-15' },
+                { loanId: 'LN002', borrower: 'XYZ Inc', amount: 350000, interestRate: 7.2, riskGrade: 'B', status: 'Active', originationDate: '2024-02-20' },
+                { loanId: 'LN003', borrower: 'DEF Ltd', amount: 800000, interestRate: 5.8, riskGrade: 'A', status: 'Active', originationDate: '2023-12-10' },
+                { loanId: 'LN004', borrower: 'GHI Co', amount: 200000, interestRate: 8.5, riskGrade: 'C', status: 'Active', originationDate: '2024-03-05' },
+                { loanId: 'LN005', borrower: 'JKL Corp', amount: 600000, interestRate: 6.0, riskGrade: 'B', status: 'Delinquent', originationDate: '2023-11-28' },
+                { loanId: 'LN006', borrower: 'MNO Inc', amount: 450000, interestRate: 7.0, riskGrade: 'A', status: 'Active', originationDate: '2024-01-30' },
+                { loanId: 'LN007', borrower: 'PQR Ltd', amount: 900000, interestRate: 5.5, riskGrade: 'A', status: 'Active', originationDate: '2024-02-14' },
+                { loanId: 'LN008', borrower: 'STU Co', amount: 150000, interestRate: 9.0, riskGrade: 'D', status: 'Default', originationDate: '2023-10-20' },
+                { loanId: 'LN009', borrower: 'VWX Corp', amount: 700000, interestRate: 6.3, riskGrade: 'B', status: 'Active', originationDate: '2024-03-01' },
+                { loanId: 'LN010', borrower: 'YZA Inc', amount: 550000, interestRate: 5.9, riskGrade: 'A', status: 'Active', originationDate: '2024-02-28' }
+            ];
+
+            analyzePortfolio();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    if (file.name.endsWith('.csv')) {
+                        parseCSV(e.target.result);
+                    } else {
+                        parseExcel(e.target.result);
+                    }
+                } catch (error) {
+                    alert('Error reading file: ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function parseCSV(csvText) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            const headers = lines[0].split(',').map(h => h.trim());
+
+            portfolioData = lines.slice(1).map(line => {
+                const values = line.split(',');
+                return {
+                    loanId: values[0] || '',
+                    borrower: values[1] || '',
+                    amount: parseFloat(values[2]) || 0,
+                    interestRate: parseFloat(values[3]) || 0,
+                    riskGrade: values[4] || 'B',
+                    status: values[5] || 'Active',
+                    originationDate: values[6] || ''
+                };
+            });
+
+            analyzePortfolio();
+        }
+
+        function parseExcel(data) {
+            const workbook = XLSX.read(data, { type: 'binary' });
+            const sheetName = workbook.SheetNames[0];
+            const sheet = workbook.Sheets[sheetName];
+            const jsonData = XLSX.utils.sheet_to_json(sheet);
+
+            portfolioData = jsonData.map(row => ({
+                loanId: row['Loan ID'] || row['LoanID'] || row['loanId'] || '',
+                borrower: row['Borrower'] || row['borrower'] || '',
+                amount: row['Amount'] || row['amount'] || 0,
+                interestRate: row['Interest Rate'] || row['interestRate'] || row['InterestRate'] || 0,
+                riskGrade: row['Risk Grade'] || row['riskGrade'] || row['RiskGrade'] || 'B',
+                status: row['Status'] || row['status'] || 'Active',
+                originationDate: row['Origination Date'] || row['originationDate'] || row['OriginationDate'] || ''
+            }));
+
+            analyzePortfolio();
+        }
+
+        function formatCurrency(value) {
+            if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(1) + 'M';
+            }
+            return '$' + value.toLocaleString();
+        }
+
+        function getStatusBadge(status) {
+            const statusMap = {
+                'Active': 'badge-success',
+                'Delinquent': 'badge-warning',
+                'Default': 'badge-error'
+            };
+            return '<span class="badge ' + (statusMap[status] || 'badge-warning') + '">' + status + '</span>';
+        }
+
+        function analyzePortfolio() {
+            document.getElementById('upload-section').style.display = 'none';
+            document.getElementById('data-section').style.display = 'block';
+            document.getElementById('analysis-section').style.display = 'block';
+
+            const totalLoans = portfolioData.length;
+            const totalValue = portfolioData.reduce((sum, loan) => sum + loan.amount, 0);
+            const avgRate = portfolioData.reduce((sum, loan) => sum + loan.interestRate, 0) / totalLoans;
+            const defaultRate = portfolioData.filter(l => l.status === 'Default').length / totalLoans;
+
+            document.getElementById('total-loans').textContent = totalLoans.toLocaleString();
+            document.getElementById('total-value').textContent = formatCurrency(totalValue);
+            document.getElementById('avg-rate').textContent = avgRate.toFixed(2) + '%';
+            document.getElementById('default-rate').textContent = (defaultRate * 100).toFixed(1) + '%';
+
+            const tbody = document.getElementById('loans-body');
+            tbody.innerHTML = portfolioData.map(loan => `
+                <tr>
+                    <td>${loan.loanId}</td>
+                    <td>${loan.borrower}</td>
+                    <td>${formatCurrency(loan.amount)}</td>
+                    <td>${loan.interestRate.toFixed(2)}%</td>
+                    <td>${loan.riskGrade}</td>
+                    <td>${getStatusBadge(loan.status)}</td>
+                    <td>${loan.originationDate}</td>
+                </tr>
+            `).join('');
+
+            renderCharts();
+        }
+
+        function renderCharts() {
+            const riskData = {};
+            const statusData = {};
+
+            portfolioData.forEach(loan => {
+                riskData[loan.riskGrade] = (riskData[loan.riskGrade] || 0) + loan.amount;
+                statusData[loan.status] = (statusData[loan.status] || 0) + 1;
+            });
+
+            if (riskChart) riskChart.destroy();
+            riskChart = new Chart(document.getElementById('risk-chart'), {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(riskData),
+                    datasets: [{
+                        data: Object.values(riskData),
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444', '#6366f1']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            if (statusChart) statusChart.destroy();
+            statusChart = new Chart(document.getElementById('status-chart'), {
+                type: 'pie',
+                data: {
+                    labels: Object.keys(statusData),
+                    datasets: [{
+                        data: Object.values(statusData),
+                        backgroundColor: ['#10b981', '#f59e0b', '#ef4444']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            const monthlyData = {};
+            portfolioData.forEach(loan => {
+                if (loan.originationDate) {
+                    const month = loan.originationDate.substring(0, 7);
+                    monthlyData[month] = (monthlyData[month] || 0) + loan.amount;
+                }
+            });
+
+            if (performanceChart) performanceChart.destroy();
+            performanceChart = new Chart(document.getElementById('performance-chart'), {
+                type: 'line',
+                data: {
+                    labels: Object.keys(monthlyData).sort(),
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: Object.keys(monthlyData).sort().map(m => monthlyData[m]),
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.text('Loan Portfolio Analysis Report', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Generated on: ' + new Date().toLocaleDateString(), 20, 30);
+
+            doc.setFontSize(14);
+            doc.text('Portfolio Summary', 20, 45);
+            doc.setFontSize(11);
+
+            let y = 55;
+            const totalValue = portfolioData.reduce((sum, loan) => sum + loan.amount, 0);
+            const avgRate = portfolioData.reduce((sum, loan) => sum + loan.interestRate, 0) / portfolioData.length;
+            const defaultRate = portfolioData.filter(l => l.status === 'Default').length / portfolioData.length;
+
+            doc.text(`Total Loans: ${portfolioData.length}`, 20, y); y += 8;
+            doc.text(`Total Portfolio Value: ${formatCurrency(totalValue)}`, 20, y); y += 8;
+            doc.text(`Average Interest Rate: ${avgRate.toFixed(2)}%`, 20, y); y += 8;
+            doc.text(`Default Rate: ${(defaultRate * 100).toFixed(1)}%`, 20, y); y += 15;
+
+            doc.setFontSize(14);
+            doc.text('Risk Grade Distribution', 20, y); y += 10;
+            doc.setFontSize(11);
+
+            const riskData = {};
+            portfolioData.forEach(loan => {
+                riskData[loan.riskGrade] = (riskData[loan.riskGrade] || 0) + loan.amount;
+            });
+
+            Object.entries(riskData).forEach(([grade, value]) => {
+                doc.text(`${grade}: ${formatCurrency(value)}`, 20, y);
+                y += 7;
+            });
+
+            doc.save('loan-portfolio-report.pdf');
+        }
+
+        document.getElementById('file-input').addEventListener('change', handleFileUpload);
+    </script>
+</body>
+</html>
