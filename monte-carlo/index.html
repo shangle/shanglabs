@@ -361,6 +361,45 @@
                 border-bottom: 1px solid var(--gray-200);
             }
         }
+
+        /* Comparison Styles */
+        #bank-select {
+            font-size: 0.85rem;
+        }
+
+        #bank-select option:checked {
+            background: var(--primary-light);
+        }
+
+        .comparison-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-low { background: #dcfce7; color: #166534; }
+        .badge-medium { background: #fef9c3; color: #854d0e; }
+        .badge-high { background: #fee2e2; color: #991b1b; }
+
+        table th, table td {
+            padding: 12px 10px;
+            text-align: right;
+        }
+
+        table th:first-child, table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        table tbody tr {
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        table tbody tr:hover {
+            background: var(--gray-50);
+        }
     </style>
 </head>
 <body>
@@ -377,9 +416,9 @@
             <div class="sidebar-section">
                 <h3>Data Import</h3>
                 <div class="file-upload" onclick="document.getElementById('call-report-file').click()">
-                    <input type="file" id="call-report-file" accept=".csv" hidden>
-                    <p style="font-weight: 600; margin-bottom: 4px;">Upload Call Report CSV</p>
-                    <p class="input-hint">FFIEC format supported</p>
+                    <input type="file" id="call-report-file" accept=".csv,.xbrl,.xml" hidden>
+                    <p style="font-weight: 600; margin-bottom: 4px;">Upload Call Report</p>
+                    <p class="input-hint">CSV, XBRL, or XML formats supported</p>
                 </div>
                 <p class="input-hint" style="margin-top: 8px;">Or use sample data below</p>
                 <button class="btn btn-secondary btn-block" onclick="loadSampleData()" style="margin-top: 12px;">
@@ -410,6 +449,27 @@
             </div>
 
             <div class="sidebar-section">
+                <h3>Comparison Mode</h3>
+                <button class="btn btn-secondary btn-block" onclick="toggleComparisonMode()" id="comparison-toggle">
+                    Enable Comparison
+                </button>
+                <div id="comparison-controls" style="display: none; margin-top: 12px;">
+                    <div class="form-group">
+                        <label>Saved Banks</label>
+                        <select id="bank-select" onchange="selectBank()" multiple style="height: 120px;">
+                            <option value="" disabled selected>Select banks to compare</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-secondary btn-block" onclick="saveCurrentBank()" style="font-size: 0.8rem; padding: 6px 12px;">
+                        Save Current Bank Profile
+                    </button>
+                    <button class="btn btn-secondary btn-block" onclick="clearSelectedBanks()" style="font-size: 0.8rem; padding: 6px 12px; margin-top: 8px;">
+                        Clear Selection
+                    </button>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
                 <h3>Randomization Variables</h3>
 
                 <div class="variable-toggle">
@@ -417,7 +477,7 @@
                         <div style="font-weight: 500; font-size: 0.9rem;">Loan Growth Rate</div>
                         <div class="input-hint">±5% default</div>
                     </div>
-                    <div class="toggle-switch active" onclick="toggleVariable(this)"></div>
+                    <div class="toggle-switch active" data-var="loanGrowth" onclick="toggleVariable(this)"></div>
                 </div>
 
                 <div class="variable-toggle">
@@ -425,7 +485,7 @@
                         <div style="font-weight: 500; font-size: 0.9rem;">NPL Ratio</div>
                         <div class="input-hint">±0.5% default</div>
                     </div>
-                    <div class="toggle-switch active" onclick="toggleVariable(this)"></div>
+                    <div class="toggle-switch active" data-var="nplRatio" onclick="toggleVariable(this)"></div>
                 </div>
 
                 <div class="variable-toggle">
@@ -433,7 +493,7 @@
                         <div style="font-weight: 500; font-size: 0.9rem;">Net Interest Margin</div>
                         <div class="input-hint">±0.25% default</div>
                     </div>
-                    <div class="toggle-switch active" onclick="toggleVariable(this)"></div>
+                    <div class="toggle-switch active" data-var="nim" onclick="toggleVariable(this)"></div>
                 </div>
 
                 <div class="variable-toggle">
@@ -441,7 +501,7 @@
                         <div style="font-weight: 500; font-size: 0.9rem;">Non-Interest Income</div>
                         <div class="input-hint">±10% default</div>
                     </div>
-                    <div class="toggle-switch" onclick="toggleVariable(this)"></div>
+                    <div class="toggle-switch" data-var="nonInterestIncome" onclick="toggleVariable(this)"></div>
                 </div>
 
                 <div class="variable-toggle">
@@ -449,7 +509,7 @@
                         <div style="font-weight: 500; font-size: 0.9rem;">Operating Expenses</div>
                         <div class="input-hint">±5% default</div>
                     </div>
-                    <div class="toggle-switch" onclick="toggleVariable(this)"></div>
+                    <div class="toggle-switch" data-var="operatingExpenses" onclick="toggleVariable(this)"></div>
                 </div>
             </div>
 
@@ -532,16 +592,49 @@
                     </div>
                 </div>
             </div>
+
+            <div class="card" id="comparison-section" style="display: none;">
+                <div class="card-header">
+                    <h2>Bank Comparison</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="comparison-chart"></canvas>
+                    </div>
+                    <div id="comparison-metrics" style="margin-top: 20px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                            <thead>
+                                <tr style="border-bottom: 2px solid var(--gray-300);">
+                                    <th style="padding: 10px; text-align: left;">Bank</th>
+                                    <th style="padding: 10px; text-align: right;">Assets</th>
+                                    <th style="padding: 10px; text-align: right;">Capital Ratio</th>
+                                    <th style="padding: 10px; text-align: right;">Expected ROA</th>
+                                    <th style="padding: 10px; text-align: right;">95% VaR</th>
+                                    <th style="padding: 10px; text-align: right;">Risk Rating</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comparison-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </main>
     </div>
 
     <script>
         let distributionChart = null;
         let sensitivityChart = null;
+        let comparisonChart = null;
         let bankData = null;
+        let savedBanks = [];
+        let comparisonMode = false;
+        let selectedBankIds = [];
 
         function loadSampleData() {
             bankData = {
+                id: Date.now(),
+                name: 'Sample Bank',
                 totalAssets: 2500000000,
                 capitalRatio: 0.125,
                 nplRatio: 0.012,
@@ -549,19 +642,298 @@
                 loanGrowth: 0.05,
                 nim: 0.0325,
                 nonInterestIncome: 50000000,
-                operatingExpenses: 75000000
+                operatingExpenses: 75000000,
+                tier1Ratio: 0.105,
+                lcr: 0.135,
+                leverageRatio: 0.085
             };
 
-            document.getElementById('total-assets').textContent = '$2.5B';
-            document.getElementById('capital-ratio').textContent = '12.5%';
-            document.getElementById('npl-ratio').textContent = '1.2%';
-            document.getElementById('roa').textContent = '1.1%';
+            updateMetricsDisplay();
+            alert('Sample bank data loaded!\n\nBank Profile:\n- Assets: $2.5B\n- Capital Ratio: 12.5%\n- NPL Ratio: 1.2%\n- ROA: 1.1%\n- Tier 1: 10.5%\n- LCR: 13.5%\n\nReady to run simulation.');
+        }
 
-            alert('Sample bank data loaded!\n\nBank Profile:\n- Assets: $2.5B\n- Capital Ratio: 12.5%\n- NPL Ratio: 1.2%\n- ROA: 1.1%\n\nReady to run simulation.');
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const fileName = file.name.toLowerCase();
+            const fileExtension = fileName.split('.').pop();
+
+            if (fileExtension === 'xbrl' || fileExtension === 'xml') {
+                // Parse XBRL/XML file
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(e.target.result, 'text/xml');
+                        parseXBRL(xmlDoc, file.name);
+                    } catch (error) {
+                        alert('Error parsing XBRL file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            } else if (fileExtension === 'csv') {
+                // Parse CSV file
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        parseCSV(e.target.result, file.name);
+                    } catch (error) {
+                        alert('Error parsing CSV file: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                alert('Unsupported file format. Please upload a CSV, XBRL, or XML file.');
+            }
+        }
+
+        function parseCSV(csvText, fileName) {
+            const lines = csvText.split('\n').filter(line => line.trim());
+            if (lines.length < 2) {
+                alert('CSV file appears to be empty or invalid.');
+                return;
+            }
+
+            // Simple CSV parser - looks for common FFIEC Call Report fields
+            const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+            const data = lines[1].split(',').map(d => parseFloat(d.replace(/[$%,]/g, '')) || 0);
+
+            // Map common FFIEC field names to our data structure
+            const fieldMap = {
+                'total assets': 0,
+                'capital ratio': 1,
+                'nonperforming loans ratio': 2,
+                'npl ratio': 2,
+                'roa': 3,
+                'return on assets': 3,
+                'loan growth': 4,
+                'net interest margin': 5,
+                'nim': 5,
+                'noninterest income': 6,
+                'operating expenses': 7
+            };
+
+            // Try to match headers
+            let totalAssets = 0, capitalRatio = 0.1, nplRatio = 0.01, roa = 0.01;
+            let loanGrowth = 0.05, nim = 0.03, nonInterestIncome = 50000000, operatingExpenses = 75000000;
+
+            headers.forEach((header, index) => {
+                if (header.includes('total') && header.includes('asset')) {
+                    totalAssets = data[index];
+                } else if (header.includes('capital') && header.includes('ratio')) {
+                    capitalRatio = data[index] / 100;
+                } else if (header.includes('npl') || header.includes('nonperforming')) {
+                    nplRatio = data[index] / 100;
+                } else if (header.includes('roa') || (header.includes('return') && header.includes('asset'))) {
+                    roa = data[index] / 100;
+                } else if (header.includes('loan') && header.includes('growth')) {
+                    loanGrowth = data[index] / 100;
+                } else if (header.includes('nim') || (header.includes('net') && header.includes('interest') && header.includes('margin'))) {
+                    nim = data[index] / 100;
+                } else if (header.includes('noninterest') && header.includes('income')) {
+                    nonInterestIncome = data[index];
+                } else if (header.includes('operating') && header.includes('expense')) {
+                    operatingExpenses = data[index];
+                }
+            });
+
+            bankData = {
+                id: Date.now(),
+                name: fileName.replace(/\.[^/.]+$/, ''),
+                totalAssets: totalAssets || 1000000000,
+                capitalRatio: capitalRatio || 0.1,
+                nplRatio: nplRatio || 0.01,
+                roa: roa || 0.01,
+                loanGrowth: loanGrowth || 0.05,
+                nim: nim || 0.03,
+                nonInterestIncome: nonInterestIncome || 50000000,
+                operatingExpenses: operatingExpenses || 75000000,
+                tier1Ratio: capitalRatio * 0.85 || 0.085,
+                lcr: 0.135,
+                leverageRatio: capitalRatio * 0.7 || 0.07
+            };
+
+            updateMetricsDisplay();
+            alert('CSV file loaded successfully!\n\nBank: ' + bankData.name + '\nAssets: ' + formatCurrency(bankData.totalAssets) + '\nReady to run simulation.');
+        }
+
+        function parseXBRL(xmlDoc, fileName) {
+            // Parse FFIEC XBRL format (simplified - may need refinement based on actual schema)
+            const ns = 'us-gaap';
+            const getContexts = xmlDoc.getElementsByTagNameNS(ns, 'context');
+            const facts = xmlDoc.getElementsByTagNameNS(ns, 'fact');
+
+            let totalAssets = 0, capitalRatio = 0.1, nplRatio = 0.01, roa = 0.01;
+            let loanGrowth = 0.05, nim = 0.03, nonInterestIncome = 50000000, operatingExpenses = 75000000;
+
+            // Common FFIEC XBRL element names
+            const xbrlMap = {
+                'Assets': 'totalAssets',
+                'CapitalRatio': 'capitalRatio',
+                'AllowanceForLoanAndLeaseLossesRatio': 'nplRatio',
+                'ReturnOnAssets': 'roa',
+                'LoanGrowthRate': 'loanGrowth',
+                'NetInterestMargin': 'nim',
+                'NoninterestIncome': 'nonInterestIncome',
+                'NoninterestExpense': 'operatingExpenses'
+            };
+
+            // Try to extract data from XBRL facts
+            for (let i = 0; i < facts.length; i++) {
+                const fact = facts[i];
+                const elementName = fact.localName || fact.getAttribute('name');
+                const value = parseFloat(fact.textContent) || 0;
+
+                if (elementName === 'Assets') {
+                    totalAssets = value;
+                } else if (elementName === 'CapitalRatio') {
+                    capitalRatio = value;
+                } else if (elementName === 'AllowanceForLoanAndLeaseLossesRatio') {
+                    nplRatio = value;
+                } else if (elementName === 'ReturnOnAssets') {
+                    roa = value;
+                } else if (elementName === 'LoanGrowthRate') {
+                    loanGrowth = value;
+                } else if (elementName === 'NetInterestMargin') {
+                    nim = value;
+                } else if (elementName === 'NoninterestIncome') {
+                    nonInterestIncome = value;
+                } else if (elementName === 'NoninterestExpense') {
+                    operatingExpenses = value;
+                }
+            }
+
+            // If no data found, try alternative parsing strategies
+            if (totalAssets === 0) {
+                const allElements = xmlDoc.getElementsByTagName('*');
+                for (let i = 0; i < allElements.length; i++) {
+                    const el = allElements[i];
+                    const localName = el.localName || el.tagName.toLowerCase();
+                    const value = parseFloat(el.textContent) || 0;
+
+                    if (localName.includes('asset') && !localName.includes('ratio')) {
+                        totalAssets = Math.max(totalAssets, value);
+                    }
+                }
+            }
+
+            bankData = {
+                id: Date.now(),
+                name: fileName.replace(/\.[^/.]+$/, ''),
+                totalAssets: totalAssets || 1000000000,
+                capitalRatio: capitalRatio || 0.1,
+                nplRatio: nplRatio || 0.01,
+                roa: roa || 0.01,
+                loanGrowth: loanGrowth || 0.05,
+                nim: nim || 0.03,
+                nonInterestIncome: nonInterestIncome || 50000000,
+                operatingExpenses: operatingExpenses || 75000000,
+                tier1Ratio: capitalRatio * 0.85 || 0.085,
+                lcr: 0.135,
+                leverageRatio: capitalRatio * 0.7 || 0.07
+            };
+
+            updateMetricsDisplay();
+            alert('XBRL file loaded successfully!\n\nBank: ' + bankData.name + '\nAssets: ' + formatCurrency(bankData.totalAssets) + '\n\nNote: XBRL parsing is simplified. Some fields may need manual adjustment based on actual file format.');
+        }
+
+        // Add event listener for file input
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileInput = document.getElementById('call-report-file');
+            if (fileInput) {
+                fileInput.addEventListener('change', handleFileUpload);
+            }
+        });
+
+        function updateMetricsDisplay() {
+            if (!bankData) return;
+            document.getElementById('total-assets').textContent = formatCurrency(bankData.totalAssets);
+            document.getElementById('capital-ratio').textContent = (bankData.capitalRatio * 100).toFixed(1) + '%';
+            document.getElementById('npl-ratio').textContent = (bankData.nplRatio * 100).toFixed(1) + '%';
+            document.getElementById('roa').textContent = (bankData.roa * 100).toFixed(1) + '%';
+        }
+
+        function formatCurrency(value) {
+            if (value >= 1000000000) {
+                return '$' + (value / 1000000000).toFixed(1) + 'B';
+            } else if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(1) + 'M';
+            }
+            return '$' + value.toLocaleString();
         }
 
         function toggleVariable(element) {
             element.classList.toggle('active');
+        }
+
+        function toggleComparisonMode() {
+            comparisonMode = !comparisonMode;
+            const toggleBtn = document.getElementById('comparison-toggle');
+            const controls = document.getElementById('comparison-controls');
+            const section = document.getElementById('comparison-section');
+
+            if (comparisonMode) {
+                toggleBtn.textContent = 'Disable Comparison';
+                toggleBtn.classList.remove('btn-secondary');
+                toggleBtn.classList.add('btn-primary');
+                controls.style.display = 'block';
+                section.style.display = 'block';
+                loadSavedBanks();
+            } else {
+                toggleBtn.textContent = 'Enable Comparison';
+                toggleBtn.classList.remove('btn-primary');
+                toggleBtn.classList.add('btn-secondary');
+                controls.style.display = 'none';
+                section.style.display = 'none';
+            }
+        }
+
+        function loadSavedBanks() {
+            savedBanks = JSON.parse(localStorage.getItem('monteCarloBanks') || '[]');
+            const select = document.getElementById('bank-select');
+            select.innerHTML = '<option value="" disabled>Select banks to compare</option>';
+
+            savedBanks.forEach(bank => {
+                const option = document.createElement('option');
+                option.value = bank.id;
+                option.textContent = bank.name + ' (' + formatCurrency(bank.totalAssets) + ')';
+                select.appendChild(option);
+            });
+        }
+
+        function saveCurrentBank() {
+            if (!bankData) {
+                alert('Please load sample data or upload a Call Report first.');
+                return;
+            }
+
+            const name = prompt('Enter bank name:', bankData.name || 'New Bank');
+            if (!name) return;
+
+            bankData.name = name;
+            bankData.id = bankData.id || Date.now();
+
+            const existingIndex = savedBanks.findIndex(b => b.id === bankData.id);
+            if (existingIndex >= 0) {
+                savedBanks[existingIndex] = {...bankData};
+            } else {
+                savedBanks.push({...bankData});
+            }
+
+            localStorage.setItem('monteCarloBanks', JSON.stringify(savedBanks));
+            loadSavedBanks();
+            alert('Bank profile saved: ' + name);
+        }
+
+        function selectBank() {
+            const select = document.getElementById('bank-select');
+            selectedBankIds = Array.from(select.selectedOptions).map(option => parseInt(option.value));
+        }
+
+        function clearSelectedBanks() {
+            document.getElementById('bank-select').value = '';
+            selectedBankIds = [];
         }
 
         function runSimulation() {
@@ -578,32 +950,37 @@
 
             // Run Monte Carlo simulation
             setTimeout(() => {
-                const results = performSimulation(simCount, confidence);
+                const results = performSimulation(simCount, confidence, bankData);
                 displayResults(results);
+
+                // Run comparison if mode enabled and banks selected
+                if (comparisonMode && selectedBankIds.length > 0) {
+                    runComparison(simCount, confidence);
+                }
             }, 100);
         }
 
-        function performSimulation(count, confidence) {
+        function performSimulation(count, confidence, data) {
             const results = [];
             const variables = document.querySelectorAll('.toggle-switch.active');
 
             for (let i = 0; i < count; i++) {
-                let simROA = bankData.roa;
+                let simROA = data.roa;
 
                 // Apply random variations based on enabled variables
-                if (variables.length > 0) {
-                    // Loan growth impact
-                    simROA += (Math.random() - 0.5) * 0.002;
+                variables.forEach((toggle, idx) => {
+                    const variance = data[dataset.querySelector('.input-hint')?.textContent.match(/±(\d+\.?\d*)%/) ? 'variance' : 'variance'];
+                    const volatility = idx === 0 ? 0.002 : idx === 1 ? 0.003 : idx === 2 ? 0.001 : idx === 3 ? 0.005 : 0.001;
+                    const direction = Math.random() - 0.5;
 
-                    // NPL impact
-                    simROA -= (Math.random() * 0.003);
-
-                    // NIM impact
-                    simROA += (Math.random() - 0.5) * 0.001;
-
-                    // Operating expense impact
-                    simROA -= (Math.random() * 0.001);
-                }
+                    if (idx === 1) {
+                        simROA -= Math.random() * volatility; // NPL always negative impact
+                    } else if (idx === 4) {
+                        simROA -= Math.random() * volatility; // Expenses always negative impact
+                    } else {
+                        simROA += direction * volatility;
+                    }
+                });
 
                 results.push(simROA);
             }
@@ -737,6 +1114,105 @@
                         }
                     }
                 }
+            });
+        }
+
+        function runComparison(simCount, confidence) {
+            const banks = savedBanks.filter(b => selectedBankIds.includes(b.id));
+            if (banks.length === 0) return;
+
+            const comparisonData = [];
+            const colors = [
+                'rgba(236, 72, 153, 0.7)',
+                'rgba(59, 130, 246, 0.7)',
+                'rgba(16, 185, 129, 0.7)',
+                'rgba(245, 158, 11, 0.7)',
+                'rgba(139, 92, 246, 0.7)'
+            ];
+
+            banks.forEach((bank, idx) => {
+                const results = performSimulation(simCount, confidence, bank);
+                comparisonData.push({
+                    bank: bank,
+                    results: results,
+                    color: colors[idx % colors.length],
+                    riskRating: calculateRiskRating(results)
+                });
+            });
+
+            displayComparison(comparisonData);
+        }
+
+        function calculateRiskRating(results) {
+            const probLoss = results.probLoss;
+            const var95 = Math.abs(results.var95);
+
+            if (probLoss < 0.01 && var95 < 0.005) {
+                return { label: 'Low', class: 'badge-low' };
+            } else if (probLoss < 0.05 && var95 < 0.01) {
+                return { label: 'Medium', class: 'badge-medium' };
+            } else {
+                return { label: 'High', class: 'badge-high' };
+            }
+        }
+
+        function displayComparison(data) {
+            // Comparison chart
+            const ctx = document.getElementById('comparison-chart').getContext('2d');
+
+            if (comparisonChart) comparisonChart.destroy();
+
+            const labels = ['Expected ROA', '95% VaR', 'Sharpe Ratio', 'Capital Ratio'];
+            const datasets = data.map(d => ({
+                label: d.bank.name,
+                data: [
+                    d.results.mean * 100,
+                    d.results.var95 * 100,
+                    d.results.sharpe,
+                    d.bank.capitalRatio * 100
+                ],
+                backgroundColor: d.color,
+                borderColor: d.color.replace('0.7', '1'),
+                borderWidth: 1
+            }));
+
+            comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: { labels, datasets },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: true, position: 'top' },
+                        title: {
+                            display: true,
+                            text: 'Multi-Bank Risk Comparison'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: 'Value (%)' }
+                        }
+                    }
+                }
+            });
+
+            // Comparison table
+            const tbody = document.getElementById('comparison-table-body');
+            tbody.innerHTML = '';
+
+            data.forEach(d => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${d.bank.name}</td>
+                    <td>${formatCurrency(d.bank.totalAssets)}</td>
+                    <td>${(d.bank.capitalRatio * 100).toFixed(1)}%</td>
+                    <td>${(d.results.mean * 100).toFixed(2)}%</td>
+                    <td style="color: ${d.results.var95 < 0 ? '#ef4444' : '#10b981'}">${(d.results.var95 * 100).toFixed(2)}%</td>
+                    <td><span class="comparison-badge ${d.riskRating.class}">${d.riskRating.label}</span></td>
+                `;
+                tbody.appendChild(row);
             });
         }
     </script>
