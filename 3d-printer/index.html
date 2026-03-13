@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Connector Builder — Custom STL Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/examples/js/controls/OrbitControls.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #475569;
+            --primary-dark: #334155;
+            --primary-light: #64748b;
+            --secondary: #64748b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            min-height: 100vh;
+            color: var(--gray-800);
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover { opacity: 1; }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            transition: border-color 0.15s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.2);
+        }
+
+        /* Connection Type */
+        .connection-types {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .connection-type {
+            padding: 12px;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .connection-type:hover {
+            border-color: var(--primary);
+        }
+
+        .connection-type.active {
+            border-color: var(--primary);
+            background: rgba(100, 116, 139, 0.1);
+        }
+
+        .connection-type .icon {
+            font-size: 1.5rem;
+            margin-bottom: 4px;
+        }
+
+        .connection-type .name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+
+        /* Connection Config */
+        .connection-config {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+
+        .connection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .connection-number {
+            background: var(--primary);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .remove-connection {
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+
+        .remove-connection:hover {
+            color: var(--error);
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn:hover { transform: translateY(-1px); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+        }
+
+        .btn-block { width: 100%; justify-content: center; }
+        .btn-sm { padding: 6px 12px; font-size: 0.8rem; }
+
+        /* Content Area */
+        .content {
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 3D Preview */
+        .preview-container {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .preview-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        #canvas-container {
+            flex: 1;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            min-height: 400px;
+        }
+
+        #canvas-container canvas {
+            display: block;
+        }
+
+        /* Info Cards */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .info-card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+        }
+
+        .info-card .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .info-card .value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        /* System Tags */
+        .system-tags {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .system-tag {
+            background: var(--gray-100);
+            color: var(--gray-600);
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .system-tag.lego {
+            background: #fef3c7;
+            color: #d97706;
+        }
+
+        .system-tag.pvc {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--gray-200);
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span><img src="../assets/logo-3d-printer.svg" alt="" style="width: 24px; height: 24px; vertical-align: middle;"> 3D Connector Builder</span>
+        </h1>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Connection Type</h3>
+                <div class="connection-types">
+                    <div class="connection-type active" onclick="selectType(this, 'straight')">
+                        <div class="icon">—</div>
+                        <div class="name">Straight</div>
+                    </div>
+                    <div class="connection-type" onclick="selectType(this, 't-junction')">
+                        <div class="icon">⊥</div>
+                        <div class="name">T-Junction</div>
+                    </div>
+                    <div class="connection-type" onclick="selectType(this, 'y-junction')">
+                        <div class="icon">⨉</div>
+                        <div class="name">Y-Junction</div>
+                    </div>
+                    <div class="connection-type" onclick="selectType(this, 'corner')">
+                        <div class="icon">⌐</div>
+                        <div class="name">Corner</div>
+                    </div>
+                    <div class="connection-type" onclick="selectType(this, 'cross')">
+                        <div class="icon">+</div>
+                        <div class="name">Cross</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Connection Points</h3>
+                <div id="connections-container">
+                    <div class="connection-config">
+                        <div class="connection-header">
+                            <span class="connection-number">1</span>
+                        </div>
+                        <div class="form-group">
+                            <label>System Type</label>
+                            <select class="system-select" onchange="updatePreview()">
+                                <option value="lego-standard">LEGO Standard Brick</option>
+                                <option value="lego-technic">LEGO Technic Pin</option>
+                                <option value="pvc-half">PVC 1/2"</option>
+                                <option value="pvc-three-quarter">PVC 3/4"</option>
+                                <option value="pvc-one">PVC 1"</option>
+                                <option value="pvc-one-half">PVC 1.5"</option>
+                                <option value="pvc-two">PVC 2"</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="connection-config">
+                        <div class="connection-header">
+                            <span class="connection-number">2</span>
+                        </div>
+                        <div class="form-group">
+                            <label>System Type</label>
+                            <select class="system-select" onchange="updatePreview()">
+                                <option value="pvc-half">PVC 1/2"</option>
+                                <option value="pvc-three-quarter">PVC 3/4"</option>
+                                <option value="pvc-one">PVC 1"</option>
+                                <option value="pvc-one-half">PVC 1.5"</option>
+                                <option value="pvc-two">PVC 2"</option>
+                                <option value="lego-standard">LEGO Standard Brick</option>
+                                <option value="lego-technic">LEGO Technic Pin</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Advanced Settings</h3>
+                <div class="form-group">
+                    <label>Wall Thickness (mm)</label>
+                    <input type="number" id="wall-thickness" value="2" min="1" max="5" step="0.5">
+                </div>
+                <div class="form-group">
+                    <label>Tolerance (mm)</label>
+                    <input type="number" id="tolerance" value="0.2" min="0" max="1" step="0.1">
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="generateSTL()" style="margin-top: 20px;">
+                Generate STL File
+            </button>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+            <div class="preview-container">
+                <div class="preview-header">
+                    <h2>3D Preview</h2>
+                    <div>
+                        <button class="btn btn-secondary btn-sm" onclick="resetCamera()">Reset View</button>
+                    </div>
+                </div>
+                <div id="canvas-container"></div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <div class="label">Connection Type</div>
+                    <div class="value" id="info-type">Straight Join</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Systems Used</div>
+                    <div class="system-tags" id="info-systems">
+                        <span class="system-tag lego">LEGO</span>
+                        <span class="system-tag pvc">PVC</span>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Print Volume</div>
+                    <div class="value" id="info-volume">~15 cm³</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let scene, camera, renderer, controls, connector;
+        let currentType = 'straight';
+
+        // Initialize Three.js
+        function init() {
+            const container = document.getElementById('canvas-container');
+
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xf8fafc);
+
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                45,
+                container.clientWidth / container.clientHeight,
+                0.1,
+                1000
+            );
+            camera.position.set(50, 50, 50);
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+            directionalLight.position.set(50, 50, 50);
+            scene.add(directionalLight);
+
+            // Grid
+            const gridHelper = new THREE.GridHelper(100, 20, 0xcccccc, 0xe5e7eb);
+            scene.add(gridHelper);
+
+            // Create initial connector
+            createConnector();
+
+            // Animation loop
+            animate();
+
+            // Handle resize
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function createConnector() {
+            // Remove existing connector
+            if (connector) {
+                scene.remove(connector);
+            }
+
+            // Create new connector group
+            connector = new THREE.Group();
+
+            // Material
+            const material = new THREE.MeshLambertMaterial({
+                color: 0x64748b,
+                transparent: true,
+                opacity: 0.8
+            });
+
+            // Connection dimensions
+            const selectedSystems = Array.from(document.querySelectorAll('.system-select'))
+                .map(select => select.value);
+
+            // Create base connector based on type
+            const geometry = new THREE.BoxGeometry(20, 10, 20);
+            const mesh = new THREE.Mesh(geometry, material);
+            connector.add(mesh);
+
+            // Add connection points based on type
+            const pointGeometry = new THREE.CylinderGeometry(4, 4, 5, 32);
+            const pointMaterial = new THREE.MeshLambertMaterial({ color: 0x10b981 });
+
+            // Add connection points based on type
+            const positions = getConnectionPositions(currentType);
+            positions.forEach(pos => {
+                const point = new THREE.Mesh(pointGeometry, pointMaterial);
+                point.position.set(pos.x, pos.y, pos.z);
+                point.rotation.x = pos.rotationX || 0;
+                connector.add(point);
+            });
+
+            scene.add(connector);
+        }
+
+        function getConnectionPositions(type) {
+            switch(type) {
+                case 'straight':
+                    return [
+                        { x: -15, y: 0, z: 0, rotationX: 0 },
+                        { x: 15, y: 0, z: 0, rotationX: 0 }
+                    ];
+                case 't-junction':
+                    return [
+                        { x: -15, y: 0, z: 0 },
+                        { x: 15, y: 0, z: 0 },
+                        { x: 0, y: 0, z: -15, rotationX: Math.PI / 2 }
+                    ];
+                case 'y-junction':
+                    return [
+                        { x: -12, y: 0, z: -8 },
+                        { x: 12, y: 0, z: -8 },
+                        { x: 0, y: 0, z: 12 }
+                    ];
+                case 'corner':
+                    return [
+                        { x: -15, y: 0, z: 0 },
+                        { x: 0, y: 0, z: -15 }
+                    ];
+                case 'cross':
+                    return [
+                        { x: -15, y: 0, z: 0 },
+                        { x: 15, y: 0, z: 0 },
+                        { x: 0, y: 0, z: -15 },
+                        { x: 0, y: 0, z: 15 }
+                    ];
+                default:
+                    return [];
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            const container = document.getElementById('canvas-container');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+
+        function selectType(element, type) {
+            document.querySelectorAll('.connection-type').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+            currentType = type;
+            createConnector();
+            updateInfo();
+        }
+
+        function updatePreview() {
+            createConnector();
+            updateInfo();
+        }
+
+        function updateInfo() {
+            const typeNames = {
+                'straight': 'Straight Join',
+                't-junction': 'T-Junction',
+                'y-junction': 'Y-Junction',
+                'corner': 'Corner',
+                'cross': 'Cross Junction'
+            };
+
+            document.getElementById('info-type').textContent = typeNames[currentType];
+
+            const systems = new Set();
+            document.querySelectorAll('.system-select').forEach(select => {
+                const value = select.value;
+                if (value.includes('lego')) systems.add('lego');
+                if (value.includes('pvc')) systems.add('pvc');
+            });
+
+            const tagsContainer = document.getElementById('info-systems');
+            tagsContainer.innerHTML = '';
+            systems.forEach(system => {
+                const tag = document.createElement('span');
+                tag.className = `system-tag ${system}`;
+                tag.textContent = system.toUpperCase();
+                tagsContainer.appendChild(tag);
+            });
+        }
+
+        function resetCamera() {
+            camera.position.set(50, 50, 50);
+            camera.lookAt(0, 0, 0);
+            controls.reset();
+        }
+
+        function generateSTL() {
+            // Simple STL generation (ASCII format)
+            let stl = 'solid connector\n';
+
+            // Traverse all meshes in the connector
+            connector.traverse((child) => {
+                if (child instanceof THREE.Mesh) {
+                    const geometry = child.geometry;
+                    const positionAttribute = geometry.getAttribute('position');
+
+                    if (positionAttribute) {
+                        // Generate triangles
+                        for (let i = 0; i < positionAttribute.count; i += 3) {
+                            const vA = new THREE.Vector3().fromBufferAttribute(positionAttribute, i);
+                            const vB = new THREE.Vector3().fromBufferAttribute(positionAttribute, i + 1);
+                            const vC = new THREE.Vector3().fromBufferAttribute(positionAttribute, i + 2);
+
+                            // Apply mesh world matrix
+                            vA.applyMatrix4(child.matrixWorld);
+                            vB.applyMatrix4(child.matrixWorld);
+                            vC.applyMatrix4(child.matrixWorld);
+
+                            // Calculate normal
+                            const cb = new THREE.Vector3().subVectors(vC, vB);
+                            const ab = new THREE.Vector3().subVectors(vA, vB);
+                            const normal = new THREE.Vector3().crossVectors(cb, ab).normalize();
+
+                            stl += `  facet normal ${normal.x} ${normal.y} ${normal.z}\n`;
+                            stl += '    outer loop\n';
+                            stl += `      vertex ${vA.x} ${vA.y} ${vA.z}\n`;
+                            stl += `      vertex ${vB.x} ${vB.y} ${vB.z}\n`;
+                            stl += `      vertex ${vC.x} ${vC.y} ${vC.z}\n`;
+                            stl += '    endloop\n';
+                            stl += '  endfacet\n';
+                        }
+                    }
+                }
+            });
+
+            stl += 'endsolid connector\n';
+
+            // Download
+            const blob = new Blob([stl], { type: 'application/sla' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `connector-${currentType}-${Date.now()}.stl`;
+            link.click();
+
+            alert('STL file generated and downloading!\n\nNote: This is a simplified preview. For production use, you may want to refine the geometry in a CAD program.');
+        }
+
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

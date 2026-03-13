@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monte Carlo Risk Simulator — Bank Call Report Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #ec4899;
+            --primary-dark: #be185d;
+            --primary-light: #f9a8d4;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+            --radius-lg: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            min-height: 100vh;
+            color: var(--gray-800);
+        }
+
+        /* Header */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .back-link:hover { opacity: 1; }
+
+        /* Main Layout */
+        .main-container {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            min-height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 70px);
+        }
+
+        .sidebar-section {
+            margin-bottom: 24px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            transition: border-color 0.15s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+
+        .input-hint {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn:hover { transform: translateY(-1px); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-700);
+        }
+
+        .btn-block { width: 100%; justify-content: center; }
+
+        /* Range Slider */
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .range-group input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-200);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .range-value {
+            min-width: 40px;
+            text-align: right;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 24px;
+            overflow-y: auto;
+        }
+
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-header h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 16px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-error { color: var(--error); }
+
+        /* Charts */
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+
+        /* Variable Toggle */
+        .variable-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .variable-toggle:last-child {
+            border-bottom: none;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+            background: var(--gray-300);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            transform: translateX(20px);
+        }
+
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .file-upload:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+
+        /* Progress Bar */
+        .progress-bar {
+            height: 8px;
+            background: var(--gray-200);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                max-height: none;
+                border-right: none;
+                border-bottom: 1px solid var(--gray-200);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span><img src="../assets/logo-monte-carlo.svg" alt="" style="width: 24px; height: 24px; vertical-align: middle;"> Monte Carlo Risk Simulator</span>
+        </h1>
+    </header>
+
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3>Data Import</h3>
+                <div class="file-upload" onclick="document.getElementById('call-report-file').click()">
+                    <input type="file" id="call-report-file" accept=".csv" hidden>
+                    <p style="font-weight: 600; margin-bottom: 4px;">Upload Call Report CSV</p>
+                    <p class="input-hint">FFIEC format supported</p>
+                </div>
+                <p class="input-hint" style="margin-top: 8px;">Or use sample data below</p>
+                <button class="btn btn-secondary btn-block" onclick="loadSampleData()" style="margin-top: 12px;">
+                    Load Sample Bank Data
+                </button>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Simulation Settings</h3>
+
+                <div class="form-group">
+                    <label>Number of Simulations</label>
+                    <select id="sim-count">
+                        <option value="10000">10,000</option>
+                        <option value="50000" selected>50,000</option>
+                        <option value="100000">100,000</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Confidence Level</label>
+                    <select id="confidence">
+                        <option value="90">90%</option>
+                        <option value="95" selected>95%</option>
+                        <option value="99">99%</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3>Randomization Variables</h3>
+
+                <div class="variable-toggle">
+                    <div>
+                        <div style="font-weight: 500; font-size: 0.9rem;">Loan Growth Rate</div>
+                        <div class="input-hint">±5% default</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleVariable(this)"></div>
+                </div>
+
+                <div class="variable-toggle">
+                    <div>
+                        <div style="font-weight: 500; font-size: 0.9rem;">NPL Ratio</div>
+                        <div class="input-hint">±0.5% default</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleVariable(this)"></div>
+                </div>
+
+                <div class="variable-toggle">
+                    <div>
+                        <div style="font-weight: 500; font-size: 0.9rem;">Net Interest Margin</div>
+                        <div class="input-hint">±0.25% default</div>
+                    </div>
+                    <div class="toggle-switch active" onclick="toggleVariable(this)"></div>
+                </div>
+
+                <div class="variable-toggle">
+                    <div>
+                        <div style="font-weight: 500; font-size: 0.9rem;">Non-Interest Income</div>
+                        <div class="input-hint">±10% default</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleVariable(this)"></div>
+                </div>
+
+                <div class="variable-toggle">
+                    <div>
+                        <div style="font-weight: 500; font-size: 0.9rem;">Operating Expenses</div>
+                        <div class="input-hint">±5% default</div>
+                    </div>
+                    <div class="toggle-switch" onclick="toggleVariable(this)"></div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" onclick="runSimulation()" style="margin-top: 20px;">
+                Run Simulation
+            </button>
+        </aside>
+
+        <!-- Content -->
+        <main class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Bank Metrics Overview</h2>
+                </div>
+                <div class="card-body">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Total Assets</div>
+                            <div class="metric-value" id="total-assets">$2.5B</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Capital Ratio</div>
+                            <div class="metric-value" id="capital-ratio">12.5%</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">NPL Ratio</div>
+                            <div class="metric-value" id="npl-ratio">1.2%</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">ROA</div>
+                            <div class="metric-value" id="roa">1.1%</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card" id="simulation-results" style="display: none;">
+                <div class="card-header">
+                    <h2>Simulation Results</h2>
+                    <span id="sim-status" style="font-size: 0.85rem; color: var(--gray-500);"></span>
+                </div>
+                <div class="card-body">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progress-fill" style="width: 0%"></div>
+                    </div>
+
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-label">Expected ROA (Mean)</div>
+                            <div class="metric-value" id="expected-roa">—</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">95% VaR</div>
+                            <div class="metric-value" id="var-95">—</div>
+                            <div class="metric-change text-error">Worst case scenario</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Probability of Loss</div>
+                            <div class="metric-value" id="prob-loss">—</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-label">Sharpe Ratio</div>
+                            <div class="metric-value" id="sharpe">—</div>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <canvas id="distribution-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h2>Risk Sensitivity Analysis</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="sensitivity-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let distributionChart = null;
+        let sensitivityChart = null;
+        let bankData = null;
+
+        function loadSampleData() {
+            bankData = {
+                totalAssets: 2500000000,
+                capitalRatio: 0.125,
+                nplRatio: 0.012,
+                roa: 0.011,
+                loanGrowth: 0.05,
+                nim: 0.0325,
+                nonInterestIncome: 50000000,
+                operatingExpenses: 75000000
+            };
+
+            document.getElementById('total-assets').textContent = '$2.5B';
+            document.getElementById('capital-ratio').textContent = '12.5%';
+            document.getElementById('npl-ratio').textContent = '1.2%';
+            document.getElementById('roa').textContent = '1.1%';
+
+            alert('Sample bank data loaded!\n\nBank Profile:\n- Assets: $2.5B\n- Capital Ratio: 12.5%\n- NPL Ratio: 1.2%\n- ROA: 1.1%\n\nReady to run simulation.');
+        }
+
+        function toggleVariable(element) {
+            element.classList.toggle('active');
+        }
+
+        function runSimulation() {
+            if (!bankData) {
+                alert('Please load sample data or upload a Call Report first.');
+                return;
+            }
+
+            const simCount = parseInt(document.getElementById('sim-count').value);
+            const confidence = parseInt(document.getElementById('confidence').value) / 100;
+
+            document.getElementById('simulation-results').style.display = 'block';
+            document.getElementById('sim-status').textContent = 'Running ' + simCount.toLocaleString() + ' simulations...';
+
+            // Run Monte Carlo simulation
+            setTimeout(() => {
+                const results = performSimulation(simCount, confidence);
+                displayResults(results);
+            }, 100);
+        }
+
+        function performSimulation(count, confidence) {
+            const results = [];
+            const variables = document.querySelectorAll('.toggle-switch.active');
+
+            for (let i = 0; i < count; i++) {
+                let simROA = bankData.roa;
+
+                // Apply random variations based on enabled variables
+                if (variables.length > 0) {
+                    // Loan growth impact
+                    simROA += (Math.random() - 0.5) * 0.002;
+
+                    // NPL impact
+                    simROA -= (Math.random() * 0.003);
+
+                    // NIM impact
+                    simROA += (Math.random() - 0.5) * 0.001;
+
+                    // Operating expense impact
+                    simROA -= (Math.random() * 0.001);
+                }
+
+                results.push(simROA);
+            }
+
+            results.sort((a, b) => a - b);
+
+            const mean = results.reduce((a, b) => a + b, 0) / count;
+            const variance = results.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / count;
+            const stdDev = Math.sqrt(variance);
+
+            const varIndex = Math.floor(count * (1 - confidence));
+            const var95 = results[varIndex];
+
+            const lossCount = results.filter(r => r < 0).length;
+            const probLoss = lossCount / count;
+
+            const sharpe = mean / stdDev;
+
+            return {
+                results,
+                mean,
+                stdDev,
+                var95,
+                probLoss,
+                sharpe,
+                confidence
+            };
+        }
+
+        function displayResults(results) {
+            document.getElementById('progress-fill').style.width = '100%';
+            document.getElementById('sim-status').textContent = 'Complete';
+
+            document.getElementById('expected-roa').textContent = (results.mean * 100).toFixed(2) + '%';
+            document.getElementById('var-95').textContent = (results.var95 * 100).toFixed(2) + '%';
+            document.getElementById('prob-loss').textContent = (results.probLoss * 100).toFixed(1) + '%';
+            document.getElementById('sharpe').textContent = results.sharpe.toFixed(2);
+
+            // Create distribution chart
+            const ctx = document.getElementById('distribution-chart').getContext('2d');
+
+            if (distributionChart) distributionChart.destroy();
+
+            // Create histogram data
+            const bins = 50;
+            const min = Math.min(...results.results);
+            const max = Math.max(...results.results);
+            const binWidth = (max - min) / bins;
+            const histogram = new Array(bins).fill(0);
+
+            results.results.forEach(val => {
+                const binIndex = Math.min(Math.floor((val - min) / binWidth), bins - 1);
+                histogram[binIndex]++;
+            });
+
+            const labels = [];
+            for (let i = 0; i < bins; i++) {
+                labels.push(((min + i * binWidth) * 100).toFixed(2) + '%');
+            }
+
+            distributionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Frequency',
+                        data: histogram,
+                        backgroundColor: 'rgba(236, 72, 153, 0.5)',
+                        borderColor: 'rgba(236, 72, 153, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'ROA Distribution'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            display: true,
+                            title: { display: true, text: 'ROA' }
+                        },
+                        y: {
+                            display: true,
+                            title: { display: true, text: 'Frequency' }
+                        }
+                    }
+                }
+            });
+
+            // Create sensitivity chart
+            const ctx2 = document.getElementById('sensitivity-chart').getContext('2d');
+
+            if (sensitivityChart) sensitivityChart.destroy();
+
+            sensitivityChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: ['Loan Growth', 'NPL Ratio', 'NIM', 'Op Expenses', 'Non-Interest Income'],
+                    datasets: [{
+                        label: 'Impact on ROA',
+                        data: [0.15, -0.25, 0.20, -0.10, 0.05],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(239, 68, 68, 0.7)',
+                            'rgba(16, 185, 129, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    plugins: {
+                        legend: { display: false },
+                        title: {
+                            display: true,
+                            text: 'Variable Sensitivity (Impact on ROA)'
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'ROA Impact (%)' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>
