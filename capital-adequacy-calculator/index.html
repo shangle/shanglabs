@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capital Adequacy Calculator — Shanglabs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .content {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+        }
+
+        .card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+        }
+
+        .range-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .range-group input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: var(--gray-200);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .range-group input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+        }
+
+        .range-value {
+            min-width: 50px;
+            text-align: right;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--gray-700);
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border-radius: var(--radius);
+            padding: 16px;
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .text-success { color: var(--success); }
+        .text-warning { color: var(--warning); }
+        .text-error { color: var(--error); }
+
+        .chart-container {
+            height: 300px;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .threshold-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef9c3; color: #854d0e; }
+        .badge-error { background: #fee2e2; color: #991b1b; }
+
+        .summary-section {
+            background: var(--gray-50);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-top: 24px;
+        }
+
+        .summary-section h3 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 12px;
+        }
+
+        .summary-list {
+            list-style: none;
+        }
+
+        .summary-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .summary-list li:last-child {
+            border-bottom: none;
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span>💰 Capital Adequacy Calculator</span>
+        </h1>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Bank Assets</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Risk-Weighted Assets ($M)</label>
+                    <input type="number" id="rwa" value="2500" step="100" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Total Assets ($M)</label>
+                    <input type="number" id="total-assets" value="3000" step="100" onchange="calculate()">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Capital Components</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Common Equity Tier 1 ($M)</label>
+                    <input type="number" id="cet1" value="262.5" step="10" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Additional Tier 1 Capital ($M)</label>
+                    <input type="number" id="additional-t1" value="15" step="5" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Total Tier 1 Capital ($M)</label>
+                    <input type="number" id="tier1" value="277.5" step="10" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Total Capital ($M)</label>
+                    <input type="number" id="total-capital" value="375" step="10" onchange="calculate()">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Requirements</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Tier 1 Minimum (%)</label>
+                    <div class="range-group">
+                        <input type="range" id="t1-min" min="4" max="10" step="0.5" value="6" onchange="calculate()">
+                        <span class="range-value" id="t1-min-value">6%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Capital Minimum (%)</label>
+                    <div class="range-group">
+                        <input type="range" id="tc-min" min="6" max="12" step="0.5" value="8" onchange="calculate()">
+                        <span class="range-value" id="tc-min-value">8%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Leverage Ratio Limit (%)</label>
+                    <div class="range-group">
+                        <input type="range" id="leverage-max" min="3" max="8" step="0.5" value="5" onchange="calculate()">
+                        <span class="range-value" id="leverage-max-value">5%</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="exportPDF()" style="width: 100%;">
+                📤 Export Report
+            </button>
+        </aside>
+
+        <main class="content">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Tier 1 Ratio</div>
+                    <div class="metric-value" id="tier1-ratio">11.1%</div>
+                    <div class="metric-change text-success" id="tier1-status">Well Capitalized</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Total Capital Ratio</div>
+                    <div class="metric-value" id="tc-ratio">15.0%</div>
+                    <div class="metric-change text-success" id="tc-status">Well Capitalized</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Leverage Ratio</div>
+                    <div class="metric-value" id="leverage-ratio">9.3%</div>
+                    <div class="metric-change text-warning" id="leverage-status">Above Limit</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Capital Surplus</div>
+                    <div class="metric-value" id="capital-surplus">$175M</div>
+                    <div class="metric-change text-success">+7.0% buffer</div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Capital Ratios vs Requirements</h3>
+                <div class="chart-container">
+                    <canvas id="ratios-chart"></canvas>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Capital Adequacy Trend</h3>
+                <div class="chart-container">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </div>
+
+            <div class="summary-section">
+                <h3>Capital Adequacy Summary</h3>
+                <ul class="summary-list">
+                    <li>
+                        <span>Tier 1 Ratio</span>
+                        <span id="t1-summary">11.1% vs 6% minimum ✅</span>
+                    </li>
+                    <li>
+                        <span>Total Capital Ratio</span>
+                        <span id="tc-summary">15.0% vs 8% minimum ✅</span>
+                    </li>
+                    <li>
+                        <span>Leverage Ratio</span>
+                        <span id="leverage-summary">9.3% vs 5% maximum ⚠️</span>
+                    </li>
+                    <li>
+                        <span>Capital Surplus</span>
+                        <span id="surplus-summary">$175M (7.0% buffer)</span>
+                    </li>
+                </ul>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let ratiosChart = null;
+        let trendChart = null;
+
+        function calculate() {
+            const rwa = parseFloat(document.getElementById('rwa').value) * 1000000;
+            const totalAssets = parseFloat(document.getElementById('total-assets').value) * 1000000;
+            const cet1 = parseFloat(document.getElementById('cet1').value) * 1000000;
+            const additionalT1 = parseFloat(document.getElementById('additional-t1').value) * 1000000;
+            const tier1 = parseFloat(document.getElementById('tier1').value) * 1000000;
+            const totalCapital = parseFloat(document.getElementById('total-capital').value) * 1000000;
+
+            const t1Min = parseFloat(document.getElementById('t1-min').value) / 100;
+            const tcMin = parseFloat(document.getElementById('tc-min').value) / 100;
+            const leverageMax = parseFloat(document.getElementById('leverage-max').value) / 100;
+
+            document.getElementById('t1-min-value').textContent = t1Min * 100 + '%';
+            document.getElementById('tc-min-value').textContent = tcMin * 100 + '%';
+            document.getElementById('leverage-max-value').textContent = leverageMax * 100 + '%';
+
+            const tier1Ratio = tier1 / rwa;
+            const tcRatio = totalCapital / rwa;
+            const leverageRatio = tier1 / totalAssets;
+            const capitalSurplus = totalCapital - (rwa * tcMin);
+
+            document.getElementById('tier1-ratio').textContent = (tier1Ratio * 100).toFixed(1) + '%';
+            document.getElementById('tc-ratio').textContent = (tcRatio * 100).toFixed(1) + '%';
+            document.getElementById('leverage-ratio').textContent = (leverageRatio * 100).toFixed(1) + '%';
+            document.getElementById('capital-surplus').textContent = formatCurrency(capitalSurplus);
+
+            // Status badges
+            const t1Status = document.getElementById('tier1-status');
+            const tcStatus = document.getElementById('tc-status');
+            const leverageStatus = document.getElementById('leverage-status');
+
+            if (tier1Ratio >= t1Min) {
+                t1Status.textContent = 'Well Capitalized';
+                t1Status.className = 'metric-change text-success';
+            } else {
+                t1Status.textContent = 'Below Minimum';
+                t1Status.className = 'metric-change text-error';
+            }
+
+            if (tcRatio >= tcMin) {
+                tcStatus.textContent = 'Well Capitalized';
+                tcStatus.className = 'metric-change text-success';
+            } else {
+                tcStatus.textContent = 'Below Minimum';
+                tcStatus.className = 'metric-change text-error';
+            }
+
+            if (leverageRatio <= leverageMax) {
+                leverageStatus.textContent = 'Within Limit';
+                leverageStatus.className = 'metric-change text-success';
+            } else {
+                leverageStatus.textContent = 'Above Limit';
+                leverageStatus.className = 'metric-change text-error';
+            }
+
+            // Summary
+            document.getElementById('t1-summary').textContent = 
+                (tier1Ratio * 100).toFixed(1) + '% vs ' + (t1Min * 100).toFixed(1) + '% minimum ' +
+                (tier1Ratio >= t1Min ? '✅' : '❌');
+
+            document.getElementById('tc-summary').textContent =
+                (tcRatio * 100).toFixed(1) + '% vs ' + (tcMin * 100).toFixed(1) + '% minimum ' +
+                (tcRatio >= tcMin ? '✅' : '❌');
+
+            document.getElementById('leverage-summary').textContent =
+                (leverageRatio * 100).toFixed(1) + '% vs ' + (leverageMax * 100).toFixed(1) + '% maximum ' +
+                (leverageRatio <= leverageMax ? '✅' : '❌');
+
+            document.getElementById('surplus-summary').textContent =
+                formatCurrency(capitalSurplus) + ' (' + ((capitalSurplus / (rwa * tcMin)) * 100).toFixed(1) + '% buffer)';
+
+            document.querySelector('#capital-surplus + .metric-change').className =
+                'metric-change ' + (capitalSurplus >= 0 ? 'text-success' : 'text-error');
+
+            renderCharts(tier1Ratio, tcRatio, leverageRatio, t1Min, tcMin, leverageMax);
+        }
+
+        function formatCurrency(value) {
+            if (value >= 1000000) {
+                return '$' + (value / 1000000).toFixed(1) + 'M';
+            }
+            return '$' + value.toLocaleString();
+        }
+
+        function renderCharts(tier1Ratio, tcRatio, leverageRatio, t1Min, tcMin, leverageMax) {
+            if (ratiosChart) ratiosChart.destroy();
+            ratiosChart = new Chart(document.getElementById('ratios-chart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Tier 1 Ratio', 'Total Capital Ratio', 'Leverage Ratio'],
+                    datasets: [{
+                        label: 'Current',
+                        data: [tier1Ratio * 100, tcRatio * 100, leverageRatio * 100],
+                        backgroundColor: [
+                            tier1Ratio >= t1Min ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)',
+                            tcRatio >= tcMin ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)',
+                            leverageRatio <= leverageMax ? 'rgba(16, 185, 129, 0.7)' : 'rgba(239, 68, 68, 0.7)'
+                        ]
+                    }, {
+                        label: 'Minimum/Maximum',
+                        data: [t1Min * 100, tcMin * 100, leverageMax * 100],
+                        borderColor: '#ef4444',
+                        borderDash: [5, 5],
+                        type: 'line',
+                        fill: false
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+                }
+            });
+
+            if (trendChart) trendChart.destroy();
+            trendChart = new Chart(document.getElementById('trend-chart'), {
+                type: 'line',
+                data: {
+                    labels: ['Q1 2024', 'Q2 2024', 'Q3 2024', 'Q4 2024', 'Q1 2025'],
+                    datasets: [{
+                        label: 'Tier 1 Ratio',
+                        data: [10.5, 10.8, 11.0, 11.1, tier1Ratio * 100],
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Total Capital Ratio',
+                        data: [14.0, 14.5, 14.8, 15.0, tcRatio * 100],
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+                }
+            });
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.text('Capital Adequacy Report', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Generated on: ' + new Date().toLocaleDateString(), 20, 30);
+
+            const rwa = parseFloat(document.getElementById('rwa').value);
+            const tier1Ratio = parseFloat(document.getElementById('tier1-ratio').textContent);
+            const tcRatio = parseFloat(document.getElementById('tc-ratio').textContent);
+            const leverageRatio = parseFloat(document.getElementById('leverage-ratio').textContent);
+            const capitalSurplus = document.getElementById('capital-surplus').textContent;
+
+            doc.setFontSize(14);
+            doc.text('Capital Metrics', 20, 45);
+            doc.setFontSize(11);
+
+            let y = 55;
+            doc.text(`Risk-Weighted Assets: $${rwa}M`, 25, y); y += 7;
+            doc.text(`Tier 1 Capital: $${parseFloat(document.getElementById('tier1').value)}M`, 25, y); y += 7;
+            doc.text(`Total Capital: $${parseFloat(document.getElementById('total-capital').value)}M`, 25, y); y += 7;
+            doc.text(`Tier 1 Ratio: ${tier1Ratio}`, 25, y); y += 7;
+            doc.text(`Total Capital Ratio: ${tcRatio}`, 25, y); y += 7;
+            doc.text(`Leverage Ratio: ${leverageRatio}`, 25, y); y += 7;
+            doc.text(`Capital Surplus: ${capitalSurplus}`, 25, y); y += 15;
+
+            doc.setFontSize(14);
+            doc.text('Regulatory Requirements', 20, y); y += 10;
+            doc.setFontSize(11);
+
+            doc.text(`Tier 1 Minimum: ${document.getElementById('t1-min-value').textContent}`, 25, y); y += 7;
+            doc.text(`Total Capital Minimum: ${document.getElementById('tc-min-value').textContent}`, 25, y); y += 7;
+            doc.text(`Leverage Ratio Maximum: ${document.getElementById('leverage-max-value').textContent}`, 25, y);
+
+            doc.save('capital-adequacy-report.pdf');
+        }
+
+        calculate();
+    </script>
+</body>
+</html>
