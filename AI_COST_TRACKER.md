@@ -83,6 +83,20 @@ This tracks ONLY AI token usage and model inference time - NOT human effort, set
 **Status:** ✅ Complete
 **Total AI Processing:** ~100K tokens (~$0.06)
 
+### Monte Carlo Simulator
+**Status:** ✅ Complete (NEW - March 14, 2026)
+**Total AI Processing:** ~800K tokens (~$0.48)
+**AI Processing Timeline:**
+- 2026-03-14: Full implementation (~800K tokens)
+- Features: Call Report import, 10K-100K simulations, 5 variables, charts
+
+### 3D Printer Connector Builder
+**Status:** ✅ Complete (NEW - March 14, 2026)
+**Total AI Processing:** ~750K tokens (~$0.45)
+**AI Processing Timeline:**
+- 2026-03-14: Full implementation (~750K tokens)
+- Features: 5 connection types, LEGO/PVC support, Three.js preview, STL export
+
 ---
 
 ## App Summaries
@@ -90,11 +104,11 @@ This tracks ONLY AI token usage and model inference time - NOT human effort, set
 ### Total Platform Cost (All Apps)
 | Metric | Value |
 |--------|-------|
-| Total AI Tokens Processed | ~7,250,000 tokens |
-| Total AI Processing Cost | ~$4.35 |
-| Number of Apps | 10 (including legal page) |
+| Total AI Tokens Processed | ~8,800,000 tokens |
+| Total AI Processing Cost | ~$5.28 |
+| Number of Apps | 12 (including legal page) |
 | Average Cost per App | ~$0.44 |
-| Average Tokens per App | ~725,000 tokens |
+| Average Tokens per App | ~733,000 tokens |
 
 ### What This Tracks
 ✅ **INCLUDED:**

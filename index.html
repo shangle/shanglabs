@@ -163,40 +163,64 @@
             font-size: 2.5rem;
             text-align: center;
             font-weight: 800;
-            margin-bottom: 60px;
+            margin-bottom: 40px;
             color: var(--gray-900);
         }
 
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
+        .why-content {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .why-intro {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .why-tagline {
+            font-size: 1.4rem;
+            color: var(--gray-600);
+            line-height: 1.6;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .why-list {
+            display: flex;
+            flex-direction: column;
             gap: 40px;
         }
 
-        .feature-card {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            text-align: center;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-            transition: transform 0.3s, box-shadow 0.3s;
+        .why-item {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
         }
 
-        .feature-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.12);
+        .why-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            flex-shrink: 0;
+            width: 80px;
+            line-height: 1;
         }
 
-        .feature-icon {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 20px;
-        }
-
-        .feature-card h3 {
-            font-size: 1.3rem;
+        .why-text h3 {
+            font-size: 1.25rem;
             font-weight: 700;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
+            color: var(--gray-900);
+        }
+
+        .why-text p {
+            color: var(--gray-600);
+            line-height: 1.7;
+            font-size: 1rem;
+        }
             color: var(--gray-900);
         }
 
@@ -464,6 +488,8 @@
         @media (max-width: 900px) {
             .stats-bar { grid-template-columns: repeat(2, 1fr); }
             .feature-grid { grid-template-columns: repeat(2, 1fr); }
+            .why-item { flex-direction: column; gap: 12px; }
+            .why-number { font-size: 2rem; width: auto; }
             .apps-grid { grid-template-columns: repeat(2, 1fr); }
             .pricing-cards { grid-template-columns: 1fr; }
             .footer-grid { grid-template-columns: 1fr 1fr; }
@@ -521,36 +547,60 @@
 
     <section id="why" class="features">
         <h2>Why Shanglabs</h2>
-        <div class="feature-grid">
-            <div class="feature-card">
-                <img src="assets/logo-shanglabs.svg" alt="" class="feature-icon">
-                <h3>Your Data Stays Yours</h3>
-                <p>100% client-side processing. Your files never leave your browser. No accounts, no tracking, no data collection.</p>
+
+        <div class="why-content">
+            <div class="why-intro">
+                <p class="why-tagline">We built Shanglabs because existing tools were either too expensive, too complex, or required giving up your data.</p>
             </div>
-            <div class="feature-card">
-                <img src="assets/logo-finance.svg" alt="" class="feature-icon">
-                <h3>Instant Performance</h3>
-                <p>No signup. No loading screens. No waiting. Just results. Open any tool and get going in seconds.</p>
-            </div>
-            <div class="feature-card">
-                <img src="assets/logo-cashflow.svg" alt="" class="feature-icon">
-                <h3>Fair Pricing</h3>
-                <p>Free web tools forever. Optional downloads at transparent prices. $13/mo unlocks everything.</p>
-            </div>
-            <div class="feature-card">
-                <img src="assets/logo-nacha.svg" alt="" class="feature-icon">
-                <h3>Professional Quality</h3>
-                <p>Built with enterprise standards. Accurate calculations, beautiful charts, robust validation.</p>
-            </div>
-            <div class="feature-card">
-                <img src="assets/logo-qr.svg" alt="" class="feature-icon">
-                <h3>Open Source</h3>
-                <p>Transparent code on GitHub. See exactly how your data is processed. Trust through transparency.</p>
-            </div>
-            <div class="feature-card">
-                <img src="assets/logo-budget.svg" alt="" class="feature-icon">
-                <h3>Always Improving</h3>
-                <p>Regular updates, new tools, community-driven features. Your feedback shapes development.</p>
+
+            <div class="why-list">
+                <div class="why-item">
+                    <div class="why-number">01</div>
+                    <div class="why-text">
+                        <h3>Privacy by Design</h3>
+                        <p>All processing happens in your browser. Your files never leave your device. No accounts required, no tracking, no data collection—ever.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">02</div>
+                    <div class="why-text">
+                        <h3>Instant Access</h3>
+                        <p>No signup screens. No loading spinners. No waiting. Open any tool and get results in seconds. Pure client-side speed.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">03</div>
+                    <div class="why-text">
+                        <h3>Transparent Economics</h3>
+                        <p>Free web tools forever. Optional downloads at honest prices. Our AI development costs are public—most apps cost under $1 to build.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">04</div>
+                    <div class="why-text">
+                        <h3>Professional Standards</h3>
+                        <p>Enterprise-grade accuracy and validation. Built with the same rigor as commercial software, but accessible to everyone.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">05</div>
+                    <div class="why-text">
+                        <h3>Open & Accountable</h3>
+                        <p>Code is visible on GitHub. See exactly how your data is processed. Trust through transparency, not marketing claims.</p>
+                    </div>
+                </div>
+
+                <div class="why-item">
+                    <div class="why-number">06</div>
+                    <div class="why-text">
+                        <h3>Community Driven</h3>
+                        <p>Your feedback shapes development. Request features, report bugs, suggest improvements. We build what you need.</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
