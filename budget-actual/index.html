@@ -10,7 +10,7 @@
     <div class="container">
         <header>
             <a href="../" class="back-link">← Back to Shanglabs</a>
-            <h1>📊 Budget vs Actual Tracker</h1>
+            <h1><img src="../assets/logo-budget.svg" alt="" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 8px;">Budget vs Actual Tracker</h1>
             <p class="subtitle">Upload your budget and actual spending files to analyze variance</p>
         </header>
 
@@ -18,7 +18,7 @@
         <section class="upload-section">
             <div class="upload-grid">
                 <div class="upload-card">
-                    <h2>📋 Budget File</h2>
+                    <h2>Budget File</h2>
                     <p class="help-text">CSV file with planned amounts</p>
                     <div class="file-drop-zone" id="budgetDropZone">
                         <input type="file" id="budgetFile" accept=".csv" hidden>
@@ -99,18 +99,18 @@ HR,Recruitment,35000</pre>
             <!-- Charts -->
             <div class="charts-container">
                 <div class="chart-card">
-                    <h3>📊 Budget vs Actual by Category</h3>
+                    <h3>Budget vs Actual by Category</h3>
                     <div id="chartCategory" class="chart"></div>
                 </div>
                 <div class="chart-card">
-                    <h3>📊 Budget vs Actual by Department</h3>
+                    <h3>Budget vs Actual by Department</h3>
                     <div id="chartDepartment" class="chart"></div>
                 </div>
             </div>
 
             <!-- Detailed Table -->
             <div class="table-section">
-                <h3>📋 Detailed Variance Report</h3>
+                <h3>Detailed Variance Report</h3>
                 <div class="table-controls">
                     <button id="filterAll" class="filter-btn active">All</button>
                     <button id="filterOver" class="filter-btn">Over Budget</button>
