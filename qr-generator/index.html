@@ -736,11 +736,8 @@ https://example3.com"></textarea>
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('QR Generator initializing...');
-
             // Check if QRCode library loaded
             if (typeof QRCode === 'undefined') {
-                console.error('QRCode library not loaded!');
                 document.querySelector('#qr-preview').innerHTML = '<p style="color: red;">QRCode library failed to load. Please refresh the page.</p>';
                 return;
             }
