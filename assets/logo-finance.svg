@@ -1,0 +1,26 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Financial Analysis - Chart with Trend Line -->
+  <defs>
+    <linearGradient id="finance-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#10b981;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#059669;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <rect width="80" height="80" rx="16" fill="url(#finance-grad)"/>
+
+  <!-- Chart Axes -->
+  <line x1="18" y1="60" x2="62" y2="60" stroke="white" stroke-width="2"/>
+  <line x1="18" y1="60" x2="18" y2="20" stroke="white" stroke-width="2"/>
+
+  <!-- Bar Chart -->
+  <rect x="24" y="45" width="8" height="15" rx="2" fill="rgba(255,255,255,0.7)"/>
+  <rect x="36" y="35" width="8" height="25" rx="2" fill="rgba(255,255,255,0.7)"/>
+  <rect x="48" y="28" width="8" height="32" rx="2" fill="rgba(255,255,255,0.7)"/>
+
+  <!-- Trend Line -->
+  <path d="M26 42 L40 32 L54 24" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
+
+  <!-- Trend Arrow -->
+  <polygon points="58,20 52,22 54,26" fill="white"/>
+</svg>
