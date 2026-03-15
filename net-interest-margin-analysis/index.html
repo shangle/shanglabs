@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Net Interest Margin Analysis — Shanglabs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 24px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .content {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+        }
+
+        .card {
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius);
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--gray-700);
+            margin-bottom: 6px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius);
+            font-size: 0.9rem;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--gray-50) 0%, white 100%);
+            border-radius: var(--radius);
+            padding: 16px;
+            border-left: 4px solid var(--primary);
+            box-shadow: var(--shadow);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .metric-change {
+            font-size: 0.8rem;
+            margin-top: 4px;
+        }
+
+        .text-success { color: var(--success); }
+        .text-error { color: var(--error); }
+        .text-warning { color: var(--warning); }
+
+        .chart-container {
+            height: 350px;
+            position: relative;
+            margin-bottom: 24px;
+        }
+
+        .table-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background: var(--gray-50);
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--gray-700);
+            border-bottom: 2px solid var(--gray-200);
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
+        @media (max-width: 900px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span>📈 Net Interest Margin Analysis</span>
+        </h1>
+    </header>
+
+    <div class="container">
+        <aside class="sidebar">
+            <div class="card">
+                <div class="card-header">
+                    <h3>Income Components</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Interest Income ($K)</label>
+                    <input type="number" id="interest-income" value="85" step="1" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Non-Interest Income ($K)</label>
+                    <input type="number" id="non-interest-income" value="12" step="1" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Other Income ($K)</label>
+                    <input type="number" id="other-income" value="8" step="1" onchange="calculate()">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Expense Components</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Interest Expense ($K)</label>
+                    <input type="number" id="interest-expense" value="45" step="1" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Non-Interest Expense ($K)</label>
+                    <input type="number" id="non-interest-expense" value="35" step="1" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Provision Expense ($K)</label>
+                    <input type="number" id="provision-expense" value="5" step="1" onchange="calculate()">
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3>Balance Sheet</h3>
+                </div>
+
+                <div class="form-group">
+                    <label>Total Assets ($K)</label>
+                    <input type="number" id="total-assets" value="1200" step="10" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Earning Assets ($K)</label>
+                    <input type="number" id="earning-assets" value="800" step="10" onchange="calculate()">
+                </div>
+
+                <div class="form-group">
+                    <label>Average Total Assets ($K)</label>
+                    <input type="number" id="avg-assets" value="1000" step="10" onchange="calculate()">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="exportPDF()" style="width: 100%;">
+                📤 Export Report
+            </button>
+        </aside>
+
+        <main class="content">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-label">Net Interest Margin</div>
+                    <div class="metric-value" id="nim">3.25%</div>
+                    <div class="metric-change text-success">+0.15% vs prior</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Net Interest Income</div>
+                    <div class="metric-value" id="net-interest-income">$40K</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Yield on Earning Assets</div>
+                    <div class="metric-value" id="yield">5.0%</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-label">Interest Expense Ratio</div>
+                    <div class="metric-value" id="expense-ratio">52.9%</div>
+                    <div class="metric-change text-warning">+2.9% vs last quarter</div>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Margin Components Breakdown</h3>
+                <div class="chart-container">
+                    <canvas id="breakdown-chart"></canvas>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Margin Trend (12 Quarters)</h3>
+                <div class="chart-container">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </div>
+
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-700); margin-bottom: 12px;">Peer Comparison</h3>
+                <div class="chart-container">
+                    <canvas id="peer-chart"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let breakdownChart = null;
+        let trendChart = null;
+        let peerChart = null;
+
+        function calculate() {
+            const interestIncome = parseFloat(document.getElementById('interest-income').value);
+            const nonInterestIncome = parseFloat(document.getElementById('non-interest-income').value);
+            const otherIncome = parseFloat(document.getElementById('other-income').value);
+
+            const interestExpense = parseFloat(document.getElementById('interest-expense').value);
+            const nonInterestExpense = parseFloat(document.getElementById('non-interest-expense').value);
+            const provisionExpense = parseFloat(document.getElementById('provision-expense').value);
+
+            const totalIncome = interestIncome + nonInterestIncome + otherIncome;
+            const totalExpense = interestExpense + nonInterestExpense + provisionExpense;
+            const netInterestIncome = totalIncome - totalExpense;
+
+            const totalAssets = parseFloat(document.getElementById('total-assets').value);
+            const earningAssets = parseFloat(document.getElementById('earning-assets').value);
+            const avgAssets = parseFloat(document.getElementById('avg-assets').value);
+
+            const nim = netInterestIncome / avgAssets;
+            const yield = netInterestIncome / earningAssets;
+            const expenseRatio = interestExpense / interestIncome;
+
+            document.getElementById('nim').textContent = (nim * 100).toFixed(2) + '%';
+            document.getElementById('net-interest-income').textContent = '$' + (netInterestIncome).toFixed(0) + 'K';
+            document.getElementById('yield').textContent = (yield * 100).toFixed(1) + '%';
+            document.getElementById('expense-ratio').textContent = (expenseRatio * 100).toFixed(1) + '%';
+
+            renderCharts(interestIncome, nonInterestIncome, otherIncome, interestExpense, nonInterestExpense, provisionExpense);
+        }
+
+        function renderCharts(interestIncome, nonInterestIncome, otherIncome, interestExpense, nonInterestExpense, provisionExpense) {
+            const incomeLabels = ['Interest Income', 'Non-Interest Income', 'Other Income'];
+            const incomeData = [interestIncome, nonInterestIncome, otherIncome];
+            const expenseLabels = ['Interest Expense', 'Non-Interest Expense', 'Provision'];
+            const expenseData = [interestExpense, nonInterestExpense, provisionExpense];
+
+            if (breakdownChart) breakdownChart.destroy();
+            breakdownChart = new Chart(document.getElementById('breakdown-chart'), {
+                type: 'bar',
+                data: {
+                    labels: [...incomeLabels, ...expenseLabels],
+                    datasets: [{
+                        label: 'Income ($K)',
+                        data: [interestIncome, nonInterestIncome, otherIncome, 0, 0, 0],
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)'
+                    }, {
+                        label: 'Expense ($K)',
+                        data: [0, 0, 0, -interestExpense, -nonInterestExpense, -provisionExpense],
+                        backgroundColor: 'rgba(239, 68, 68, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            const quarters = ['Q1 2025', 'Q2 2025', 'Q3 2025', 'Q4 2025'];
+            const nimTrend = [3.0, 3.1, 3.25, 3.35];
+            const yieldTrend = [4.8, 4.9, 5.0, 5.2];
+
+            if (trendChart) trendChart.destroy();
+            trendChart = new Chart(document.getElementById('trend-chart'), {
+                type: 'line',
+                data: {
+                    labels: quarters,
+                    datasets: [{
+                        label: 'NIM (%)',
+                        data: nimTrend,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Yield on Earning Assets (%)',
+                        data: yieldTrend,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            if (peerChart) peerChart.destroy();
+            peerChart = new Chart(document.getElementById('peer-chart'), {
+                type: 'bar',
+                data: {
+                    labels: ['Your Bank', 'Peer Average', 'Top Quartile'],
+                    datasets: [{
+                        label: 'NIM (%)',
+                        data: [3.25, 3.15, 3.45],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.7)',
+                            'rgba(163, 230, 53, 0.7)',
+                            'rgba(245, 158, 11, 0.7)'
+                        ]
+                    }, {
+                        label: 'Yield (%)',
+                        data: [5.0, 4.8, 5.3],
+                        backgroundColor: [
+                            'rgba(139, 92, 246, 0.7)',
+                            'rgba(217, 119, 6, 0.7)',
+                            'rgba(251, 146, 60, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return value + '%';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function exportPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            doc.setFontSize(20);
+            doc.text('Net Interest Margin Analysis Report', 20, 20);
+            doc.setFontSize(12);
+            doc.text('Generated on: ' + new Date().toLocaleDateString(), 20, 30);
+
+            const nim = document.getElementById('nim').textContent;
+            const netInterestIncome = document.getElementById('net-interest-income').textContent;
+            const yield = document.getElementById('yield').textContent;
+            const expenseRatio = document.getElementById('expense-ratio').textContent;
+
+            let y = 45;
+
+            doc.setFontSize(14);
+            doc.text('Key Metrics', 20, y); y += 10;
+            doc.setFontSize(11);
+            doc.text(`Net Interest Margin: ${nim}`, 25, y); y += 6;
+            doc.text(`Net Interest Income: ${netInterestIncome}`, 25, y); y += 6;
+            doc.text(`Yield on Earning Assets: ${yield}`, 25, y); y += 6;
+            doc.text(`Interest Expense Ratio: ${expenseRatio}`, 25, y); y += 15;
+
+            doc.save('net-interest-margin-report.pdf');
+        }
+
+        calculate();
+    </script>
+</body>
+</html>
