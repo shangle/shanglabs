@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Credit Risk Scoring — Shanglabs</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
+            --radius: 8px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-100);
+            color: var(--gray-800);
+        }
+
+        .app-header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow-lg);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .app-header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .back-link {
+            color: white;
+            text-decoration: none;
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .metric-card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 4px;
+        }
+
+        .metric-sub {
+            font-size: 0.85rem;
+            color: var(--gray-600);
+        }
+
+        .metric-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .badge-success { background: #dcfce7; color: #166534; }
+        .badge-warning { background: #fef9c3; color: #854d0e; }
+        .badge-error { background: #fee2e2; color: #991b1b; }
+
+        .charts-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+        }
+
+        .chart-container h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 16px;
+        }
+
+        .chart-inner {
+            height: 350px;
+            position: relative;
+        }
+
+        @media (max-width: 900px) {
+            .metrics-grid, .charts-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="app-header">
+        <h1>
+            <a href="../" class="back-link">← Shanglabs</a>
+            <span>⚡ Credit Risk Scoring</span>
+        </h1>
+    </header>
+
+    <div class="container">
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <div class="metric-label">Overall Risk Score</div>
+                <div class="metric-value" id="risk-score">72</div>
+                <div class="metric-sub">Out of 100</div>
+                <div class="metric-badge badge-success">Low Risk</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Default Probability</div>
+                <div class="metric-value" id="default-prob">2.8%</div>
+                <div class="metric-sub">Estimated 12-month</div>
+                <div class="metric-badge badge-success">Within Limits</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Portfolio NPL</div>
+                <div class="metric-value" id="max-npl">1.5%</div>
+                <div class="metric-sub">Best Case Model</div>
+                <div class="metric-badge badge-success">Below Threshold</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Loan Count</div>
+                <div class="metric-value" id="loan-count">842</div>
+                <div class="metric-sub">Active loans</div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3>Default Probability Distribution</h3>
+                <div class="chart-inner">
+                    <canvas id="distribution-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Risk Score vs Portfolio Balance</h3>
+                <div class="chart-inner">
+                    <canvas id="scatter-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-container">
+                <h3>Credit Quality Mix</h3>
+                <div class="chart-inner">
+                    <canvas id="quality-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h3>Risk Trend (12 Months)</h3>
+                <div class="chart-inner">
+                    <canvas id="trend-chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let distributionChart = null;
+        let scatterChart = null;
+        let qualityChart = null;
+        let trendChart = null;
+
+        function initCharts() {
+            const labels = ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%'];
+            const distributionData = [5, 12, 25, 35, 23];
+
+            distributionChart = new Chart(document.getElementById('distribution-chart'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Loan Count',
+                        data: distributionData,
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    }
+                }
+            });
+
+            const scatterData = [];
+            for (let i = 0; i < 50; i++) {
+                scatterData.push({
+                    x: Math.random() * 1000000 + 100000,
+                    y: Math.random() * 100
+                });
+            }
+
+            scatterChart = new Chart(document.getElementById('scatter-chart'), {
+                type: 'scatter',
+                data: {
+                    datasets: [{
+                        label: 'Individual Loans',
+                        data: scatterData,
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            title: { display: true, text: 'Loan Balance ($)' },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + (value / 1000).toFixed(0) + 'K';
+                                }
+                            }
+                        },
+                        y: {
+                            title: { display: true, text: 'Risk Score' },
+                            min: 0,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            qualityChart = new Chart(document.getElementById('quality-chart'), {
+                type: 'doughnut',
+                data: {
+                    labels: ['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC'],
+                    datasets: [{
+                        data: [45, 95, 120, 180, 175, 150, 77],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(16, 185, 129, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(245, 158, 11, 0.7)',
+                            'rgba(239, 68, 68, 0.5)',
+                            'rgba(239, 68, 68, 0.7)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+
+            const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            const nplTrend = [1.2, 1.3, 1.3, 1.4, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5];
+            const riskScoreTrend = [70, 71, 72, 72, 72, 72, 72, 72, 72, 72, 72, 72];
+
+            trendChart = new Chart(document.getElementById('trend-chart'), {
+                type: 'line',
+                data: {
+                    labels: months,
+                    datasets: [{
+                        label: 'NPL (%)',
+                        data: nplTrend,
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }, {
+                        label: 'Risk Score',
+                        data: riskScoreTrend,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'bottom' }
+                    },
+                    scales: {
+                        y: [
+                            {
+                                position: 'left',
+                                title: { display: true, text: 'NPL (%)' },
+                                max: 4,
+                                min: 0
+                            },
+                            {
+                                position: 'right',
+                                title: { display: true, text: 'Risk Score' },
+                                max: 100,
+                                min: 60
+                            }
+                        ]
+                    }
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', initCharts);
+    </script>
+</body>
+</html>
