@@ -938,18 +938,14 @@ END:VEVENT`;
         }
 
         function generateQR() {
-            console.log('Generating QR code...');
-
             const content = getContent();
             const size = parseInt(document.getElementById('qr-size').value);
             const margin = parseInt(document.getElementById('qr-margin').value);
             const errorCorrection = document.getElementById('error-correction').value;
             const fgColor = document.getElementById('fg-color').value;
-            const bgColor = document.getElementById('bg-color').value;
+            const bgColor = document.getElementById('bg-color').value);
 
             const canvas = document.getElementById('qr-canvas');
-
-            console.log('QR parameters:', { content, size, margin, errorCorrection, fgColor, bgColor });
 
             QRCode.toCanvas(canvas, content, {
                 width: size,
@@ -964,8 +960,6 @@ END:VEVENT`;
                     console.error('QR generation error:', error);
                     return;
                 }
-
-                console.log('QR code generated successfully!');
 
                 // Add logo if present
                 if (currentLogo && document.getElementById('add-logo').checked) {

@@ -1,0 +1,22 @@
+<svg width="80" height="80" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="portfolio-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6366f1" stop-opacity="1"/>
+      <stop offset="100%" stop-color="#4f46e5" stop-opacity="1"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="80" height="80" rx="16" fill="url(#portfolio-grad)"/>
+
+  <!-- Bar chart representation -->
+  <rect x="16" y="40" width="10" height="24" rx="2" fill="white" fill-opacity="0.9"/>
+  <rect x="30" y="28" width="10" height="36" rx="2" fill="white" fill-opacity="0.9"/>
+  <rect x="44" y="20" width="10" height="44" rx="2" fill="white" fill-opacity="0.9"/>
+  <rect x="58" y="32" width="10" height="32" rx="2" fill="white" fill-opacity="0.9"/>
+
+  <!-- Trend line -->
+  <polyline points="21,40 35,28 49,20 63,32" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Base line -->
+  <rect x="14" y="66" width="52" height="2" rx="1" fill="white" fill-opacity="0.5"/>
+</svg>
