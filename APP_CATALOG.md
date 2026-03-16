@@ -87,11 +87,13 @@ Advanced risk analysis tools for financial institutions.
   - XBRL file support
   - Interactive visualization
   - Scenario simulation
+  - **CSV Export** (Added March 17, 2026)
 - **Link:** `/monte-carlo/index.html`
 - **Logo:** `assets/logo-monte-carlo.svg`
 - **Lines of Code:** ~1,500
 - **AI Cost:** $0.15
 - **Recent Updates:**
+  - Added CSV export for simulation results (March 17)
   - Added multi-bank comparison (March 14)
   - Added XBRL support (March 14)
   - iOS compatibility fix for file extensions (March 14)
@@ -421,6 +423,7 @@ Specialized tool for manufacturing operations.
 ## Recent Updates (March 17, 2026)
 
 ### New Features Added
+- **Monte Carlo Risk Simulator:** Added CSV export for simulation results
 - **Net Interest Margin Analysis:** Added PDF and CSV export functionality
 - **Credit Risk Scoring:** Added CSV export functionality
 - **Liquidity Risk Dashboard:** Added CSV export functionality
