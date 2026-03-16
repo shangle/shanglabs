@@ -549,6 +549,9 @@
             <div class="card" id="simulation-results" style="display: none;">
                 <div class="card-header">
                     <h2>Simulation Results</h2>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn btn-secondary" onclick="exportSimulationCSV()" style="font-size: 0.85rem; padding: 8px 12px;">📥 CSV</button>
+                    </div>
                     <span id="sim-status" style="font-size: 0.85rem; color: var(--gray-500);"></span>
                 </div>
                 <div class="card-body">
@@ -627,6 +630,10 @@
         let sensitivityChart = null;
         let comparisonChart = null;
         let bankData = null;
+        let simulationResults = null;
+        let comparisonMode = false;
+        let savedBanks = [];
+        let selectedBankIds = [];
         let savedBanks = [];
         let comparisonMode = false;
         let selectedBankIds = [];
@@ -991,8 +998,14 @@
             const variance = results.reduce((a, b) => a + Math.pow(b - mean, 2), 0) / count;
             const stdDev = Math.sqrt(variance);
 
-            const varIndex = Math.floor(count * (1 - confidence));
-            const var95 = results[varIndex];
+            const varIndex95 = Math.floor(count * (1 - confidence));
+            const var95 = results[varIndex95];
+
+            const varIndex99 = Math.floor(count * 0.01);
+            const var99 = results[varIndex99];
+
+            const min = results[0];
+            const max = results[count - 1];
 
             const lossCount = results.filter(r => r < 0).length;
             const probLoss = lossCount / count;
@@ -1003,7 +1016,10 @@
                 results,
                 mean,
                 stdDev,
+                min,
+                max,
                 var95,
+                var99,
                 probLoss,
                 sharpe,
                 confidence
@@ -1011,6 +1027,9 @@
         }
 
         function displayResults(results) {
+            // Store results for export
+            simulationResults = results;
+
             document.getElementById('progress-fill').style.width = '100%';
             document.getElementById('sim-status').textContent = 'Complete';
 
@@ -1214,6 +1233,73 @@
                 `;
                 tbody.appendChild(row);
             });
+        }
+
+        function exportSimulationCSV() {
+            if (!bankData || !simulationResults) {
+                alert('Please run a simulation first.');
+                return;
+            }
+
+            const rows = [];
+
+            // Header
+            rows.push([
+                'Monte Carlo Risk Simulation Report',
+                `Generated: ${new Date().toLocaleDateString()}`,
+                '',
+                '',
+                ''
+            ]);
+            rows.push(['', '', '', '', '']);
+
+            // Bank Information
+            rows.push(['Bank Information', '', '', '', '']);
+            rows.push(['Bank Name', bankData.name, '', '', '']);
+            rows.push(['Total Assets', formatCurrency(bankData.totalAssets), '', '', '']);
+            rows.push(['Capital Ratio', (bankData.capitalRatio * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['NPL Ratio', (bankData.nplRatio * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['ROA', (bankData.roa * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['', '', '', '', '']);
+
+            // Simulation Settings
+            rows.push(['Simulation Parameters', '', '', '', '']);
+            rows.push(['Simulation Count', document.getElementById('sim-count').value || '1000', '', '', '']);
+            rows.push(['Confidence Level', (document.getElementById('confidence-level').value || '95') + '%', '', '', '']);
+            rows.push(['', '', '', '', '']);
+
+            // Simulation Results
+            rows.push(['Simulation Results', '', '', '', '']);
+            rows.push(['Expected ROA', (simulationResults.mean * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['Standard Deviation', (simulationResults.stdDev * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['Min ROA', (simulationResults.min * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['Max ROA', (simulationResults.max * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['95% VaR', (simulationResults.var95 * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['99% VaR', (simulationResults.var99 * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['Probability of Loss', (simulationResults.probLoss * 100).toFixed(2) + '%', '', '', '']);
+            rows.push(['Sharpe Ratio', simulationResults.sharpe.toFixed(2), '', '', '']);
+            rows.push(['', '', '', '', '']);
+
+            // Risk Rating
+            const riskRating = calculateRiskRating(simulationResults);
+            rows.push(['Risk Assessment', '', '', '', '']);
+            rows.push(['Risk Rating', riskRating.label, '', '', '']);
+            rows.push(['', '', '', '', '']);
+
+            // Convert to CSV
+            const csv = rows.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\n');
+
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `monte-carlo-simulation-${bankData.name.replace(/\s+/g, '-')}-${new Date().toISOString().split('T')[0]}.csv`;
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
         }
     </script>
 </body>
