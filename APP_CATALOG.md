@@ -135,6 +135,7 @@ Advanced risk analysis tools for financial institutions.
   - Gap analysis
   - Interest rate risk assessment
   - Trend visualization
+  - **PDF and CSV Export** (Added March 17, 2026)
 - **Link:** `/net-interest-margin-analysis/index.html`
 - **Logo:** `assets/logo-nim.svg`
 - **Lines of Code:** ~1,050
