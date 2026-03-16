@@ -61,4 +61,4 @@ document.querySelectorAll('.app-card, .why-card, .featured-card').forEach(el => 
     observer.observe(el);
 });
 
-console.log('🔬 Shanglabs loaded');
+
