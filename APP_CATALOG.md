@@ -1,7 +1,7 @@
 # APP_CATALOG.md - Shanglabs Application Catalog
 
 ## Overview
-**Last Updated:** March 16, 2026
+**Last Updated:** March 16, 2026 (23:05 GMT+8)
 **Platform:** Shanglabs (https://shanglabs.com)
 **Total Tools:** 15 (9 Featured on Homepage)
 **Business Model:** Free web apps → Optional paid downloads ($0.50-$2.00) → Subscription funded
@@ -104,6 +104,7 @@ Advanced risk analysis tools for financial institutions.
   - Stress testing for liquidity
   - Real-time dashboards
   - Early warning indicators
+  - **CSV Export** (Added March 16, 2026)
 - **Link:** `/liquidity-risk-dashboard/index.html`
 - **Logo:** Custom SVG needed
 - **Lines of Code:** ~1,000
@@ -118,6 +119,7 @@ Advanced risk analysis tools for financial institutions.
   - Impact assessment
   - Regulatory stress testing templates
   - Export to PDF/CSV
+  - **CSV Export** (Added March 16, 2026)
 - **Link:** `/stress-test-scenarios/index.html`
 - **Logo:** Custom SVG needed
 - **Lines of Code:** ~950
@@ -407,6 +409,24 @@ Specialized tool for manufacturing operations.
 
 ---
 
-**Catalog Version:** 1.2
-**Maintained By:** Documentation Keeper Subagent
+**Catalog Version:** 1.3
+**Maintained By:** Documentation Keeper (Fallback Mode)
 **Next Review:** March 23, 2026
+
+---
+
+## Recent Updates (March 16, 2026)
+
+### New Features Added
+- **Credit Risk Scoring:** Added CSV export functionality
+- **Liquidity Risk Dashboard:** Added CSV export functionality
+- **Stress Test Scenarios:** Added CSV export functionality
+
+### New Proposals
+- **ACH Batch Builder:** Create NACHA files from transaction data
+- **Account Analysis Decoder:** Decode bank account analysis statements
+
+### System Status
+- 15 active tools
+- All tools have export functionality
+- Autonomous system operational
