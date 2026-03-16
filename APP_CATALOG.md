@@ -307,7 +307,8 @@ Specialized tool for manufacturing operations.
 2. Add logos for new tools (custom SVG files needed)
 3. Update homepage to showcase all 15 tools (currently shows 9)
 4. User testing on all new tools
-5. Add CSV export to Credit Risk Scoring - ✅ **DONE March 16**
+5. ✅ ~~Add CSV export to Credit Risk Scoring~~ - DONE March 16
+6. ✅ ~~Add CSV export to Monte Carlo Risk Simulator~~ - DONE March 17
 
 ### Medium Priority
 1. Enhanced export formats
