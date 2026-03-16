@@ -161,6 +161,7 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span>⚡ Credit Risk Scoring</span>
         </h1>
+        <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">📥 Export CSV</button>
     </header>
 
     <div class="container">
@@ -371,6 +372,47 @@
         }
 
         document.addEventListener('DOMContentLoaded', initCharts);
+
+        function exportToCSV() {
+            const riskScore = document.getElementById('risk-score').textContent;
+            const defaultProb = document.getElementById('default-prob').textContent;
+            const maxNpl = document.getElementById('max-npl').textContent;
+            const loanCount = document.getElementById('loan-count').textContent;
+
+            let csv = 'Credit Risk Scoring Report\n';
+            csv += 'Generated,' + new Date().toISOString() + '\n\n';
+            csv += 'Summary Metrics\n';
+            csv += 'Metric,Value\n';
+            csv += 'Overall Risk Score,' + riskScore + '\n';
+            csv += 'Default Probability,' + defaultProb + '\n';
+            csv += 'Portfolio NPL,' + maxNpl + '\n';
+            csv += 'Loan Count,' + loanCount + '\n\n';
+
+            csv += 'Default Probability Distribution\n';
+            csv += 'Range,Loan Count\n';
+            const distLabels = ['0-20%', '20-40%', '40-60%', '60-80%', '80-100%'];
+            const distData = [5, 12, 25, 35, 23];
+            distLabels.forEach((label, i) => {
+                csv += label + ',' + distData[i] + '\n';
+            });
+            csv += '\n';
+
+            csv += 'Credit Quality Mix\n';
+            csv += 'Rating,Count\n';
+            const qualityLabels = ['AAA', 'AA', 'A', 'BBB', 'BB', 'B', 'CCC'];
+            const qualityData = [45, 95, 120, 180, 175, 150, 77];
+            qualityLabels.forEach((label, i) => {
+                csv += label + ',' + qualityData[i] + '\n';
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'credit-risk-report-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>

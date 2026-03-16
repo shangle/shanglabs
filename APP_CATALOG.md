@@ -65,6 +65,7 @@ Tools for banking professionals working with ACH files, loan portfolios, and reg
   - LGD (Loss Given Default) analysis
   - Risk scoring algorithms
   - Multi-factor evaluation
+  - **CSV Export** (Added March 16, 2026)
 - **Link:** `/credit-risk-scoring/index.html`
 - **Logo:** Custom SVG needed
 - **Lines of Code:** ~1,100
@@ -296,10 +297,11 @@ Specialized tool for manufacturing operations.
 ## Pending Work
 
 ### High Priority
-1. Create landing pages for new tools (Capital Adequacy, Liquidity Risk, Stress Test, NIM Analysis, Credit Risk)
+1. ✅ ~~Create landing pages for new tools~~ - Basic pages exist
 2. Add logos for new tools (custom SVG files needed)
 3. Update homepage to showcase all 15 tools (currently shows 9)
 4. User testing on all new tools
+5. Add CSV export to Credit Risk Scoring - ✅ **DONE March 16**
 
 ### Medium Priority
 1. Enhanced export formats
