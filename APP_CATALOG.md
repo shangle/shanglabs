@@ -51,6 +51,7 @@ Tools for banking professionals working with ACH files, loan portfolios, and reg
   - Risk-weighted asset analysis
   - Regulatory compliance checks
   - Dynamic scenario modeling
+  - **CSV Export** (Added March 17, 2026)
 - **Link:** `/capital-adequacy-calculator/index.html`
 - **Logo:** `assets/logo-capacity.svg`
 - **Lines of Code:** ~900
