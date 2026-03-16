@@ -220,6 +220,7 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span>💧 Liquidity Risk Dashboard</span>
         </h1>
+        <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">📥 Export CSV</button>
     </header>
 
     <div class="container">
@@ -536,6 +537,40 @@
         }
 
         document.addEventListener('DOMContentLoaded', initCharts);
+
+        function exportToCSV() {
+            let csv = 'Liquidity Risk Dashboard Report\n';
+            csv += 'Generated,' + new Date().toISOString() + '\n\n';
+
+            csv += 'Key Metrics\n';
+            csv += 'Metric,Value,Status\n';
+            csv += 'Liquidity Coverage Ratio (LCR),' + document.getElementById('lcr').textContent + ',Above 100% minimum\n';
+            csv += 'Net Stable Funding Ratio (NSFR),' + document.getElementById('nsfr').textContent + ',Above 100% minimum\n';
+            csv += 'Cash Position,$' + document.getElementById('cash-position').textContent + ',Current\n';
+            csv += 'Liquidity Gap,' + document.getElementById('liquidity-gap').textContent + '\n\n';
+
+            csv += 'Stress Test Scenarios\n';
+            csv += 'Scenario,LCR (%),Status\n';
+            csv += 'Baseline,135,Pass\n';
+            csv += '5% Outflow Shock,122,Pass\n';
+            csv += '10% Outflow Shock,108,Pass\n';
+            csv += '15% Outflow Shock,95,Fail\n\n';
+
+            csv += 'Liquidity by Maturity\n';
+            csv += 'Period,Amount ($M)\n';
+            csv += 'Overnight,45\n';
+            csv += '1-7 Days,82\n';
+            csv += '8-30 Days,156\n';
+            csv += '31-90 Days,234\n';
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'liquidity-risk-report-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
     </script>
 </body>
 </html>
