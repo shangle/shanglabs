@@ -360,7 +360,10 @@
             </div>
 
             <button class="btn btn-primary" onclick="exportPDF()" style="width: 100%;">
-                📤 Export Report
+                📤 Export PDF
+            </button>
+            <button class="btn btn-secondary" onclick="exportCSV()" style="width: 100%; margin-top: 8px;">
+                📥 Export CSV
             </button>
         </aside>
 
@@ -636,6 +639,38 @@
             doc.text(`Leverage Ratio Maximum: ${document.getElementById('leverage-max-value').textContent}`, 25, y);
 
             doc.save('capital-adequacy-report.pdf');
+        }
+
+        function exportCSV() {
+            let csv = 'Capital Adequacy Report\n';
+            csv += 'Generated,' + new Date().toISOString() + '\n\n';
+
+            csv += 'Input Parameters\n';
+            csv += 'Parameter,Value\n';
+            csv += 'Risk-Weighted Assets,$' + document.getElementById('rwa').value + 'M\n';
+            csv += 'Tier 1 Capital,$' + document.getElementById('tier1').value + 'M\n';
+            csv += 'Total Capital,$' + document.getElementById('total-capital').value + 'M\n';
+            csv += 'Total Assets,$' + document.getElementById('total-assets').value + 'M\n\n';
+
+            csv += 'Capital Ratios\n';
+            csv += 'Ratio,Value,Status\n';
+            csv += 'Tier 1 Ratio,' + document.getElementById('tier1-ratio').textContent + ',' + document.getElementById('tier1-status').textContent + '\n';
+            csv += 'Total Capital Ratio,' + document.getElementById('tc-ratio').textContent + ',' + document.getElementById('tc-status').textContent + '\n';
+            csv += 'Leverage Ratio,' + document.getElementById('leverage-ratio').textContent + ',' + document.getElementById('leverage-status').textContent + '\n';
+            csv += 'Capital Surplus,' + document.getElementById('capital-surplus').textContent + '\n\n';
+
+            csv += 'Regulatory Thresholds\n';
+            csv += 'Requirement,Minimum,Actual,Status\n';
+            csv += 'Tier 1 Capital,' + document.getElementById('t1-min-value').textContent + ',' + document.getElementById('tier1-ratio').textContent + ',Compliant\n';
+            csv += 'Total Capital,' + document.getElementById('tc-min-value').textContent + ',' + document.getElementById('tc-ratio').textContent + ',Compliant\n';
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'capital-adequacy-report-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
         }
 
         calculate();

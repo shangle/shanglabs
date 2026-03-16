@@ -289,7 +289,10 @@
             </div>
 
             <button class="btn btn-primary" onclick="exportPDF()" style="width: 100%;">
-                📤 Export Report
+                📤 Export PDF
+            </button>
+            <button class="btn btn-secondary" onclick="exportCSV()" style="width: 100%; margin-top: 8px;">
+                📥 Export CSV
             </button>
         </aside>
 
@@ -513,6 +516,32 @@
             doc.text(`Interest Expense Ratio: ${expenseRatio}`, 25, y); y += 15;
 
             doc.save('net-interest-margin-report.pdf');
+        }
+
+        function exportCSV() {
+            let csv = 'Net Interest Margin Analysis Report\n';
+            csv += 'Generated,' + new Date().toISOString() + '\n\n';
+
+            csv += 'Key Metrics\n';
+            csv += 'Metric,Value\n';
+            csv += 'Net Interest Margin,' + document.getElementById('nim').textContent + '\n';
+            csv += 'Net Interest Income,' + document.getElementById('net-interest-income').textContent + '\n';
+            csv += 'Yield on Earning Assets,' + document.getElementById('yield').textContent + '\n';
+            csv += 'Interest Expense Ratio,' + document.getElementById('expense-ratio').textContent + '\n\n';
+
+            csv += 'Input Parameters\n';
+            csv += 'Parameter,Value\n';
+            csv += 'Interest Income,$' + document.getElementById('interest-income').value + 'M\n';
+            csv += 'Interest Expense,$' + document.getElementById('interest-expense').value + 'M\n';
+            csv += 'Earning Assets,$' + document.getElementById('earning-assets').value + 'M\n';
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'nim-report-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
         }
 
         calculate();
