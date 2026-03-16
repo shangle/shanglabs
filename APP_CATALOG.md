@@ -52,7 +52,7 @@ Tools for banking professionals working with ACH files, loan portfolios, and reg
   - Regulatory compliance checks
   - Dynamic scenario modeling
 - **Link:** `/capital-adequacy-calculator/index.html`
-- **Logo:** `assets/logo-capacity.svg` (if exists)
+- **Logo:** `assets/logo-capacity.svg`
 - **Lines of Code:** ~900
 - **AI Cost:** $0.09
 
@@ -135,7 +135,7 @@ Advanced risk analysis tools for financial institutions.
   - Interest rate risk assessment
   - Trend visualization
 - **Link:** `/net-interest-margin-analysis/index.html`
-- **Logo:** Custom SVG needed
+- **Logo:** `assets/logo-nim.svg`
 - **Lines of Code:** ~1,050
 - **AI Cost:** $0.105
 
@@ -332,13 +332,14 @@ Specialized tool for manufacturing operations.
 - `logo-monte-carlo.svg` - Monte Carlo Simulator
 - `logo-3d-printer.svg` - 3D Connector Builder
 - `logo-portfolio.svg` - Loan Portfolio Analyzer (added March 15)
+- `logo-capacity.svg` - Capital Adequacy Calculator (added March 16)
+- `logo-credit.svg` - Credit Risk Scoring (added March 16)
+- `logo-liquidity.svg` - Liquidity Risk Dashboard (added March 16)
+- `logo-nim.svg` - Net Interest Margin Analysis (added March 16)
+- `logo-stress.svg` - Stress Test Scenarios (added March 16)
 
 ### Logos Needed
-- `logo-capacity.svg` - Capital Adequacy Calculator
-- `logo-liquidity.svg` - Liquidity Risk Dashboard
-- `logo-stress.svg` - Stress Test Scenarios
-- `logo-nim.svg` - Net Interest Margin Analysis
-- `logo-credit.svg` - Credit Risk Scoring
+(none - all logos created)
 
 ---
 
@@ -430,3 +431,5 @@ Specialized tool for manufacturing operations.
 - 15 active tools
 - All tools have export functionality
 - Autonomous system operational
+al
+al
