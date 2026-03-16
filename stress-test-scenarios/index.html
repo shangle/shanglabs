@@ -388,7 +388,10 @@
             </div>
 
             <button class="btn btn-secondary" onclick="exportPDF()" style="margin-top: 24px;">
-                📤 Export Report
+                📤 Export PDF
+            </button>
+            <button class="btn btn-secondary" onclick="exportCSV()" style="margin-top: 24px; margin-left: 8px;">
+                📥 Export CSV
             </button>
         </main>
     </div>
@@ -668,6 +671,38 @@
             doc.text(`Capital Gap: ${formatCurrency(severe.capitalGap)}`, 25, y);
 
             doc.save('stress-test-report.pdf');
+        }
+
+        function exportCSV() {
+            const baseline = getScenarioData('baseline');
+            const adverse = getScenarioData('adverse');
+            const severe = getScenarioData('severe');
+
+            let csv = 'Stress Test Scenarios Report\n';
+            csv += 'Generated,' + new Date().toISOString() + '\n\n';
+
+            csv += 'Input Parameters\n';
+            csv += 'Parameter,Value\n';
+            csv += 'Total Assets,$' + document.getElementById('total-assets').value + 'M\n';
+            csv += 'Capital Ratio,' + document.getElementById('capital-ratio').value + '%\n';
+            csv += 'NPL Ratio,' + document.getElementById('npl-ratio').value + '%\n';
+            csv += 'NIM,' + document.getElementById('nim').value + '%\n';
+            csv += 'ROA,' + document.getElementById('roa').value + '%\n';
+            csv += 'Efficiency Ratio,' + document.getElementById('efficiency-ratio').value + '%\n\n';
+
+            csv += 'Scenario Results\n';
+            csv += 'Scenario,Capital Ratio,NPL Ratio,ROA,Capital Gap\n';
+            csv += 'Baseline,' + (baseline.adjustedCapitalRatio * 100).toFixed(2) + '%,' + (baseline.adjustedNPLRatio * 100).toFixed(2) + '%,' + (baseline.adjustedROA * 100).toFixed(2) + '%,$' + (baseline.capitalGap / 1000000).toFixed(2) + 'M\n';
+            csv += 'Adverse,' + (adverse.adjustedCapitalRatio * 100).toFixed(2) + '%,' + (adverse.adjustedNPLRatio * 100).toFixed(2) + '%,' + (adverse.adjustedROA * 100).toFixed(2) + '%,$' + (adverse.capitalGap / 1000000).toFixed(2) + 'M\n';
+            csv += 'Severely Adverse,' + (severe.adjustedCapitalRatio * 100).toFixed(2) + '%,' + (severe.adjustedNPLRatio * 100).toFixed(2) + '%,' + (severe.adjustedROA * 100).toFixed(2) + '%,$' + (severe.capitalGap / 1000000).toFixed(2) + 'M\n';
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'stress-test-report-' + new Date().toISOString().split('T')[0] + '.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
         }
 
         runStressTest();
