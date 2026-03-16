@@ -418,9 +418,10 @@ Specialized tool for manufacturing operations.
 
 ---
 
-## Recent Updates (March 16, 2026)
+## Recent Updates (March 17, 2026)
 
 ### New Features Added
+- **Net Interest Margin Analysis:** Added PDF and CSV export functionality
 - **Credit Risk Scoring:** Added CSV export functionality
 - **Liquidity Risk Dashboard:** Added CSV export functionality
 - **Stress Test Scenarios:** Added CSV export functionality
