@@ -4,57 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shanglabs — Better Tools for the Work That Matters</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
     <meta name="description" content="Free professional banking and business tools. NACHA viewer, cash flow forecaster, ROI calculator, and more. Client-side only, no signup required.">
     <meta name="keywords" content="banking tools, NACHA viewer, cash flow forecaster, ROI calculator, financial analysis, business tools, free tools">
-    
-    <!-- Open Graph / Social Sharing -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%236366f1' width='100' height='100' rx='20'/><text x='50' y='65' font-size='55' text-anchor='middle' fill='white' font-weight='bold'>S</text></svg>">
     <meta property="og:title" content="Shanglabs — Better Tools for the Work That Matters">
     <meta property="og:description" content="Free professional banking and business tools. NACHA viewer, cash flow forecaster, ROI calculator, and more. Client-side only, no signup required.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://shangle.me/shanglabs">
-    
-    <!-- Twitter Card -->
-    <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Shanglabs — Better Tools for the Work That Matters">
     <meta name="twitter:description" content="Free professional banking and business tools. NACHA viewer, cash flow forecaster, ROI calculator, and more.">
-    
+    <meta name="twitter:card" content="summary_large_image">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
         :root {
             --primary: #6366f1;
             --primary-dark: #4f46e5;
             --secondary: #8b5cf6;
-            --accent: #f59e0b;
+            --accent: #ec4899;
             --success: #10b981;
-            --white: #ffffff;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
             --gray-600: #4b5563;
+            --gray-700: #374151;
             --gray-800: #1f2937;
             --gray-900: #111827;
         }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--gray-100);
-            color: var(--gray-800);
             line-height: 1.6;
+            color: var(--gray-800);
+            background: white;
         }
 
         /* Header */
-        header {
+        .site-header {
             background: white;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid var(--gray-200);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             position: sticky;
             top: 0;
             z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .logo {
@@ -64,9 +71,17 @@
             text-decoration: none;
         }
 
-        .logo img {
+        .logo-icon {
             width: 40px;
             height: 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 24px;
         }
 
         .logo-text {
@@ -78,41 +93,35 @@
         nav {
             display: flex;
             align-items: center;
+            gap: 32px;
         }
 
         nav a {
-            color: var(--gray-600);
             text-decoration: none;
-            margin-left: 24px;
+            color: var(--gray-600);
             font-weight: 500;
             transition: color 0.2s;
         }
 
         nav a:hover { color: var(--primary); }
 
-        nav a:only-child { margin-left: 0; }
-
-        /* Mobile Menu Toggle */
-        .mobile-menu-toggle {
+        .mobile-menu-btn {
             display: none;
             background: none;
             border: none;
-            font-size: 1.5rem;
-            cursor: pointer;
+            font-size: 24px;
             color: var(--gray-600);
-            padding: 8px;
+            cursor: pointer;
         }
 
-        /* Mobile Menu */
         .mobile-menu {
             display: none;
-            background: white;
-            border-top: 1px solid var(--gray-200);
-            padding: 0 40px;
             position: absolute;
             top: 100%;
             left: 0;
             right: 0;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             z-index: 99;
         }
 
@@ -120,54 +129,69 @@
 
         .mobile-menu a {
             display: block;
-            padding: 16px 0;
+            padding: 16px 24px;
             color: var(--gray-600);
             text-decoration: none;
             font-weight: 500;
             border-bottom: 1px solid var(--gray-100);
         }
 
-        .mobile-menu a:hover { color: var(--primary); }
+        .mobile-menu a:hover { color: var(--primary); background: var(--gray-50); }
         .mobile-menu a:last-child { border-bottom: none; }
+
+        @media (max-width: 768px) {
+            nav { display: none; }
+            .mobile-menu-btn { display: block; }
+            .mobile-menu.active { display: block; }
+        }
 
         /* Hero */
         .hero {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, #ec4899 100%);
             color: white;
-            padding: 100px 40px;
+            padding: 100px 24px;
             text-align: center;
         }
 
         .hero h1 {
-            font-size: 4rem;
+            font-size: clamp(2.5rem, 5vw, 4rem);
             font-weight: 800;
             margin-bottom: 20px;
             line-height: 1.1;
         }
 
         .hero p {
-            font-size: 1.4rem;
+            font-size: clamp(1.1rem, 2.5vw, 1.4rem);
             opacity: 0.95;
+            margin-bottom: 40px;
             max-width: 700px;
-            margin: 0 auto 40px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .hero-buttons {
             display: flex;
-            gap: 20px;
+            gap: 16px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn {
-            padding: 16px 40px;
-            border-radius: 50px;
+            padding: 14px 32px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
 
         .btn-primary {
             background: white;
@@ -177,29 +201,31 @@
         .btn-secondary {
             background: rgba(255,255,255,0.2);
             color: white;
-            border: 2px solid white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
         }
 
-        /* Stats Bar */
-        .stats-bar {
-            background: white;
-            padding: 30px 40px;
+        /* Stats */
+        .stats {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 40px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-            margin: 0 auto;
-            max-width: 1200px;
-            border-radius: 12px;
-            transform: translateY(-30px);
+            max-width: 900px;
+            margin: -40px auto 80px;
+            padding: 30px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
         }
 
         .stat-item {
             text-align: center;
         }
 
-        .stat-value {
-            font-size: 2.5rem;
+        .stat-number {
+            font-size: 3rem;
             font-weight: 800;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
@@ -215,13 +241,13 @@
 
         /* Features Section */
         .features {
-            padding: 80px 40px;
+            padding: 80px 24px;
             max-width: 1200px;
             margin: 0 auto;
         }
 
         .features h2 {
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 4vw, 2.5rem);
             text-align: center;
             font-weight: 800;
             margin-bottom: 40px;
@@ -239,9 +265,9 @@
         }
 
         .why-tagline {
-            font-size: 1.4rem;
+            font-size: 1.25rem;
             color: var(--gray-600);
-            line-height: 1.6;
+            line-height: 1.7;
             max-width: 700px;
             margin: 0 auto;
         }
@@ -283,30 +309,32 @@
             font-size: 1rem;
         }
 
-        .feature-card p {
-            color: var(--gray-600);
-            line-height: 1.6;
-        }
-
         /* Apps Section */
         .apps-section {
-            padding: 80px 40px;
+            padding: 80px 24px;
             background: var(--gray-50);
         }
 
         .apps-section h2 {
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 4vw, 2.5rem);
             text-align: center;
             font-weight: 800;
-            margin-bottom: 60px;
+            margin-bottom: 20px;
             color: var(--gray-900);
+        }
+
+        .apps-section p {
+            text-align: center;
+            color: var(--gray-600);
+            margin-bottom: 60px;
+            font-size: 1.1rem;
         }
 
         .apps-grid {
             max-width: 1200px;
             margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 30px;
         }
 
@@ -316,6 +344,8 @@
             overflow: hidden;
             box-shadow: 0 4px 15px rgba(0,0,0,0.06);
             transition: transform 0.3s, box-shadow 0.3s;
+            display: flex;
+            flex-direction: column;
         }
 
         .app-card:hover {
@@ -326,19 +356,23 @@
         .app-header {
             padding: 24px;
             text-align: center;
+            background: linear-gradient(135deg, var(--gray-50), white);
         }
 
         .app-header img {
-            width: 60px;
-            height: 60px;
+            width: 64px;
+            height: 64px;
         }
 
         .app-body {
             padding: 24px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .app-body h3 {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 8px;
             color: var(--gray-900);
@@ -358,9 +392,9 @@
 
         .app-body p {
             color: var(--gray-600);
-            font-size: 0.95rem;
-            margin-bottom: 20px;
-            line-height: 1.5;
+            line-height: 1.6;
+            flex-grow: 1;
+            margin-bottom: 16px;
         }
 
         .app-link {
@@ -369,437 +403,366 @@
             font-weight: 600;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
 
         .app-link:hover {
-            gap: 10px;
+            color: var(--primary-dark);
         }
 
-        /* Pricing Section */
+        /* Pricing */
         .pricing {
-            padding: 100px 40px;
+            padding: 100px 24px;
             text-align: center;
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         .pricing h2 {
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 4vw, 2.5rem);
             font-weight: 800;
             margin-bottom: 20px;
             color: var(--gray-900);
         }
 
-        .pricing > p {
+        .pricing-subtitle {
             font-size: 1.2rem;
             color: var(--gray-600);
             margin-bottom: 60px;
         }
 
-        .pricing-cards {
+        .pricing-grid {
+            max-width: 900px;
+            margin: 0 auto;
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
         }
 
-        .price-card {
-            background: white;
-            padding: 50px;
-            border-radius: 24px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        .pricing-card {
+            padding: 40px;
+            border-radius: 16px;
+            border: 2px solid var(--gray-200);
         }
 
-        .price-card.featured {
-            border: 3px solid var(--primary);
+        .pricing-card.featured {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(139, 92, 246, 0.05));
             position: relative;
         }
 
-        .price-badge {
-            position: absolute;
-            top: -15px;
-            right: 30px;
+        .pricing-badge {
+            display: inline-block;
             background: var(--primary);
             color: white;
-            padding: 8px 20px;
+            padding: 4px 16px;
             border-radius: 20px;
+            font-size: 0.875rem;
             font-weight: 600;
+            margin-bottom: 20px;
         }
 
-        .price-amount {
+        .pricing-price {
             font-size: 3rem;
             font-weight: 800;
             margin: 20px 0;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
 
-        .price-period {
-            font-size: 1rem;
+        .pricing-price span {
+            font-size: 1.25rem;
+            font-weight: 500;
             color: var(--gray-600);
         }
 
-        .price-features {
+        .pricing-features {
             list-style: none;
-            text-align: left;
             margin: 30px 0;
+            text-align: left;
         }
 
-        .price-features li {
-            padding: 10px 0;
+        .pricing-features li {
+            padding: 12px 0;
             border-bottom: 1px solid var(--gray-100);
-            color: var(--gray-700);
+            color: var(--gray-600);
         }
 
-        .price-features li::before {
-            content: '✓ ';
-            color: var(--primary);
-            font-weight: 700;
+        .pricing-features li:last-child {
+            border-bottom: none;
+        }
+
+        .pricing-features li::before {
+            content: "✓";
+            color: var(--success);
+            font-weight: bold;
+            margin-right: 12px;
+        }
+
+        .btn-pricing {
+            width: 100%;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: block;
+        }
+
+        .btn-pricing.primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+        }
+
+        .btn-pricing.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-pricing.secondary {
+            background: var(--gray-100);
+            color: var(--gray-800);
+            border: 2px solid var(--gray-200);
+        }
+
+        .btn-pricing.secondary:hover {
+            background: var(--gray-200);
         }
 
         /* Footer */
-        footer {
+        .site-footer {
             background: var(--gray-900);
             color: white;
-            padding: 60px 40px 40px;
+            padding: 60px 24px;
+            text-align: center;
         }
 
-        .footer-inner {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 2fr repeat(4, 1fr);
-            gap: 40px;
-            margin-bottom: 40px;
-        }
-
-        .footer-brand img {
-            width: 60px;
-            height: 60px;
-            margin-bottom: 16px;
-        }
-
-        .footer-brand h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
+        .site-footer p {
+            opacity: 0.8;
             margin-bottom: 12px;
         }
 
-        .footer-brand p {
-            color: rgba(255,255,255,0.7);
-            font-size: 0.95rem;
-            line-height: 1.6;
-        }
-
-        .footer-column h4 {
-            font-size: 0.85rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 16px;
-            color: rgba(255,255,255,0.5);
-        }
-
-        .footer-column a {
-            display: block;
-            color: rgba(255,255,255,0.8);
+        .site-footer a {
+            color: var(--primary);
             text-decoration: none;
-            padding: 6px 0;
-            font-size: 0.95rem;
-            transition: color 0.2s;
         }
 
-        .footer-column a:hover {
-            color: white;
-        }
-
-        .footer-bottom {
-            padding-top: 40px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            color: rgba(255,255,255,0.6);
-        }
-
-        .footer-stats {
-            display: flex;
-            gap: 24px;
-        }
-
-        .footer-stat {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .footer-stat span:first-child {
-            font-size: 1.2rem;
-        }
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .stats-bar { grid-template-columns: repeat(2, 1fr); }
-            .feature-grid { grid-template-columns: repeat(2, 1fr); }
-            .why-item { flex-direction: column; gap: 12px; }
-            .why-number { font-size: 2rem; width: auto; }
-            .apps-grid { grid-template-columns: repeat(2, 1fr); }
-            .pricing-cards { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr 1fr; }
+        .site-footer a:hover {
+            text-decoration: underline;
         }
 
         @media (max-width: 600px) {
-            .desktopNav { display: none; }
-            .mobile-menu-toggle { display: block; }
-            .stats-bar { grid-template-columns: 1fr; }
-            .feature-grid { grid-template-columns: 1fr; }
+            .hero { padding: 80px 20px; }
+            .stats { padding: 20px; gap: 24px; }
+            .stat-number { font-size: 2.5rem; }
             .apps-grid { grid-template-columns: 1fr; }
-            .footer-grid { grid-template-columns: 1fr; }
-            .footer-bottom { flex-direction: column; gap: 16px; }
+            .why-item { flex-direction: column; text-align: center; }
+            .why-number { margin: 0 auto; }
         }
     </style>
 </head>
 <body>
-    <header>
-        <a href="./" class="logo">
-            <img src="assets/logo-shanglabs.svg" alt="Shanglabs Logo">
-            <span class="logo-text">Shanglabs</span>
-        </a>
-        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
-        <nav id="desktopNav">
-            <a href="#apps">Tools</a>
-            <a href="#why">How It Works</a>
-            <a href="#about">About</a>
-        </nav>
-        <div class="mobile-menu" id="mobileMenu">
-            <a href="#apps" onclick="toggleMobileMenu()">Tools</a>
-            <a href="#why" onclick="toggleMobileMenu()">How It Works</a>
-            <a href="#about" onclick="toggleMobileMenu()">About</a>
+    <!-- Header -->
+    <header class="site-header">
+        <div class="header-content">
+            <a href="#" class="logo">
+                <div class="logo-icon">S</div>
+                <span class="logo-text">Shanglabs</span>
+            </a>
+            <nav>
+                <a href="#apps">Tools</a>
+                <a href="#pricing">Pricing</a>
+            </nav>
+            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">☰</button>
+            <div class="mobile-menu" id="mobileMenu">
+                <a href="#apps" onclick="toggleMobileMenu()">Tools</a>
+                <a href="#pricing" onclick="toggleMobileMenu()">Pricing</a>
+            </div>
         </div>
     </header>
 
+    <!-- Hero -->
     <section class="hero">
         <h1>Better tools for<br>the work that matters</h1>
         <p>Enterprise-grade financial and banking tools. Free to use forever. Optional upgrades for those who need more.</p>
         <div class="hero-buttons">
-            <a href="#apps" class="btn btn-primary">Browse Tools</a>
-            <a href="#about" class="btn btn-secondary">Learn More</a>
+            <a href="#apps" class="btn btn-primary">Browse Tools →</a>
+            <a href="#pricing" class="btn btn-secondary">See Pricing</a>
         </div>
     </section>
 
-    <div class="stats-bar">
+    <!-- Stats -->
+    <section class="stats">
         <div class="stat-item">
-            <div class="stat-value">15</div>
+            <div class="stat-number">15</div>
             <div class="stat-label">Professional Tools</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value">100%</div>
-            <div class="stat-label">Client-Side</div>
+            <div class="stat-number">0</div>
+            <div class="stat-label">Data Collected</div>
         </div>
         <div class="stat-item">
-            <div class="stat-value">$0</div>
-            <div class="stat-label">Startup Cost</div>
+            <div class="stat-number">$1</div>
+            <div class="stat-label">Avg App Cost</div>
         </div>
-        <div class="stat-item">
-            <div class="stat-value">435x</div>
-            <div class="stat-label">More Efficient</div>
-        </div>
-    </div>
+    </section>
 
-    <section id="why" class="features">
-        <h2>Why Shanglabs</h2>
-
+    <!-- Why Section -->
+    <section class="features">
+        <h2>Why Shanglabs?</h2>
         <div class="why-content">
             <div class="why-intro">
                 <p class="why-tagline">We built Shanglabs because existing tools were either too expensive, too complex, or required giving up your data.</p>
             </div>
-
             <div class="why-list">
                 <div class="why-item">
                     <div class="why-number">01</div>
                     <div class="why-text">
-                        <h3>Privacy by Design</h3>
-                        <p>All processing happens in your browser. Your files never leave your device. No accounts required, no tracking, no data collection—ever.</p>
+                        <h3>Your data stays yours</h3>
+                        <p>All tools run entirely in your browser. No servers. No cloud. No data collection. Your financial information never leaves your device.</p>
                     </div>
                 </div>
-
                 <div class="why-item">
                     <div class="why-number">02</div>
                     <div class="why-text">
-                        <h3>Instant Access</h3>
-                        <p>No signup screens. No loading spinners. No waiting. Open any tool and get results in seconds. Pure client-side speed.</p>
+                        <h3>Built by banking professionals</h3>
+                        <p>These aren't generic business tools. Every feature is designed for the specific needs of banking back office operations, from ACH file processing to risk analysis.</p>
                     </div>
                 </div>
-
                 <div class="why-item">
                     <div class="why-number">03</div>
                     <div class="why-text">
-                        <h3>Transparent Economics</h3>
+                        <h3>Transparent pricing, honest value</h3>
                         <p>Free web tools forever. Optional downloads at honest prices. Our AI development costs are public—most apps cost under $1 to build.</p>
-                    </div>
-                </div>
-
-                <div class="why-item">
-                    <div class="why-number">04</div>
-                    <div class="why-text">
-                        <h3>Professional Standards</h3>
-                        <p>Enterprise-grade accuracy and validation. Built with the same rigor as commercial software, but accessible to everyone.</p>
-                    </div>
-                </div>
-
-                <div class="why-item">
-                    <div class="why-number">05</div>
-                    <div class="why-text">
-                        <h3>Open & Accountable</h3>
-                        <p>Code is visible on GitHub. See exactly how your data is processed. Trust through transparency, not marketing claims.</p>
-                    </div>
-                </div>
-
-                <div class="why-item">
-                    <div class="why-number">06</div>
-                    <div class="why-text">
-                        <h3>Community Driven</h3>
-                        <p>Your feedback shapes development. Request features, report bugs, suggest improvements. We build what you need.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <section id="apps" class="apps-section">
+    <!-- Apps Section -->
+    <section class="apps-section" id="apps">
         <h2>Available Tools</h2>
+        <p>Choose what works for you. Free web tools, optional upgrades, no pressure.</p>
+        
         <div class="apps-grid">
+            <!-- NACHA Viewer -->
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-nacha.svg" alt="NACHA File Viewer">
+                    <img src="assets/logo-nacha.svg" alt="NACHA Viewer">
                 </div>
                 <div class="app-body">
-                    <span class="category">Banking</span>
+                    <span class="category">Operations</span>
                     <h3>NACHA File Viewer</h3>
-                    <p>Parse, validate, and search ACH files with instant error detection.</p>
-                    <a href="nacha-viewer/landing/index.html" class="app-link">Try Free →</a>
+                    <p>Parse, validate, and examine ACH files with line-by-line analysis and CSV export.</p>
+                    <a href="nacha-viewer/index.html" class="app-link">Try Free →</a>
                 </div>
             </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <img src="assets/logo-finance.svg" alt="Financial Analysis Suite">
-                </div>
-                <div class="app-body">
-                    <span class="category">Finance</span>
-                    <h3>Financial Analysis Suite</h3>
-                    <p>ROI, NPV, IRR, break-even, and budget variance in one tool.</p>
-                    <a href="financial-analysis/index.html" class="app-link">Try Free →</a>
-                </div>
-            </div>
+
+            <!-- Cash Flow Forecaster -->
             <div class="app-card">
                 <div class="app-header">
                     <img src="assets/logo-cashflow.svg" alt="Cash Flow Forecaster">
                 </div>
                 <div class="app-body">
                     <span class="category">Finance</span>
-                    <h3>Cash Flow Forecaster</h3>
-                    <p>13-week projections with burn rate tracking and runway alerts.</p>
-                    <a href="cash-flow/landing/index.html" class="app-link">Try Free →</a>
+                    <h3>Cash Flow Forecaster Pro</h3>
+                    <p>13-week rolling forecast with scenario planning and actual vs. forecast comparison.</p>
+                    <a href="cash-flow/index.html" class="app-link">Try Free →</a>
                 </div>
             </div>
+
+            <!-- ROI Calculator -->
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-qr.svg" alt="QR Code Generator">
-                </div>
-                <div class="app-body">
-                    <span class="category">Utilities</span>
-                    <h3>QR Code Generator</h3>
-                    <p>Advanced QR codes with colors, logos, 8 formats, and batch mode.</p>
-                    <a href="qr-generator/index.html" class="app-link">Try Free →</a>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <img src="assets/logo-budget.svg" alt="Budget Variance">
+                    <img src="assets/logo-finance.svg" alt="ROI Calculator">
                 </div>
                 <div class="app-body">
                     <span class="category">Finance</span>
-                    <h3>Budget vs Actual</h3>
-                    <p>Track budget variance with category analysis and exportable reports.</p>
-                    <a href="financial-analysis/index.html" class="app-link">Try Free →</a>
+                    <h3>ROI Calculator</h3>
+                    <p>Business case analysis with simple/advanced modes, sensitivity analysis, and multi-scenario comparison.</p>
+                    <a href="roi-calculator/index.html" class="app-link">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Break-Even Analysis -->
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-invoice.svg" alt="Invoice Aging Tracker">
+                    <img src="assets/logo-finance.svg" alt="Break-Even Analysis">
                 </div>
                 <div class="app-body">
-                    <span class="category">Operations</span>
+                    <span class="category">Finance</span>
+                    <h3>Break-Even Analysis Tool</h3>
+                    <p>Pricing analysis with multi-product support, contribution margin calculator, and profit projections.</p>
+                    <a href="break-even/index.html" class="app-link">Try Free →</a>
+                </div>
+            </div>
+
+            <!-- Invoice Aging Tracker -->
+            <div class="app-card">
+                <div class="app-header">
+                    <img src="assets/logo-finance.svg" alt="Invoice Aging Tracker">
+                </div>
+                <div class="app-body">
+                    <span class="category">Finance</span>
                     <h3>Invoice Aging Tracker</h3>
-                    <p>Track overdue invoices with aging buckets and dunning templates.</p>
+                    <p>Upload invoices, auto-categorize by aging buckets, generate dunning email templates.</p>
                     <a href="invoice-aging/index.html" class="app-link">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Budget vs Actual -->
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-reconciliation.svg" alt="Payment Reconciliation">
+                    <img src="assets/logo-finance.svg" alt="Budget vs Actual">
+                </div>
+                <div class="app-body">
+                    <span class="category">Finance</span>
+                    <h3>Budget vs. Actual Tracker</h3>
+                    <p>Variance analysis with visual charts, drill-down capabilities, and department rollups.</p>
+                    <a href="budget-actual/index.html" class="app-link">Try Free →</a>
+                </div>
+            </div>
+
+            <!-- Payment Reconciliation -->
+            <div class="app-card">
+                <div class="app-header">
+                    <img src="assets/logo-finance.svg" alt="Payment Reconciliation">
                 </div>
                 <div class="app-body">
                     <span class="category">Operations</span>
-                    <h3>Payment Reconciliation</h3>
-                    <p>Auto-match payments to invoices with exportable reports.</p>
+                    <h3>Payment Reconciliation Helper</h3>
+                    <p>Auto-match payments to invoices, flag unmatched items with custom matching rules.</p>
                     <a href="reconciliation/index.html" class="app-link">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Loan Portfolio Analyzer -->
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-monte-carlo.svg" alt="Monte Carlo Simulator">
-                </div>
-                <div class="app-body">
-                    <span class="category">Risk Analysis</span>
-                    <h3>Monte Carlo Risk Simulator</h3>
-                    <p>Bank Call Report analysis with Monte Carlo risk modeling and multi-bank comparison.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
-                    <a href="monte-carlo/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <img src="assets/logo-portfolio.svg" alt="Loan Portfolio Analyzer">
+                    <img src="assets/logo-loan.svg" alt="Loan Portfolio Analyzer">
                 </div>
                 <div class="app-body">
                     <span class="category">Banking</span>
                     <h3>Loan Portfolio Analyzer</h3>
-                    <p>Analyze loan performance, risk distribution, and portfolio metrics with PDF reports.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
-                    <a href="loan-portfolio-analyzer/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
+                    <p>Analyze loan performance, calculate metrics (NPL ratio, LTV distribution), track trends.</p>
+                    <a href="loan-portfolio-analyzer/index.html" class="app-link">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Capital Adequacy Calculator -->
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-3d-printer.svg" alt="3D Connector Builder">
+                    <img src="assets/logo-capital.svg" alt="Capital Adequacy Calculator">
                 </div>
                 <div class="app-body">
-                    <span class="category">Manufacturing</span>
-                    <h3>3D Connector Builder</h3>
-                    <p>Generate printable STL files with custom connection adapters.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
-                    <a href="3d-printer/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
-                </div>
-            </div>
-            <div class="app-card">
-                <div class="app-header">
-                    <img src="assets/logo-capacity.svg" alt="Capital Adequacy Calculator">
-                </div>
-                <div class="app-body">
-                    <span class="category">Banking</span>
+                    <span class="category">Risk Management</span>
                     <h3>Capital Adequacy Calculator</h3>
-                    <p>Calculate Tier 1/2 capital ratios, risk-weighted assets, and regulatory compliance.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
-                    <a href="capital-adequacy-calculator/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
+                    <p>Calculate CET1 ratio, Tier 1 ratio, Total capital ratio against regulatory requirements.</p>
+                    <a href="capital-adequacy-calculator/index.html" class="app-link">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Credit Risk Scoring -->
             <div class="app-card">
                 <div class="app-header">
                     <img src="assets/logo-credit.svg" alt="Credit Risk Scoring">
@@ -808,10 +771,12 @@
                     <span class="category">Risk Management</span>
                     <h3>Credit Risk Scoring</h3>
                     <p>PD/LGD analysis, credit quality distribution, and risk scoring with CSV export.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
+                    <span style="color: var(--success); font-size: 0.85rem; font-weight: 600;">New!</span>
                     <a href="credit-risk-scoring/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Liquidity Risk Dashboard -->
             <div class="app-card">
                 <div class="app-header">
                     <img src="assets/logo-liquidity.svg" alt="Liquidity Risk Dashboard">
@@ -820,10 +785,12 @@
                     <span class="category">Risk Management</span>
                     <h3>Liquidity Risk Dashboard</h3>
                     <p>LCR/NSFR tracking, cash position monitoring, and liquidity stress testing.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
+                    <span style="color: var(--success); font-size: 0.85rem; font-weight: 600;">New!</span>
                     <a href="liquidity-risk-dashboard/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Net Interest Margin Analysis -->
             <div class="app-card">
                 <div class="app-header">
                     <img src="assets/logo-nim.svg" alt="Net Interest Margin Analysis">
@@ -832,10 +799,12 @@
                     <span class="category">Financial Analysis</span>
                     <h3>Net Interest Margin Analysis</h3>
                     <p>NIM tracking, gap analysis, and interest rate risk assessment.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
+                    <span style="color: var(--success); font-size: 0.85rem; font-weight: 600;">New!</span>
                     <a href="net-interest-margin-analysis/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Stress Test Scenarios -->
             <div class="app-card">
                 <div class="app-header">
                     <img src="assets/logo-stress.svg" alt="Stress Test Scenarios">
@@ -844,99 +813,91 @@
                     <span class="category">Risk Management</span>
                     <h3>Stress Test Scenarios</h3>
                     <p>Custom stress testing, scenario analysis, and regulatory compliance templates.</p>
-                    <span style="color: var(--success); font-size: 0.9rem; font-weight: 600;">New!</span>
+                    <span style="color: var(--success); font-size: 0.85rem; font-weight: 600;">New!</span>
                     <a href="stress-test-scenarios/index.html" class="app-link" style="margin-left: 8px;">Try Free →</a>
                 </div>
             </div>
+
+            <!-- Monte Carlo Risk Simulator -->
+            <div class="app-card">
+                <div class="app-header">
+                    <img src="assets/logo-monte.svg" alt="Monte Carlo Risk Simulator">
+                </div>
+                <div class="app-body">
+                    <span class="category">Risk Management</span>
+                    <h3>Monte Carlo Risk Simulator</h3>
+                    <p>Probability distribution analysis, VaR calculation, confidence intervals, and risk assessment.</p>
+                    <a href="monte-carlo/index.html" class="app-link">Try Free →</a>
+                </div>
+            </div>
+
+            <!-- Financial Analysis Dashboard -->
+            <div class="app-card">
+                <div class="app-header">
+                    <img src="assets/logo-finance.svg" alt="Financial Analysis Dashboard">
+                </div>
+                <div class="app-body">
+                    <span class="category">Financial Analysis</span>
+                    <h3>Financial Analysis Dashboard</h3>
+                    <p>Comprehensive financial metrics, ratio analysis, and performance benchmarking.</p>
+                    <a href="financial-analysis/index.html" class="app-link">Try Free →</a>
+                </div>
+            </div>
+
+            <!-- QR Code Generator -->
+            <div class="app-card">
+                <div class="app-header">
+                    <img src="assets/logo-qr.svg" alt="QR Code Generator">
+                </div>
+                <div class="app-body">
+                    <span class="category">Utilities</span>
+                    <h3>QR Code Generator</h3>
+                    <p>Generate QR codes for payments, links, and text with customizable styling and branding.</p>
+                    <a href="qr-generator/index.html" class="app-link">Try Free →</a>
+                </div>
+            </div>
         </div>
     </section>
 
-    <section class="pricing">
-        <h2>Fair, Transparent Pricing</h2>
-        <p>Choose what works for you. Free web tools, optional upgrades, no pressure.</p>
-        <div class="pricing-cards">
-            <div class="price-card">
+    <!-- Pricing -->
+    <section class="pricing" id="pricing">
+        <h2>Pricing</h2>
+        <p class="pricing-subtitle">Free web tools forever. Optional downloads when you need more.</p>
+        
+        <div class="pricing-grid">
+            <div class="pricing-card">
                 <h3>Free Web Tools</h3>
-                <div class="price-amount">$0</div>
-                <div class="price-period">Forever</div>
-                <ul class="price-features">
+                <div class="pricing-price">$0<span>/forever</span></div>
+                <ul class="pricing-features">
                     <li>All 15 tools included</li>
-                    <li>No signup required</li>
-                    <li>No data tracking</li>
                     <li>Unlimited usage</li>
-                    <li>Regular updates</li>
+                    <li>Full functionality</li>
+                    <li>No account required</li>
+                    <li>Client-side only</li>
                 </ul>
-                <a href="#apps" class="btn btn-secondary" style="background: var(--gray-200); display: inline-block;">Start Using Free</a>
+                <a href="#apps" class="btn-pricing secondary">Start Using Free</a>
             </div>
-            <div class="price-card featured">
-                <div class="price-badge">Most Popular</div>
-                <h3>All-Access Pass</h3>
-                <div class="price-amount">$13</div>
-                <div class="price-period">per month</div>
-                <ul class="price-features">
-                    <li>Everything in Free</li>
-                    <li>Offline desktop apps</li>
-                    <li>Priority features</li>
+            
+            <div class="pricing-card featured">
+                <span class="pricing-badge">Best Value</span>
+                <h3>B subscriber</h3>
+                <div class="pricing-price">$13<span>/month</span></div>
+                <ul class="pricing-features">
+                    <li>All downloadable versions</li>
+                    <li>Offline functionality</li>
+                    <li>Priority feature requests</li>
                     <li>Direct support channel</li>
                     <li>Early access to new tools</li>
-                    <li>Cancel anytime</li>
                 </ul>
-                <a href="#" class="btn btn-primary" style="display: inline-block;">Subscribe Now</a>
+                <a href="#" class="btn-pricing primary">Subscribe (Coming Soon)</a>
             </div>
         </div>
     </section>
 
-    <footer id="about">
-        <div class="footer-inner">
-            <div class="footer-grid">
-                <div class="footer-brand">
-                    <img src="assets/logo-shanglabs.svg" alt="Shanglabs">
-                    <h3>Shanglabs</h3>
-                    <p>Better tools for the work that matters. Built with AI, priced fairly, available for everyone.</p>
-                </div>
-                <div class="footer-column">
-                    <h4>Tools</h4>
-                    <a href="nacha-viewer/landing/index.html">NACHA File Viewer</a>
-                    <a href="financial-analysis/index.html">Financial Analysis</a>
-                    <a href="cash-flow/landing/index.html">Cash Flow Forecaster</a>
-                    <a href="qr-generator/index.html">QR Code Generator</a>
-                </div>
-                <div class="footer-column">
-                    <h4>Resources</h4>
-                    <a href="#apps">All Tools</a>
-                    <a href="#why">How It Works</a>
-                    <a href="AI_COST_TRACKER.md">Transparent Pricing</a>
-                    <a href="TESTING.md">Quality Assurance</a>
-                </div>
-                <div class="footer-column">
-                    <h4>Legal</h4>
-                    <a href="legal.html">Privacy Policy</a>
-                    <a href="legal.html">Terms of Service</a>
-                </div>
-                <div class="footer-column">
-                    <h4>Connect</h4>
-                    <a href="https://shangle.me">shangle.me</a>
-                    <a href="https://github.com/shangle/shanglabs">GitHub</a>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>© 2026 Shanglabs. Available for everyone.</p>
-                <div class="footer-stats">
-                    <div class="footer-stat">
-                        <span>🔬</span>
-                        <span>9 tools</span>
-                    </div>
-                    <div class="footer-stat">
-                        <span>📈</span>
-                        <span>More coming</span>
-                    </div>
-                    <div class="footer-stat">
-                        <span>💎</span>
-                        <span>5% funded</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <!-- Footer -->
+    <footer class="site-footer">
+        <p>Built for Shanglabs • Client-side only — Your data stays in your browser</p>
+        <p style="font-size: 0.9rem;"><a href="https://shangle.me" target="_blank">shangle.me</a></p>
     </footer>
 
     <script>
@@ -944,15 +905,15 @@
             const menu = document.getElementById('mobileMenu');
             menu.classList.toggle('active');
         }
-        
-        // Handle resize
-        window.addEventListener('resize', () => {
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
             const menu = document.getElementById('mobileMenu');
-            if (window.innerWidth > 600) {
+            const btn = document.querySelector('.mobile-menu-btn');
+            if (menu && !menu.contains(e.target) && !btn.contains(e.target)) {
                 menu.classList.remove('active');
             }
         });
     </script>
 </body>
 </html>
-l>
