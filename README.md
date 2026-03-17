@@ -1,4 +1,4 @@
-# Shanglabs — Deployment Guide
+# Shanglabs - Deployment Guide
 
 ## Quick Links
 
@@ -14,7 +14,7 @@ Shanglabs is **15 professional banking and business tools**, all client-side, no
 ### All Tools
 
 | Tool | Category | Status | Price | Export |
-|-------|----------|--------|-------|--------|
+|-------|----------|--------|--------|--------|
 | NACHA File Viewer | Operations | Live | TBD | CSV |
 | Cash Flow Forecaster Pro | Finance | Live | TBD | CSV, PDF |
 | ROI Calculator | Finance | Live | TBD | CSV, PDF |
@@ -57,7 +57,7 @@ shangle.me/
 
 ### Option B: Separate Repository
 
-Create a dedicated `shanglabs` repository for the tools.
+Create a dedicated `shanglabs` repository for tools.
 
 **Result:** `https://timshangle.github.io/shanglabs/` or custom domain like `tools.shangle.me`
 
@@ -74,7 +74,7 @@ cd /path/to/shangle.me
 git checkout -b shanglabs
 ```
 
-2. Copy the `shanglabs` folder into your repository:
+2. Copy `shanglabs` folder into your repository:
 
 ```bash
 cp -r /path/to/shanglabs .
@@ -131,23 +131,26 @@ git push -u origin main
 - **5 categories:** Operations, Finance, Risk Management, Banking, Financial Analysis, Utilities
 - **Marketing content:** Social media posts, email campaigns, blog articles ready to deploy
 - **Feature proposals:** 7 documented new app ideas in pipeline
+- **Documentation:** Complete README, deployment guide, app catalog
 
 ### Recent Improvements (2026-03-17)
 - **Homepage:** Fixed CSS bug, added favicon/OG tags, mobile navigation, linked all 15 apps
 - **Cash Flow Forecaster:** Added actual vs. forecast comparison, historical data import, variance analysis
 - **Monte Carlo Risk Simulator:** Added CSV export functionality
-- **Design System:** Standardized primary color across all apps
+- **Design System:** Standardized primary color (#6366f1) across all apps
+- **Mobile:** Full responsive design with hamburger menu and fluid typography
 
 ---
 
 ## Deployment Checklist
 
-- [ ] Choose deployment option (A or B)
+- [x] Choose deployment option (A or B)
 - [ ] Deploy to GitHub Pages
 - [ ] Verify all 15 tools load correctly
 - [ ] Test mobile responsiveness
 - [ ] Update "Subscribe" section with actual subscription link when ready
 - [ ] Add analytics (optional – client-side tools, only main site needs tracking)
+- [ ] Deploy marketing content (social media, blog posts)
 
 ---
 
@@ -156,9 +159,9 @@ git push -u origin main
 ```
 shanglabs/
 ├── index.html                    # Main landing (15 tools, mobile nav, SEO tags)
-├── README.md                    # This file
+├── README.md                    # Deployment guide (this file)
 ├── css/                         # Shared design system
-│   └── styles.css              # Component styles, color palette
+│   └── styles.css              # Component styles, color palette (#6366f1)
 ├── assets/                       # SVG logos for all tools
 │   ├── logo-nacha.svg
 │   ├── logo-cashflow.svg
@@ -196,7 +199,7 @@ shanglabs/
 ├── loan-portfolio-analyzer/      # Loan Portfolio Analyzer
 │   ├── index.html
 │   └── README.md
-├── break-even/                  # Break-Even Analysis Tool
+├── break-even/                 # Break-Even Analysis Tool
 │   ├── index.html
 │   └── styles.css
 ├── credit-risk-scoring/          # Credit Risk Scoring
@@ -211,8 +214,11 @@ shanglabs/
 ├── net-interest-margin-analysis/    # Net Interest Margin Analysis
 │   ├── index.html
 │   └── README.md
-└── qr-generator/                # QR Code Generator
-    └── index.html
+├── monte-carlo/                # Monte Carlo Risk Simulator
+│   └── index.html
+├── qr-generator/                # QR Code Generator
+│   └── index.html
+└── APP_CATALOG.md              # App catalog (in memory/)
 ```
 
 ---
@@ -220,7 +226,7 @@ shanglabs/
 ## Development Notes
 
 ### Design System
-All tools use the shared color palette from `css/styles.css`:
+All tools use → shared color palette from `css/styles.css`:
 - **Primary:** `#6366f1` (indigo)
 - **Secondary:** `#8b5cf6` (purple)
 - **Success:** `#10b981` (emerald)
@@ -239,8 +245,8 @@ All tools are **client-side only** – no servers, no data collection. User's fi
 
 ## Next Steps
 
-1. **Deploy** the tools to your chosen URL
-2. **Subscribe** section – Update with actual subscription link when ready
-3. **Analytics** – Add privacy-respecting analytics to main site (optional)
-4. **Marketing** – Deploy social media posts and email campaigns
-5. **New tools** – Build out feature proposals as demand dictates
+1. **Deploy** → tools to your chosen URL (shangle.me/shanglabs or custom domain)
+2. **Subscribe** → Update "Subscribe" section with actual subscription link when ready
+3. **Analytics** → Add privacy-respecting analytics to main site (optional)
+4. **Marketing** → Deploy social media posts and email campaigns
+5. **New tools** → Build out feature proposals as demand dictates
