@@ -4,6 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shanglabs — Better Tools for the Work That Matters</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔧</text></svg>">
+    <meta name="description" content="Free professional banking and business tools. NACHA viewer, cash flow forecaster, ROI calculator, and more. Client-side only, no signup required.">
+    <meta name="keywords" content="banking tools, NACHA viewer, cash flow forecaster, ROI calculator, financial analysis, business tools, free tools">
+    
+    <!-- Open Graph / Social Sharing -->
+    <meta property="og:title" content="Shanglabs — Better Tools for the Work That Matters">
+    <meta property="og:description" content="Free professional banking and business tools. NACHA viewer, cash flow forecaster, ROI calculator, and more. Client-side only, no signup required.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://shangle.me/shanglabs">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Shanglabs — Better Tools for the Work That Matters">
+    <meta name="twitter:description" content="Free professional banking and business tools. NACHA viewer, cash flow forecaster, ROI calculator, and more.">
+    
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -12,6 +27,7 @@
             --primary-dark: #4f46e5;
             --secondary: #8b5cf6;
             --accent: #f59e0b;
+            --success: #10b981;
             --white: #ffffff;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
@@ -59,6 +75,11 @@
             color: var(--gray-900);
         }
 
+        nav {
+            display: flex;
+            align-items: center;
+        }
+
         nav a {
             color: var(--gray-600);
             text-decoration: none;
@@ -68,6 +89,46 @@
         }
 
         nav a:hover { color: var(--primary); }
+
+        nav a:only-child { margin-left: 0; }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-600);
+            padding: 8px;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            background: white;
+            border-top: 1px solid var(--gray-200);
+            padding: 0 40px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            z-index: 99;
+        }
+
+        .mobile-menu.active { display: block; }
+
+        .mobile-menu a {
+            display: block;
+            padding: 16px 0;
+            color: var(--gray-600);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .mobile-menu a:hover { color: var(--primary); }
+        .mobile-menu a:last-child { border-bottom: none; }
 
         /* Hero */
         .hero {
@@ -220,8 +281,6 @@
             color: var(--gray-600);
             line-height: 1.7;
             font-size: 1rem;
-        }
-            color: var(--gray-900);
         }
 
         .feature-card p {
@@ -496,6 +555,8 @@
         }
 
         @media (max-width: 600px) {
+            .desktopNav { display: none; }
+            .mobile-menu-toggle { display: block; }
             .stats-bar { grid-template-columns: 1fr; }
             .feature-grid { grid-template-columns: 1fr; }
             .apps-grid { grid-template-columns: 1fr; }
@@ -510,11 +571,17 @@
             <img src="assets/logo-shanglabs.svg" alt="Shanglabs Logo">
             <span class="logo-text">Shanglabs</span>
         </a>
-        <nav>
+        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()" aria-label="Toggle menu">☰</button>
+        <nav id="desktopNav">
             <a href="#apps">Tools</a>
             <a href="#why">How It Works</a>
             <a href="#about">About</a>
         </nav>
+        <div class="mobile-menu" id="mobileMenu">
+            <a href="#apps" onclick="toggleMobileMenu()">Tools</a>
+            <a href="#why" onclick="toggleMobileMenu()">How It Works</a>
+            <a href="#about" onclick="toggleMobileMenu()">About</a>
+        </div>
     </header>
 
     <section class="hero">
@@ -528,7 +595,7 @@
 
     <div class="stats-bar">
         <div class="stat-item">
-            <div class="stat-value">9</div>
+            <div class="stat-value">15</div>
             <div class="stat-label">Professional Tools</div>
         </div>
         <div class="stat-item">
@@ -723,7 +790,7 @@
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-monte-carlo.svg" alt="Capital Adequacy Calculator">
+                    <img src="assets/logo-capacity.svg" alt="Capital Adequacy Calculator">
                 </div>
                 <div class="app-body">
                     <span class="category">Banking</span>
@@ -735,7 +802,7 @@
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-monte-carlo.svg" alt="Credit Risk Scoring">
+                    <img src="assets/logo-credit.svg" alt="Credit Risk Scoring">
                 </div>
                 <div class="app-body">
                     <span class="category">Risk Management</span>
@@ -747,7 +814,7 @@
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-monte-carlo.svg" alt="Liquidity Risk Dashboard">
+                    <img src="assets/logo-liquidity.svg" alt="Liquidity Risk Dashboard">
                 </div>
                 <div class="app-body">
                     <span class="category">Risk Management</span>
@@ -759,7 +826,7 @@
             </div>
             <div class="app-card">
                 <div class="app-header">
-                    <img src="assets/logo-monte-carlo.svg" alt="Net Interest Margin Analysis">
+                    <img src="assets/logo-nim.svg" alt="Net Interest Margin Analysis">
                 </div>
                 <div class="app-body">
                     <span class="category">Financial Analysis</span>
@@ -871,6 +938,21 @@
             </div>
         </div>
     </footer>
+
+    <script>
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('active');
+        }
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            const menu = document.getElementById('mobileMenu');
+            if (window.innerWidth > 600) {
+                menu.classList.remove('active');
+            }
+        });
+    </script>
 </body>
 </html>
 l>

@@ -81,8 +81,9 @@ git push -u origin main
 ## What's Included
 
 - **Main site** – App catalog, subscription info, about page
-- **NACHA Viewer** – Fully functional ACH file parser (ready to use)
-- **6 placeholder apps** – Coming soon cards for future development
+- **15 fully functional tools** – All tools are ready to use with export functionality
+- **Marketing content** – Social media posts, email campaigns, blog articles
+- **Feature proposals** – Documentation of potential new tools to build
 
 ---
 
@@ -100,16 +101,50 @@ git push -u origin main
 
 ```
 shanglabs/
-├── index.html              # Main landing page
-├── css/
-│   └── styles.css          # Main site styles
-├── js/
-│   └── app.js              # Main site interactivity
-├── nacha-viewer/           # NACHA File Viewer app
+├── index.html              # Main landing page (15 tools displayed)
+├── README.md               # This file
+├── assets/                 # SVG logos for all tools
+├── nacha-viewer/           # NACHA File Viewer
 │   ├── index.html
-│   ├── styles.css
+│   ├── landing/
+│   ├── app.js
 │   ├── nacha-parser.js
-│   ├── nacha-validator.js
-│   └── app.js
-└── README.md               # This file
+│   └── nacha-validator.js
+├── financial-analysis/     # Financial Analysis Suite
+│   ├── index.html
+│   └── README.md
+├── cash-flow/              # Cash Flow Forecaster (with comparison view)
+│   ├── index.html
+│   └── landing/
+├── roi-calculator/         # ROI Calculator
+│   ├── index.html
+│   └── README.md
+├── budget-actual/          # Budget vs Actual Tracker
+│   └── index.html
+├── invoice-aging/          # Invoice Aging Tracker
+│   └── index.html
+├── reconciliation/         # Payment Reconciliation Helper
+│   └── index.html
+├── monte-carlo/            # Monte Carlo Risk Simulator
+│   └── index.html
+├── credit-risk-scoring/    # Credit Risk Scoring
+│   └── index.html
+├── capital-adequacy-calculator/  # Capital Adequacy Calculator
+│   ├── index.html
+│   └── README.md
+├── liquidity-risk-dashboard/     # Liquidity Risk Dashboard
+│   └── index.html
+├── stress-test-scenarios/  # Stress Test Scenarios
+│   └── index.html
+├── net-interest-margin-analysis/  # Net Interest Margin Analysis
+│   ├── index.html
+│   └── README.md
+├── loan-portfolio-analyzer/  # Loan Portfolio Analyzer
+│   ├── index.html
+│   └── README.md
+├── break-even/             # Break-Even Analysis Tool
+│   ├── index.html
+│   └── styles.css
+└── qr-generator/           # QR Code Generator
+    └── index.html
 ```

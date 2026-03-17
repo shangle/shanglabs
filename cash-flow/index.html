@@ -18,6 +18,8 @@
             --warning-light: #fef3c7;
             --error: #ef4444;
             --error-light: #fee2e2;
+            --info: #3b82f6;
+            --info-light: #dbeafe;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -76,6 +78,57 @@
             gap: 10px;
         }
         
+        /* Tabs */
+        .view-tabs {
+            background: white;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+        }
+        
+        .view-tab {
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            color: var(--gray-600);
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        
+        .view-tab:hover {
+            color: var(--primary);
+            background: var(--gray-50);
+        }
+        
+        .view-tab.active {
+            color: var(--primary);
+        }
+        
+        .view-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%);
+        }
+        
+        /* View Panels */
+        .view-panel {
+            display: none;
+        }
+        
+        .view-panel.active {
+            display: block;
+        }
+        
         /* Toolbar */
         .toolbar {
             background: white;
@@ -130,6 +183,11 @@
             color: white;
         }
         
+        .btn-info {
+            background: linear-gradient(135deg, #0284c7 0%, #3b82f6 100%);
+            color: white;
+        }
+        
         .btn-outline {
             background: white;
             border: 1px solid var(--gray-300);
@@ -143,7 +201,7 @@
         .main-container {
             display: grid;
             grid-template-columns: 320px 1fr;
-            min-height: calc(100vh - 120px);
+            min-height: calc(100vh - 180px);
         }
         
         /* Sidebar */
@@ -152,7 +210,7 @@
             border-right: 1px solid var(--gray-200);
             padding: 20px;
             overflow-y: auto;
-            max-height: calc(100vh - 120px);
+            max-height: calc(100vh - 180px);
         }
         
         .sidebar-section {
@@ -337,6 +395,10 @@
             border-left: 4px solid var(--error);
         }
         
+        .metric-card.info {
+            border-left: 4px solid var(--info);
+        }
+        
         .metric-label {
             font-size: 0.75rem;
             text-transform: uppercase;
@@ -393,6 +455,10 @@
         .chart-card-body {
             padding: 20px;
             height: 350px;
+        }
+        
+        .chart-card-body.tall {
+            height: 450px;
         }
         
         /* Scenario Tabs */
@@ -491,6 +557,7 @@
         .text-success { color: var(--success); }
         .text-error { color: var(--error); }
         .text-warning { color: var(--warning); }
+        .text-info { color: var(--info); }
         .text-muted { color: var(--gray-500); }
         
         .font-mono { font-family: 'SF Mono', Monaco, monospace; }
@@ -517,6 +584,42 @@
         }
         
         .status-badge.danger {
+            background: var(--error-light);
+            color: #991b1b;
+        }
+        
+        .status-badge.info {
+            background: var(--info-light);
+            color: #075985;
+        }
+        
+        /* Variance Badge */
+        .variance-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .variance-badge.excellent {
+            background: var(--success-light);
+            color: #065f46;
+        }
+        
+        .variance-badge.good {
+            background: var(--info-light);
+            color: #075985;
+        }
+        
+        .variance-badge.fair {
+            background: var(--warning-light);
+            color: #92400e;
+        }
+        
+        .variance-badge.poor {
             background: var(--error-light);
             color: #991b1b;
         }
@@ -590,6 +693,106 @@
             gap: 12px;
         }
         
+        /* Drop Zone */
+        .drop-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        
+        .drop-zone-icon {
+            font-size: 3rem;
+            margin-bottom: 12px;
+        }
+        
+        .drop-zone-text {
+            font-size: 1rem;
+            color: var(--gray-600);
+            margin-bottom: 4px;
+        }
+        
+        .drop-zone-hint {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+        }
+        
+        /* Insights Panel */
+        .insights-panel {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--gray-200);
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .insights-panel h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .insights-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        
+        .insight-card {
+            background: var(--gray-50);
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .insight-card.positive {
+            background: var(--success-light);
+            border-color: var(--success);
+        }
+        
+        .insight-card.warning {
+            background: var(--warning-light);
+            border-color: var(--warning);
+        }
+        
+        .insight-card.concern {
+            background: var(--error-light);
+            border-color: var(--error);
+        }
+        
+        .insight-title {
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .insight-value {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .insight-desc {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            line-height: 1.4;
+        }
+        
         /* Empty State */
         .empty-state {
             text-align: center;
@@ -620,7 +823,8 @@
         }
         
         @media (max-width: 600px) {
-            .metrics-grid {
+            .metrics-grid,
+            .insights-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -632,11 +836,20 @@
                 padding: 8px;
                 font-size: 0.75rem;
             }
+            
+            .view-tabs {
+                padding: 0 12px;
+            }
+            
+            .view-tab {
+                padding: 12px 16px;
+                font-size: 0.85rem;
+            }
         }
         
         /* Print Styles */
         @media print {
-            .app-header, .toolbar, .sidebar, .modal-overlay, .btn {
+            .app-header, .toolbar, .sidebar, .modal-overlay, .btn, .view-tabs {
                 display: none !important;
             }
             
@@ -646,6 +859,10 @@
             
             .content {
                 padding: 0;
+            }
+            
+            .view-panel {
+                display: block !important;
             }
         }
     </style>
@@ -667,144 +884,245 @@
         </div>
     </header>
     
-    <!-- Toolbar -->
-    <div class="toolbar">
-        <div class="toolbar-group">
-            <button class="btn btn-secondary btn-sm" onclick="loadTemplate('startup')">Startup Template</button>
-            <button class="btn btn-secondary btn-sm" onclick="loadTemplate('retail')">🏪 Retail Template</button>
-            <button class="btn btn-secondary btn-sm" onclick="loadTemplate('saas')">☁️ SaaS Template</button>
+    <!-- View Tabs -->
+    <div class="view-tabs">
+        <button class="view-tab active" data-view="forecast" onclick="switchView('forecast')">📊 Forecast</button>
+        <button class="view-tab" data-view="comparison" onclick="switchView('comparison')">📈 Comparison</button>
+    </div>
+    
+    <!-- Forecast View -->
+    <div id="forecast-view" class="view-panel active">
+        <!-- Toolbar -->
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button class="btn btn-secondary btn-sm" onclick="loadTemplate('startup')">Startup Template</button>
+                <button class="btn btn-secondary btn-sm" onclick="loadTemplate('retail')">🏪 Retail Template</button>
+                <button class="btn btn-secondary btn-sm" onclick="loadTemplate('saas')">☁️ SaaS Template</button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-group">
+                <button class="btn btn-outline btn-sm" onclick="saveScenario()">💾 Save Scenario</button>
+                <button class="btn btn-outline btn-sm" onclick="loadScenario()">📂 Load Scenario</button>
+            </div>
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-group">
+                <button class="btn btn-outline btn-sm" onclick="sensitivityAnalysis()">Sensitivity Analysis</button>
+            </div>
         </div>
-        <div class="toolbar-divider"></div>
-        <div class="toolbar-group">
-            <button class="btn btn-outline btn-sm" onclick="saveScenario()">💾 Save Scenario</button>
-            <button class="btn btn-outline btn-sm" onclick="loadScenario()">📂 Load Scenario</button>
-        </div>
-        <div class="toolbar-divider"></div>
-        <div class="toolbar-group">
-            <button class="btn btn-outline btn-sm" onclick="sensitivityAnalysis()">Sensitivity Analysis</button>
+        
+        <!-- Main Layout -->
+        <div class="main-container">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Settings -->
+                <div class="sidebar-section">
+                    <h3>⚙️ Forecast Settings</h3>
+                    <div class="form-group">
+                        <label for="startingBalance">Starting Cash Balance</label>
+                        <input type="number" id="startingBalance" value="100000" min="0" step="1000">
+                        <span class="input-hint">Current bank balance</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="minThreshold">Minimum Cash Threshold</label>
+                        <input type="number" id="minThreshold" value="20000" min="0" step="1000">
+                        <span class="input-hint">Alert when below this amount</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="startDate">Forecast Start Date</label>
+                        <input type="date" id="startDate">
+                    </div>
+                    <div class="form-group">
+                        <label for="forecastWeeks">Forecast Period</label>
+                        <select id="forecastWeeks">
+                            <option value="4">4 Weeks</option>
+                            <option value="8">8 Weeks</option>
+                            <option value="13" selected>13 Weeks</option>
+                            <option value="26">26 Weeks</option>
+                            <option value="52">52 Weeks</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Inflows -->
+                <div class="sidebar-section">
+                    <h3>📥 Cash Inflows</h3>
+                    <div id="inflows-list" class="flow-list"></div>
+                    <button class="add-flow-btn" onclick="addFlowModal('inflow')">+ Add Inflow</button>
+                </div>
+                
+                <!-- Outflows -->
+                <div class="sidebar-section">
+                    <h3>📤 Cash Outflows</h3>
+                    <div id="outflows-list" class="flow-list"></div>
+                    <button class="add-flow-btn" onclick="addFlowModal('outflow')">+ Add Outflow</button>
+                </div>
+            </aside>
+            
+            <!-- Content -->
+            <main class="content">
+                <!-- Metrics -->
+                <div class="metrics-grid">
+                    <div class="metric-card primary">
+                        <div class="metric-label">Current Balance</div>
+                        <div class="metric-value" id="metricCurrent">$100,000</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Ending Balance</div>
+                        <div class="metric-value" id="metricEnding">$0</div>
+                        <div class="metric-change" id="metricChange"></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Monthly Burn Rate</div>
+                        <div class="metric-value" id="metricBurn">$0</div>
+                        <div class="metric-change" id="metricBurnChange"></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Runway</div>
+                        <div class="metric-value" id="metricRunway">∞</div>
+                        <div class="metric-change" id="metricRunwayStatus"></div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Inflows</div>
+                        <div class="metric-value text-success" id="metricInflows">$0</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-label">Total Outflows</div>
+                        <div class="metric-value text-error" id="metricOutflows">$0</div>
+                    </div>
+                </div>
+                
+                <!-- Chart -->
+                <div class="chart-card">
+                    <div class="chart-card-header">
+                        <h3>📈 Cash Position Forecast</h3>
+                        <div class="scenario-tabs">
+                            <button class="scenario-tab active" data-scenario="base">Base Case</button>
+                            <button class="scenario-tab" data-scenario="optimistic">Optimistic +20%</button>
+                            <button class="scenario-tab" data-scenario="pessimistic">Pessimistic -20%</button>
+                        </div>
+                    </div>
+                    <div class="chart-card-body">
+                        <canvas id="cashChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Data Table -->
+                <div class="data-table-container">
+                    <div class="data-table-header">
+                        <h3>Weekly Forecast Detail</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+                    </div>
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Week</th>
+                                <th>Date</th>
+                                <th>Starting</th>
+                                <th>Inflows</th>
+                                <th>Outflows</th>
+                                <th>Net</th>
+                                <th>Ending</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="forecastTable">
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    <div class="empty-state-icon">💰</div>
+                                    <p>Add cash flows and click "Generate Forecast" to see your projection</p>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </main>
         </div>
     </div>
     
-    <!-- Main Layout -->
-    <div class="main-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <!-- Settings -->
-            <div class="sidebar-section">
-                <h3>⚙️ Forecast Settings</h3>
-                <div class="form-group">
-                    <label for="startingBalance">Starting Cash Balance</label>
-                    <input type="number" id="startingBalance" value="100000" min="0" step="1000">
-                    <span class="input-hint">Current bank balance</span>
-                </div>
-                <div class="form-group">
-                    <label for="minThreshold">Minimum Cash Threshold</label>
-                    <input type="number" id="minThreshold" value="20000" min="0" step="1000">
-                    <span class="input-hint">Alert when below this amount</span>
-                </div>
-                <div class="form-group">
-                    <label for="startDate">Forecast Start Date</label>
-                    <input type="date" id="startDate">
-                </div>
-                <div class="form-group">
-                    <label for="forecastWeeks">Forecast Period</label>
-                    <select id="forecastWeeks">
-                        <option value="4">4 Weeks</option>
-                        <option value="8">8 Weeks</option>
-                        <option value="13" selected>13 Weeks</option>
-                        <option value="26">26 Weeks</option>
-                        <option value="52">52 Weeks</option>
-                    </select>
-                </div>
+    <!-- Comparison View -->
+    <div id="comparison-view" class="view-panel">
+        <div class="toolbar">
+            <div class="toolbar-group">
+                <button class="btn btn-info btn-sm" onclick="showImportModal()">📂 Import Historical Data</button>
             </div>
-            
-            <!-- Inflows -->
-            <div class="sidebar-section">
-                <h3>📥 Cash Inflows</h3>
-                <div id="inflows-list" class="flow-list"></div>
-                <button class="add-flow-btn" onclick="addFlowModal('inflow')">+ Add Inflow</button>
+            <div class="toolbar-divider"></div>
+            <div class="toolbar-group">
+                <button class="btn btn-outline btn-sm" onclick="exportComparisonCSV()">📥 Export Comparison</button>
             </div>
-            
-            <!-- Outflows -->
-            <div class="sidebar-section">
-                <h3>📤 Cash Outflows</h3>
-                <div id="outflows-list" class="flow-list"></div>
-                <button class="add-flow-btn" onclick="addFlowModal('outflow')">+ Add Outflow</button>
-            </div>
-        </aside>
+        </div>
         
-        <!-- Content -->
         <main class="content">
-            <!-- Metrics -->
+            <!-- Comparison Metrics -->
             <div class="metrics-grid">
+                <div class="metric-card info">
+                    <div class="metric-label">Historical Period</div>
+                    <div class="metric-value" id="metricHistorical">$0</div>
+                    <div class="metric-change text-muted">Actual ending balance</div>
+                </div>
+                <div class="metric-card info">
+                    <div class="metric-label">Forecast for Same Period</div>
+                    <div class="metric-value" id="metricForecastSame">$0</div>
+                    <div class="metric-change" id="metricForecastVariance"></div>
+                </div>
                 <div class="metric-card primary">
-                    <div class="metric-label">Current Balance</div>
-                    <div class="metric-value" id="metricCurrent">$100,000</div>
+                    <div class="metric-label">Overall Forecast Accuracy</div>
+                    <div class="metric-value" id="metricAccuracy">--%</div>
+                    <div class="metric-change" id="metricAccuracyStatus"></div>
                 </div>
                 <div class="metric-card">
-                    <div class="metric-label">Ending Balance</div>
-                    <div class="metric-value" id="metricEnding">$0</div>
-                    <div class="metric-change" id="metricChange"></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Monthly Burn Rate</div>
-                    <div class="metric-value" id="metricBurn">$0</div>
-                    <div class="metric-change" id="metricBurnChange"></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Runway</div>
-                    <div class="metric-value" id="metricRunway">∞</div>
-                    <div class="metric-change" id="metricRunwayStatus"></div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Total Inflows</div>
-                    <div class="metric-value text-success" id="metricInflows">$0</div>
-                </div>
-                <div class="metric-card">
-                    <div class="metric-label">Total Outflows</div>
-                    <div class="metric-value text-error" id="metricOutflows">$0</div>
+                    <div class="metric-label">Avg Monthly Variance</div>
+                    <div class="metric-value" id="metricAvgVariance">$0</div>
+                    <div class="metric-change" id="metricVarianceTrend"></div>
                 </div>
             </div>
             
-            <!-- Chart -->
-            <div class="chart-card">
-                <div class="chart-card-header">
-                    <h3>📈 Cash Position Forecast</h3>
-                    <div class="scenario-tabs">
-                        <button class="scenario-tab active" data-scenario="base">Base Case</button>
-                        <button class="scenario-tab" data-scenario="optimistic">Optimistic +20%</button>
-                        <button class="scenario-tab" data-scenario="pessimistic">Pessimistic -20%</button>
+            <!-- Insights Panel -->
+            <div class="insights-panel" id="insightsPanel">
+                <h3>💡 Performance Insights</h3>
+                <div class="insights-grid" id="insightsGrid">
+                    <div class="insight-card">
+                        <div class="insight-title">📌 Import data to see insights</div>
+                        <div class="insight-desc">Upload historical cash flow data to compare against your forecasts and identify accuracy patterns.</div>
                     </div>
                 </div>
-                <div class="chart-card-body">
-                    <canvas id="cashChart"></canvas>
+            </div>
+            
+            <!-- Variance Chart -->
+            <div class="chart-card">
+                <div class="chart-card-header">
+                    <h3>📉 Actual vs. Forecast Variance</h3>
+                </div>
+                <div class="chart-card-body tall">
+                    <canvas id="varianceChart"></canvas>
                 </div>
             </div>
             
-            <!-- Data Table -->
+            <!-- Comparison Table -->
             <div class="data-table-container">
                 <div class="data-table-header">
-                    <h3>Weekly Forecast Detail</h3>
-                    <button class="btn btn-secondary btn-sm" onclick="exportCSV()">📥 Export CSV</button>
+                    <h3>Actual vs. Forecast Comparison</h3>
+                    <div class="scenario-tabs">
+                        <button class="scenario-tab active" data-period="all">All Periods</button>
+                        <button class="scenario-tab" data-period="recent">Recent 4</button>
+                        <button class="scenario-tab" data-period="variance-high">High Variance</button>
+                    </div>
                 </div>
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Week</th>
-                            <th>Date</th>
-                            <th>Starting</th>
-                            <th>Inflows</th>
-                            <th>Outflows</th>
-                            <th>Net</th>
-                            <th>Ending</th>
-                            <th>Status</th>
+                            <th>Period</th>
+                            <th>Actual Balance</th>
+                            <th>Forecast Balance</th>
+                            <th>Variance</th>
+                            <th>Variance %</th>
+                            <th>Accuracy</th>
                         </tr>
                     </thead>
-                    <tbody id="forecastTable">
+                    <tbody id="comparisonTable">
                         <tr>
-                            <td colspan="8" class="empty-state">
-                                <div class="empty-state-icon"><img src="assets/logo-cashflow.svg" alt="" style="width: 60px; height: 60px;"></div>
-                                <p>Add cash flows and click "Generate Forecast" to see your projection</p>
+                            <td colspan="6" class="empty-state">
+                                <div class="empty-state-icon">📊</div>
+                                <p>Import historical data to see actual vs. forecast comparison</p>
                             </td>
                         </tr>
                     </tbody>
@@ -859,14 +1177,46 @@
         </div>
     </div>
     
+    <!-- Import Historical Data Modal -->
+    <div class="modal-overlay" id="importModal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h2>📂 Import Historical Data</h2>
+                <button class="modal-close" onclick="closeImportModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📄</div>
+                    <div class="drop-zone-text">Drop CSV file here or click to browse</div>
+                    <div class="drop-zone-hint">Supports date, balance, inflows, outflows columns</div>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h4 style="font-size: 0.875rem; margin-bottom: 8px;">Expected CSV Format:</h4>
+                    <pre style="background: var(--gray-50); padding: 12px; border-radius: 6px; font-size: 0.75rem; overflow-x: auto;">date,actual_balance,inflows,outflows
+2025-01-01,100000,0,0
+2025-01-31,112000,15000,-3000
+2025-02-28,108000,12000,-16000</pre>
+                </div>
+                
+                <div style="margin-top: 16px; padding: 12px; background: var(--info-light); border-radius: 6px; font-size: 0.8rem;">
+                    <strong>💡 Tip:</strong> Export your bank statements or accounting data as CSV to compare against your forecast accuracy.
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // State
         let inflows = [];
         let outflows = [];
         let forecastData = [];
+        let historicalData = [];
         let chart = null;
+        let varianceChart = null;
         let currentScenario = 'base';
         let flowType = 'inflow';
+        let comparisonPeriod = 'all';
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -877,12 +1227,26 @@
             renderFlows();
             
             // Scenario tabs
-            document.querySelectorAll('.scenario-tab').forEach(tab => {
-                tab.addEventListener('click', (e) => {
-                    document.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
-                    e.target.classList.add('active');
-                    currentScenario = e.target.dataset.scenario;
-                    updateChart();
+            document.querySelectorAll('#cashChart').forEach(chartArea => {
+                chartArea.parentElement.parentElement.querySelectorAll('.scenario-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        e.target.parentElement.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                        currentScenario = e.target.dataset.scenario;
+                        updateChart();
+                    });
+                });
+            });
+            
+            // Comparison period tabs
+            document.querySelectorAll('#comparisonTable').forEach(tableArea => {
+                tableArea.parentElement.parentElement.querySelectorAll('.scenario-tab').forEach(tab => {
+                    tab.addEventListener('click', (e) => {
+                        e.target.parentElement.querySelectorAll('.scenario-tab').forEach(t => t.classList.remove('active'));
+                        e.target.classList.add('active');
+                        comparisonPeriod = e.target.dataset.period;
+                        updateComparisonTable();
+                    });
                 });
             });
             
@@ -891,7 +1255,22 @@
                 document.getElementById('frequencyGroup').classList.toggle('hidden', e.target.value === 'onetime');
                 document.getElementById('weekGroup').classList.toggle('hidden', e.target.value === 'recurring');
             });
+            
+            // Drop zone
+            setupDropZone();
         });
+        
+        function switchView(view) {
+            document.querySelectorAll('.view-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[data-view="${view}"]`).classList.add('active');
+            
+            document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+            document.getElementById(`${view}-view`).classList.add('active');
+            
+            if (view === 'comparison') {
+                updateComparisonView();
+            }
+        }
         
         function getNextMonday() {
             const today = new Date();
@@ -973,7 +1352,6 @@
                 return;
             }
             
-            // Ensure correct sign
             if (flowType === 'outflow' && amount > 0) amount = -amount;
             if (flowType === 'inflow' && amount < 0) amount = -amount;
             
@@ -1027,7 +1405,6 @@
                 document.getElementById('weekGroup').classList.add('hidden');
             }
             
-            // Remove old and show modal
             deleteFlow(id, type);
             document.getElementById('flowModal').classList.add('active');
         }
@@ -1050,7 +1427,6 @@
                 let weekInflows = 0;
                 let weekOutflows = 0;
                 
-                // Calculate recurring flows
                 [...inflows, ...outflows].forEach(flow => {
                     if (flow.type === 'onetime' && flow.week === week) {
                         if (flow.amount > 0) weekInflows += flow.amount;
@@ -1091,13 +1467,8 @@
                 balance = endBalance;
             }
             
-            // Update metrics
             updateMetrics(startingBalance, totalInflows, totalOutflows, numWeeks, minThreshold);
-            
-            // Update table
             updateTable(numWeeks);
-            
-            // Update chart
             updateChart();
         }
         
@@ -1106,7 +1477,6 @@
             const totalChange = ending - starting;
             const monthlyBurn = totalChange < 0 ? Math.abs(totalChange) / (weeks / 4.33) : 0;
             
-            // Calculate runway
             let runway = '∞';
             const avgWeeklyBurn = totalOut > totalIn ? (totalOut - totalIn) / weeks : 0;
             if (avgWeeklyBurn > 0) {
@@ -1158,7 +1528,6 @@
             const labels = forecastData.map(r => `W${r.week}`);
             const baseData = forecastData.map(r => r.endBalance);
             
-            // Scenario adjustments
             let optimisticData, pessimisticData;
             if (currentScenario === 'optimistic') {
                 optimisticData = forecastData.map(r => r.endBalance * 1.2);
@@ -1231,8 +1600,386 @@
             });
         }
         
+        // Comparison View Functions
+        function updateComparisonView() {
+            updateComparisonMetrics();
+            updateVarianceChart();
+            updateComparisonTable();
+            updateInsights();
+        }
+        
+        function updateComparisonMetrics() {
+            const historicalEnding = historicalData.length > 0 ? historicalData[historicalData.length - 1].balance : 0;
+            const forecastForSamePeriod = forecastData.length > 0 ? forecastData[Math.min(historicalData.length - 1, forecastData.length - 1)]?.endBalance || 0 : 0;
+            const variance = historicalEnding - forecastForSamePeriod;
+            
+            document.getElementById('metricHistorical').textContent = formatCurrency(historicalEnding);
+            document.getElementById('metricForecastSame').textContent = formatCurrency(forecastForSamePeriod);
+            
+            const varianceEl = document.getElementById('metricForecastVariance');
+            if (historicalData.length > 0) {
+                const variancePercent = forecastForSamePeriod !== 0 ? ((variance / Math.abs(forecastForSamePeriod)) * 100).toFixed(1) : 0;
+                varianceEl.innerHTML = variance >= 0 
+                    ? `<span class="text-success">+${formatCurrency(variance)} (+${variancePercent}%)</span>`
+                    : `<span class="text-error">${formatCurrency(variance)} (${variancePercent}%)</span>`;
+            }
+            
+            // Calculate accuracy
+            if (historicalData.length > 0) {
+                const totalVariance = historicalData.reduce((sum, h, i) => {
+                    const forecastValue = forecastData[i]?.endBalance || 0;
+                    const hValue = h.balance;
+                    return sum + Math.abs(hValue - forecastValue);
+                }, 0);
+                const totalForecast = historicalData.reduce((sum, h, i) => {
+                    const forecastValue = forecastData[i]?.endBalance || 0;
+                    return sum + Math.abs(forecastValue);
+                }, 0);
+                
+                const accuracy = totalForecast > 0 ? ((1 - totalVariance / totalForecast) * 100).toFixed(1) : 0;
+                document.getElementById('metricAccuracy').textContent = accuracy + '%';
+                
+                const accuracyStatus = document.getElementById('metricAccuracyStatus');
+                if (parseFloat(accuracy) >= 90) {
+                    accuracyStatus.innerHTML = `<span class="text-success">Excellent</span>`;
+                } else if (parseFloat(accuracy) >= 75) {
+                    accuracyStatus.innerHTML = `<span class="text-info">Good</span>`;
+                } else if (parseFloat(accuracy) >= 50) {
+                    accuracyStatus.innerHTML = `<span class="text-warning">Fair</span>`;
+                } else {
+                    accuracyStatus.innerHTML = `<span class="text-error">Needs Improvement</span>`;
+                }
+                
+                // Average monthly variance
+                const avgMonthlyVar = totalVariance / (historicalData.length / 4.33);
+                document.getElementById('metricAvgVariance').textContent = formatCurrency(avgMonthlyVar);
+            }
+        }
+        
+        function updateVarianceChart() {
+            if (historicalData.length === 0 || varianceChart) return;
+            
+            const ctx = document.getElementById('varianceChart').getContext('2d');
+            const labels = historicalData.map(h => formatDate(new Date(h.date)));
+            const actualData = historicalData.map(h => h.balance);
+            const forecastDataPoints = historicalData.map((h, i) => forecastData[i]?.endBalance || 0);
+            const varianceData = historicalData.map((h, i) => h.balance - (forecastData[i]?.endBalance || 0));
+            
+            varianceChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [{
+                        label: 'Actual',
+                        data: actualData,
+                        backgroundColor: 'rgba(16, 185, 129, 0.7)',
+                        borderColor: '#10b981',
+                        borderWidth: 1
+                    }, {
+                        label: 'Forecast',
+                        data: forecastDataPoints,
+                        backgroundColor: 'rgba(99, 102, 241, 0.7)',
+                        borderColor: '#6366f1',
+                        borderWidth: 1
+                    }, {
+                        label: 'Variance',
+                        data: varianceData,
+                        type: 'line',
+                        borderColor: varianceData.some(v => Math.abs(v) > 10000) ? '#ef4444' : '#10b981',
+                        borderDash: [5, 5],
+                        fill: false,
+                        pointRadius: 4,
+                        pointBackgroundColor: varianceData.map(v => v >= 0 ? '#10b981' : '#ef4444')
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top' },
+                        tooltip: {
+                            callbacks: {
+                                label: ctx => `${ctx.dataset.label}: ${formatCurrency(ctx.raw)}`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            ticks: { callback: v => formatCurrency(v) }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function updateComparisonTable() {
+            const tbody = document.getElementById('comparisonTable');
+            
+            if (historicalData.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="empty-state">
+                            <div class="empty-state-icon">📊</div>
+                            <p>Import historical data to see actual vs. forecast comparison</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            let filteredData = historicalData.map((h, i) => {
+                const forecastVal = forecastData[i]?.endBalance || 0;
+                const variance = h.balance - forecastVal;
+                const variancePercent = forecastVal !== 0 ? ((variance / Math.abs(forecastVal)) * 100).toFixed(1) : 0;
+                const accuracy = 100 - Math.abs(parseFloat(variancePercent));
+                
+                return {
+                    period: formatDate(new Date(h.date)),
+                    actual: h.balance,
+                    forecast: forecastVal,
+                    variance,
+                    variancePercent,
+                    accuracy
+                };
+            });
+            
+            if (comparisonPeriod === 'recent') {
+                filteredData = filteredData.slice(-4);
+            } else if (comparisonPeriod === 'variance-high') {
+                filteredData = filteredData.sort((a, b) => Math.abs(b.variance) - Math.abs(a.variance)).slice(0, 5);
+            }
+            
+            tbody.innerHTML = filteredData.map(row => {
+                const varianceClass = Math.abs(row.variancePercent) < 10 ? 'excellent' : 
+                                     Math.abs(row.variancePercent) < 25 ? 'good' :
+                                     Math.abs(row.variancePercent) < 50 ? 'fair' : 'poor';
+                
+                return `
+                    <tr>
+                        <td><strong>${row.period}</strong></td>
+                        <td class="font-mono">${formatCurrency(row.actual)}</td>
+                        <td class="font-mono">${formatCurrency(row.forecast)}</td>
+                        <td class="font-mono ${row.variance >= 0 ? 'text-success' : 'text-error'}">
+                            ${row.variance >= 0 ? '+' : ''}${formatCurrency(Math.abs(row.variance))}
+                        </td>
+                        <td>
+                            <span class="variance-badge ${varianceClass}">
+                                ${row.variancePercent >= 0 ? '+' : ''}${row.variancePercent}%
+                            </span>
+                        </td>
+                        <td>
+                            <span class="status-badge ${row.accuracy >= 90 ? 'success' : row.accuracy >= 75 ? 'info' : row.accuracy >= 50 ? 'warning' : 'danger'}">
+                                ${row.accuracy.toFixed(0)}%
+                            </span>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function updateInsights() {
+            const insightsGrid = document.getElementById('insightsGrid');
+            
+            if (historicalData.length === 0) {
+                insightsGrid.innerHTML = `
+                    <div class="insight-card">
+                        <div class="insight-title">📌 Import data to see insights</div>
+                        <div class="insight-desc">Upload historical cash flow data to compare against your forecasts and identify accuracy patterns.</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            const insights = [];
+            
+            // Calculate overall accuracy trend
+            const firstHalf = historicalData.slice(0, Math.floor(historicalData.length / 2));
+            const secondHalf = historicalData.slice(Math.floor(historicalData.length / 2));
+            
+            const getAvgAccuracy = (data, startIndex) => {
+                const totalVariance = data.reduce((sum, h, i) => {
+                    const idx = startIndex + i;
+                    const forecastVal = forecastData[idx]?.endBalance || 0;
+                    return sum + Math.abs(h.balance - forecastVal);
+                }, 0);
+                const totalForecast = data.reduce((sum, h, i) => {
+                    const idx = startIndex + i;
+                    const forecastVal = forecastData[idx]?.endBalance || 0;
+                    return sum + Math.abs(forecastVal);
+                }, 0);
+                return totalForecast > 0 ? ((1 - totalVariance / totalForecast) * 100) : 0;
+            };
+            
+            const firstAccuracy = getAvgAccuracy(firstHalf, 0);
+            const secondAccuracy = getAvgAccuracy(secondHalf, Math.floor(historicalData.length / 2));
+            const accuracyTrend = secondAccuracy - firstAccuracy;
+            
+            if (accuracyTrend > 5) {
+                insights.push({
+                    type: 'positive',
+                    title: '📈 Accuracy Improving',
+                    value: '+' + accuracyTrend.toFixed(0) + '%',
+                    desc: 'Your forecast accuracy has improved in recent periods. Your predictions are becoming more reliable.'
+                });
+            } else if (accuracyTrend < -5) {
+                insights.push({
+                    type: 'concern',
+                    title: '📉 Accuracy Declining',
+                    value: accuracyTrend.toFixed(0) + '%',
+                    desc: 'Forecast accuracy has worsened recently. Review your cash flow assumptions and update recurring amounts.'
+                });
+            }
+            
+            // Check for consistent over/under forecasting
+            const variances = historicalData.map((h, i) => h.balance - (forecastData[i]?.endBalance || 0));
+            const avgVariance = variances.reduce((a, b) => a + b, 0) / variances.length;
+            
+            if (Math.abs(avgVariance / (historicalData[historicalData.length - 1]?.balance || 1)) > 0.1) {
+                const direction = avgVariance > 0 ? 'underestimating' : 'overestimating';
+                insights.push({
+                    type: 'warning',
+                    title: '⚠️ Forecast Bias Detected',
+                    value: formatCurrency(Math.abs(avgVariance)),
+                    desc: `You are consistently ${direction} cash balances by an average of ${formatCurrency(Math.abs(avgVariance))}. Adjust your forecasts accordingly.`
+                });
+            }
+            
+            // Cash flow volatility check
+            const volatility = calculateVolatility(variances);
+            if (volatility > 0.3) {
+                insights.push({
+                    type: 'warning',
+                    title: '📊 High Cash Flow Volatility',
+                    value: (volatility * 100).toFixed(0) + '%',
+                    desc: 'Your cash flows are highly volatile. Consider building larger cash buffers for unexpected shortfalls.'
+                });
+            }
+            
+            // Runway accuracy
+            const startingBalance = parseFloat(document.getElementById('startingBalance').value) || 0;
+            if (startingBalance > 0) {
+                const actualRunway = historicalData.filter(h => h.balance > 0).length;
+                const forecastRunway = forecastData.filter(f => f.endBalance > 0).length;
+                if (Math.abs(actualRunway - forecastRunway) > 2) {
+                    insights.push({
+                        type: actualRunway < forecastRunway ? 'concern' : 'positive',
+                        title: actualRunway < forecastRunway ? '⚠️ Shorter Runway Expected' : '✓ Extended Runway',
+                        value: actualRunway + ' vs ' + forecastRunway + ' weeks',
+                        desc: actualRunway < forecastRunaway 
+                            ? 'Actual runway is shorter than forecast. Review monthly burn rate assumptions.'
+                            : 'You maintained a longer runway than expected. Good cash management!'
+                    });
+                }
+            }
+            
+            if (insights.length === 0) {
+                insights.push({
+                    type: 'positive',
+                    title: '✓ Forecasts On Track',
+                    value: 'Stable',
+                    desc: 'Your forecasts are consistent with actual results. Continue monitoring and adjust as needed.'
+                });
+            }
+            
+            insightsGrid.innerHTML = insights.map(insight => `
+                <div class="insight-card ${insight.type}">
+                    <div class="insight-title">${insight.title}</div>
+                    <div class="insight-value">${insight.value}</div>
+                    <div class="insight-desc">${insight.desc}</div>
+                </div>
+            `).join('');
+        }
+        
+        function calculateVolatility(values) {
+            const mean = values.reduce((a, b) => a + b, 0) / values.length;
+            const variance = values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
+            return Math.sqrt(variance) / Math.abs(mean);
+        }
+        
+        // Import Functions
+        function showImportModal() {
+            document.getElementById('importModal').classList.add('active');
+        }
+        
+        function closeImportModal() {
+            document.getElementById('importModal').classList.remove('active');
+        }
+        
+        function setupDropZone() {
+            const dropZone = document.getElementById('dropZone');
+            
+            dropZone.addEventListener('click', () => {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = '.csv';
+                input.onchange = (e) => handleFileImport(e.target.files[0]);
+                input.click();
+            });
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    handleFileImport(e.dataTransfer.files[0]);
+                }
+            });
+        }
+        
+        function handleFileImport(file) {
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                try {
+                    parseHistoricalCSV(e.target.result);
+                    closeImportModal();
+                    alert(`Imported ${historicalData.length} historical data points`);
+                    updateComparisonView();
+                } catch (err) {
+                    alert('Error parsing CSV: ' + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+        
+        function parseHistoricalCSV(csvText) {
+            const lines = csvText.trim().split('\n');
+            const headers = lines[0].toLowerCase().split(',').map(h => h.trim());
+            
+            const dateIdx = headers.findIndex(h => h.includes('date'));
+            const balanceIdx = headers.findIndex(h => h.includes('balance') || h.includes('actual'));
+            
+            historicalData = [];
+            
+            for (let i = 1; i < lines.length; i++) {
+                const values = lines[i].split(',').map(v => v.trim());
+                if (values.length < 2) continue;
+                
+                const date = values[dateIdx] || '';
+                const balance = parseFloat(values[balanceIdx] || 0);
+                
+                if (date && !isNaN(balance)) {
+                    historicalData.push({
+                        date,
+                        balance,
+                        inflows: parseFloat(values[headers.findIndex(h => h.includes('inflow'))] || 0),
+                        outflows: parseFloat(values[headers.findIndex(h => h.includes('outflow'))] || 0)
+                    });
+                }
+            }
+        }
+        
         function formatDate(date) {
-            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         }
         
         function formatCurrency(value) {
@@ -1347,6 +2094,30 @@
             const a = document.createElement('a');
             a.href = url;
             a.download = `cash-forecast-${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+        }
+        
+        function exportComparisonCSV() {
+            if (historicalData.length === 0) {
+                alert('Import historical data first');
+                return;
+            }
+            
+            let csv = 'Period,Actual Balance,Forecast Balance,Variance,Variance %,Accuracy\n';
+            historicalData.forEach((h, i) => {
+                const forecastVal = forecastData[i]?.endBalance || 0;
+                const variance = h.balance - forecastVal;
+                const variancePercent = forecastVal !== 0 ? ((variance / Math.abs(forecastVal)) * 100).toFixed(1) : 0;
+                const accuracy = 100 - Math.abs(parseFloat(variancePercent));
+                
+                csv += `"${formatDate(new Date(h.date))}",${h.balance},${forecastVal},${variance},${variancePercent}%,${accuracy.toFixed(1)}%\n`;
+            });
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cash-flow-comparison-${new Date().toISOString().split('T')[0]}.csv`;
             a.click();
         }
         
