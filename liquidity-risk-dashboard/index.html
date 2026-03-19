@@ -212,6 +212,25 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
     </style>
 </head>
 <body>
@@ -220,7 +239,10 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span>💧 Liquidity Risk Dashboard</span>
         </h1>
-        <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">📥 Export CSV</button>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="toggleHelp()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">? Help</button>
+            <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">Export CSV</button>
+        </div>
     </header>
 
     <div class="container">
@@ -571,6 +593,50 @@
             a.click();
             window.URL.revokeObjectURL(url);
         }
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Liquidity Risk Dashboard Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Liquidity Risk Dashboard monitors a bank's ability to meet short-term obligations. It tracks key liquidity ratios, cash positions, and provides early warning indicators when liquidity buffers are thinning.</p>
+
+            <h3>Key Metrics Explained</h3>
+            <ul>
+                <li><strong>Liquidity Coverage Ratio (LCR):</strong> High Quality Liquid Assets divided by Net Cash Outflows over 30 days. Must be above 100% per Basel III requirements.</li>
+                <li><strong>Net Stable Funding Ratio (NSFR):</strong> Available Stable Funding divided by Required Stable Funding. Must be above 100%. Measures long-term funding stability.</li>
+                <li><strong>Cash Position:</strong> Current cash and cash equivalents available. Monitor month-over-month trends.</li>
+                <li><strong>Liquidity Gap:</strong> Projected shortfall or surplus over the next 30 days. A negative gap requires management attention.</li>
+                <li><strong>Daily Cash Flow:</strong> Average net daily cash position. Helps identify daily liquidity patterns.</li>
+                <li><strong>30-Day Outflows:</strong> Total projected cash outflows for the next month.</li>
+            </ul>
+
+            <h3>Understanding the Charts</h3>
+            <ul>
+                <li><strong>Liquidity Trend:</strong> Shows LCR and NSFR over time. Look for downward trends that might signal emerging problems.</li>
+                <li><strong>Cash Flow Timeline:</strong> Daily inflows vs outflows, highlighting periods of potential stress.</li>
+                <li><strong>Maturity Ladder:</strong> Distribution of assets and liabilities by maturity bucket, revealing gap positions.</li>
+            </ul>
+
+            <h3>Warning Indicators</h3>
+            <p>The dashboard uses color-coded status indicators: green for healthy metrics, yellow for metrics approaching limits, and red for metrics that breach regulatory thresholds or internal limits.</p>
+
+            <div class="help-tip">Tip: Monitor the Liquidity Gap metric closely. A consistently negative gap may indicate structural funding issues that need to be addressed before they become critical.</div>
+
+            <div class="help-warning">Note: This dashboard uses illustrative data. Connect it with your bank's actual liquidity data for operational monitoring.</div>
+        </div>
+    </div>
 </body>
 </html>

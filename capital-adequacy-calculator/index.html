@@ -275,6 +275,26 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Help Panel */
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
     </style>
 </head>
 <body>
@@ -283,6 +303,7 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span>💰 Capital Adequacy Calculator</span>
         </h1>
+        <button onclick="toggleHelp()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">? Help</button>
     </header>
 
     <div class="container">
@@ -674,6 +695,59 @@
         }
 
         calculate();
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <!-- Help Panel -->
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Capital Adequacy Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Capital Adequacy Calculator helps banks determine whether they hold sufficient capital relative to their risk-weighted assets, in accordance with Basel III regulatory requirements. It calculates key capital ratios and checks compliance against minimum thresholds.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Enter Bank Assets</strong> -- Input Total Risk-Weighted Assets (RWA) and Total Assets in millions.</li>
+                <li><strong>Enter Capital Components</strong> -- Fill in Common Equity Tier 1 (CET1), Additional Tier 1, Total Tier 1, Tier 2, and Total Capital values.</li>
+                <li><strong>View Results</strong> -- Ratios are calculated automatically as you update values. The dashboard shows real-time compliance status.</li>
+            </ol>
+
+            <h3>Key Capital Ratios</h3>
+            <ul>
+                <li><strong>CET1 Ratio:</strong> Common Equity Tier 1 / RWA. Minimum requirement: 4.5%. This is the highest quality capital.</li>
+                <li><strong>Tier 1 Ratio:</strong> Total Tier 1 Capital / RWA. Minimum requirement: 6%. Includes CET1 plus Additional Tier 1.</li>
+                <li><strong>Total Capital Ratio:</strong> Total Capital / RWA. Minimum requirement: 8%. Includes Tier 1 plus Tier 2 capital.</li>
+                <li><strong>Leverage Ratio:</strong> Tier 1 Capital / Total Assets. Minimum requirement: 4%. A non-risk-based backstop measure.</li>
+            </ul>
+
+            <h3>Capital Components</h3>
+            <ul>
+                <li><strong>CET1:</strong> Common stock, retained earnings, and accumulated other comprehensive income.</li>
+                <li><strong>Additional Tier 1:</strong> Non-cumulative preferred stock and related surplus.</li>
+                <li><strong>Tier 2:</strong> Subordinated debt, loan loss reserves, and other qualifying instruments.</li>
+            </ul>
+
+            <h3>Compliance Status</h3>
+            <p>Each ratio is color-coded: green indicates compliance above minimum requirements, yellow shows the ratio is close to the minimum, and red flags non-compliance that requires immediate attention.</p>
+
+            <div class="help-tip">Tip: Well-capitalized banks typically maintain ratios 2-4 percentage points above the regulatory minimums to provide a buffer.</div>
+
+            <h3>Scenario Modeling</h3>
+            <p>Adjust the input values to model different scenarios, such as asset growth, capital raises, or stress conditions. The real-time calculation makes it easy to see the impact of changes.</p>
+
+            <div class="help-warning">Note: Capital Conservation Buffer (2.5%) and any applicable G-SIB surcharge are not included in the minimum thresholds shown. Banks should consider these additional requirements.</div>
+        </div>
+    </div>
 </body>
 </html>

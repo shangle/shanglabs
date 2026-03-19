@@ -316,6 +316,25 @@
             background: rgba(255,255,255,0.3);
         }
 
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
+
         /* Navigation Tabs */
         .nav-tabs {
             background: white;
@@ -964,7 +983,7 @@
         }
 
         function showHelp() {
-            alert('Financial Analysis Suite Help\n\nROI Calculator: Calculate investment returns with NPV, IRR, and payback period.\n\nBreak-Even: Find the point where revenue equals costs.\n\nBudget Variance: Compare budget vs actual spending.\n\nHover over the (?) icons for field explanations.');
+            toggleHelp();
         }
 
         // Check if user has seen welcome screen
@@ -1251,6 +1270,64 @@
                 maximumFractionDigits: 0
             }).format(value);
         }
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Financial Analysis Suite Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Financial Analysis Suite combines three essential financial analysis tools into one interface: ROI Calculator, Break-Even Analysis, and Budget Variance tracking. Switch between tools using the tabs at the top.</p>
+
+            <h3>ROI Calculator</h3>
+            <ol>
+                <li>Enter the <strong>Initial Investment</strong> amount (total upfront cost).</li>
+                <li>Set the <strong>Annual Cash Flow</strong> (expected yearly returns).</li>
+                <li>Choose the <strong>Project Duration</strong> in years.</li>
+                <li>Set the <strong>Discount Rate</strong> (your required rate of return or cost of capital).</li>
+                <li>Click "Calculate ROI" to see results.</li>
+            </ol>
+            <p><strong>Results include:</strong></p>
+            <ul>
+                <li><strong>Simple ROI:</strong> (Total Returns - Investment) / Investment as a percentage.</li>
+                <li><strong>NPV (Net Present Value):</strong> The present value of all future cash flows minus the initial investment. Positive NPV means the project adds value.</li>
+                <li><strong>IRR (Internal Rate of Return):</strong> The discount rate that makes NPV zero. Compare to your hurdle rate.</li>
+                <li><strong>Payback Period:</strong> How long until the initial investment is recovered.</li>
+            </ul>
+
+            <h3>Break-Even Analysis</h3>
+            <ol>
+                <li>Enter <strong>Fixed Costs</strong> (rent, salaries, etc.).</li>
+                <li>Set <strong>Variable Cost Per Unit</strong> and <strong>Price Per Unit</strong>.</li>
+                <li>Click "Calculate" to find your break-even point.</li>
+            </ol>
+            <p>The chart shows total revenue vs total costs, with the break-even point clearly marked where the lines intersect.</p>
+
+            <h3>Budget Variance</h3>
+            <ol>
+                <li>Upload two CSV files: one for <strong>Budget</strong> (planned amounts) and one for <strong>Actual</strong> spending.</li>
+                <li>The tool automatically calculates variance by category.</li>
+                <li>Color-coded results show favorable (under budget) and unfavorable (over budget) variances.</li>
+            </ol>
+
+            <div class="help-tip">Tip: Hover over the (?) icons next to any input field for a detailed explanation of what that field means and how to use it.</div>
+
+            <h3>Dark Mode</h3>
+            <p>Click the moon icon in the header to toggle dark mode for comfortable viewing in low-light environments.</p>
+
+            <div class="help-warning">Note: Calculations are performed locally in your browser. No financial data is transmitted to any server.</div>
+        </div>
+    </div>
 </body>
 </html>

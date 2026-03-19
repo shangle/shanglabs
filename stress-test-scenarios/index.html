@@ -238,6 +238,25 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
     </style>
 </head>
 <body>
@@ -246,6 +265,7 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span>⚡ Stress Test Scenarios</span>
         </h1>
+        <button onclick="toggleHelp()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">? Help</button>
     </header>
 
     <div class="container">
@@ -706,6 +726,56 @@
         }
 
         runStressTest();
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Stress Test Scenarios Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Stress Test Scenarios tool models the impact of adverse economic conditions on a bank's financial health. It applies predefined and custom stress scenarios to evaluate how capital, earnings, and asset quality would be affected.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Enter Input Data</strong> -- Provide your bank's current financial position: total assets, capital ratio, NPL ratio, net income, and interest rate.</li>
+                <li><strong>Select Scenarios</strong> -- Choose from Mild Recession, Severe Recession, Market Crisis, or Interest Rate Shock scenarios.</li>
+                <li><strong>Run the Test</strong> -- Click "Run Stress Test" to calculate the impact of selected scenarios.</li>
+                <li><strong>Review Results</strong> -- Analyze how each scenario affects capital adequacy, asset quality, and profitability.</li>
+            </ol>
+
+            <h3>Scenario Definitions</h3>
+            <ul>
+                <li><strong>Mild Recession:</strong> GDP decline of 1-2%, moderate increase in unemployment. Tests baseline resilience.</li>
+                <li><strong>Severe Recession:</strong> GDP decline of 4-6%, significant unemployment spike. Tests capital buffers under stress.</li>
+                <li><strong>Market Crisis:</strong> Sharp decline in asset values, credit spread widening, liquidity freeze. Tests extreme conditions.</li>
+                <li><strong>Interest Rate Shock:</strong> Rapid 200-300bps rate increase. Tests interest rate sensitivity and NIM impact.</li>
+            </ul>
+
+            <h3>Understanding Results</h3>
+            <ul>
+                <li><strong>Capital Impact:</strong> How each scenario erodes capital ratios. Red flags when ratios drop below regulatory minimums.</li>
+                <li><strong>Asset Quality:</strong> Projected increase in NPLs and loan losses under stress.</li>
+                <li><strong>Earnings Impact:</strong> Effect on net income, showing how stress conditions compress margins.</li>
+            </ul>
+
+            <div class="help-tip">Tip: Run multiple scenarios and compare results to identify which risk factors have the greatest impact on your institution. This helps prioritize risk management efforts.</div>
+
+            <h3>Export Options</h3>
+            <p>Export results to CSV for inclusion in board reports, ALCO presentations, or regulatory filings.</p>
+
+            <div class="help-warning">Note: Stress test results are estimates based on simplified models. Actual outcomes may differ based on portfolio composition, management actions, and economic conditions.</div>
+        </div>
+    </div>
 </body>
 </html>
