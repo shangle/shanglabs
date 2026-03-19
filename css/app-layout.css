@@ -1,0 +1,381 @@
+/* ==========================================================================
+   Shanglabs - Shared App Layout
+   Common styles for all sub-application pages
+   Import after base.css: <link rel="stylesheet" href="../css/app-layout.css">
+   ========================================================================== */
+
+/* ---------- App Header ---------- */
+.app-header {
+    background: linear-gradient(135deg, var(--sl-primary) 0%, var(--sl-secondary) 100%);
+    color: var(--sl-white);
+    padding: var(--sl-space-4) var(--sl-space-6);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--sl-shadow-lg);
+}
+
+.app-header h1 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.app-header h1 img {
+    width: 32px;
+    height: 32px;
+    display: inline-block;
+}
+
+.app-header .header-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* ---------- Back Link ---------- */
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sl-space-1);
+    color: var(--sl-white);
+    text-decoration: none;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    transition: opacity var(--sl-transition);
+}
+
+.back-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+/* When back-link is inside a non-gradient header (light bg) */
+.app-header--light .back-link {
+    color: var(--sl-gray-600);
+}
+
+.app-header--light .back-link:hover {
+    color: var(--sl-primary);
+}
+
+/* ---------- Header Action Buttons ---------- */
+.header-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: var(--sl-radius);
+    font-size: 0.85rem;
+    font-weight: 500;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.15);
+    color: var(--sl-white);
+    cursor: pointer;
+    transition: all var(--sl-transition);
+    text-decoration: none;
+}
+
+.header-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.header-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ---------- Two-Column App Layout ---------- */
+.app-layout {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    min-height: calc(100vh - 60px);
+}
+
+.app-sidebar {
+    background: var(--sl-white);
+    border-right: 1px solid var(--sl-gray-200);
+    overflow-y: auto;
+    padding: var(--sl-space-6);
+}
+
+.app-main {
+    padding: var(--sl-space-6);
+    overflow-y: auto;
+}
+
+@media (max-width: 1024px) {
+    .app-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ---------- Single-Column App Layout ---------- */
+.app-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: var(--sl-space-6);
+}
+
+.app-content--narrow {
+    max-width: 1200px;
+}
+
+/* ---------- App Section ---------- */
+.app-section {
+    background: var(--sl-white);
+    border-radius: var(--sl-radius-md);
+    padding: var(--sl-space-6);
+    box-shadow: var(--sl-shadow);
+    margin-bottom: var(--sl-space-6);
+}
+
+.app-section h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--sl-gray-900);
+    margin-bottom: var(--sl-space-4);
+    display: flex;
+    align-items: center;
+    gap: var(--sl-space-2);
+}
+
+.app-section h3 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--sl-gray-800);
+    margin-bottom: var(--sl-space-3);
+}
+
+/* ---------- Metrics Grid ---------- */
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--sl-space-4);
+    margin-bottom: var(--sl-space-6);
+}
+
+.metric-card {
+    background: var(--sl-white);
+    border-radius: var(--sl-radius-md);
+    padding: var(--sl-space-5);
+    box-shadow: var(--sl-shadow);
+    border: 1px solid var(--sl-gray-200);
+}
+
+.metric-card .metric-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--sl-gray-500);
+    margin-bottom: var(--sl-space-1);
+}
+
+.metric-card .metric-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--sl-gray-900);
+}
+
+.metric-card .metric-change {
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-top: var(--sl-space-1);
+}
+
+.metric-card .metric-change.positive { color: var(--sl-success); }
+.metric-card .metric-change.negative { color: var(--sl-error); }
+
+/* ---------- Upload Area ---------- */
+.upload-area {
+    border: 2px dashed var(--sl-gray-300);
+    border-radius: var(--sl-radius-md);
+    padding: var(--sl-space-12) var(--sl-space-8);
+    text-align: center;
+    transition: all var(--sl-transition);
+    cursor: pointer;
+    background: var(--sl-gray-50);
+}
+
+.upload-area:hover,
+.upload-area.dragover {
+    border-color: var(--sl-primary);
+    background: var(--sl-primary-light);
+}
+
+.upload-area .upload-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--sl-gray-400);
+    margin: 0 auto var(--sl-space-4);
+}
+
+.upload-area .upload-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--sl-gray-700);
+    margin-bottom: var(--sl-space-2);
+}
+
+.upload-area .upload-hint {
+    color: var(--sl-gray-500);
+    font-size: 0.9rem;
+}
+
+/* ---------- Chart Container ---------- */
+.chart-container {
+    position: relative;
+    width: 100%;
+    min-height: 300px;
+    margin: var(--sl-space-4) 0;
+}
+
+/* ---------- Results / Output Panel ---------- */
+.results-panel {
+    background: var(--sl-gray-50);
+    border: 1px solid var(--sl-gray-200);
+    border-radius: var(--sl-radius-md);
+    padding: var(--sl-space-6);
+}
+
+/* ---------- Empty State ---------- */
+.empty-state {
+    text-align: center;
+    padding: var(--sl-space-16) var(--sl-space-6);
+    color: var(--sl-gray-400);
+}
+
+.empty-state .empty-icon {
+    font-size: 3rem;
+    margin-bottom: var(--sl-space-4);
+}
+
+.empty-state p {
+    font-size: 1.1rem;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* ---------- Tabs ---------- */
+.app-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid var(--sl-gray-200);
+    margin-bottom: var(--sl-space-6);
+    overflow-x: auto;
+}
+
+.app-tab {
+    padding: var(--sl-space-3) var(--sl-space-5);
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: var(--sl-gray-500);
+    border: none;
+    background: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+    transition: all var(--sl-transition);
+    white-space: nowrap;
+}
+
+.app-tab:hover {
+    color: var(--sl-gray-700);
+}
+
+.app-tab.active {
+    color: var(--sl-primary);
+    border-bottom-color: var(--sl-primary);
+}
+
+/* ---------- Alert / Notice ---------- */
+.app-alert {
+    padding: var(--sl-space-3) var(--sl-space-4);
+    border-radius: var(--sl-radius);
+    font-size: 0.9rem;
+    margin-bottom: var(--sl-space-4);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--sl-space-3);
+}
+
+.app-alert--info {
+    background: var(--sl-info-light);
+    color: #1e40af;
+    border: 1px solid #93c5fd;
+}
+
+.app-alert--success {
+    background: var(--sl-success-light);
+    color: #065f46;
+    border: 1px solid #6ee7b7;
+}
+
+.app-alert--warning {
+    background: var(--sl-warning-light);
+    color: #92400e;
+    border: 1px solid #fcd34d;
+}
+
+.app-alert--error {
+    background: var(--sl-error-light);
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+}
+
+/* ---------- App Footer ---------- */
+.app-footer {
+    text-align: center;
+    padding: var(--sl-space-6);
+    color: var(--sl-gray-400);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--sl-gray-200);
+    margin-top: var(--sl-space-10);
+}
+
+.app-footer a {
+    color: var(--sl-primary);
+    text-decoration: none;
+}
+
+.app-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ---------- Responsive App Layout ---------- */
+@media (max-width: 768px) {
+    .app-header {
+        padding: var(--sl-space-3) var(--sl-space-4);
+        flex-wrap: wrap;
+        gap: var(--sl-space-2);
+    }
+
+    .app-header h1 {
+        font-size: 1.1rem;
+    }
+
+    .app-content {
+        padding: var(--sl-space-4);
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .header-btn span {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+}
