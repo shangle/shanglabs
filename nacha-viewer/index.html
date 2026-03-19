@@ -14,9 +14,12 @@
             </div>
             <h1><img src="../assets/logo-nacha.svg" alt="" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 8px;">NACHA File Viewer</h1>
             <p class="subtitle">Secure, client-side NACHA file analysis for CCD & PPD formats</p>
-            <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">
-                🌙
-            </button>
+            <div style="display: flex; gap: 8px; position: absolute; top: 16px; right: 16px;">
+                <button onclick="toggleHelp()" style="background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: #6366f1; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">? Help</button>
+                <button id="themeToggle" class="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">
+                    🌙
+                </button>
+            </div>
         </header>
 
         <section class="upload-section">
@@ -106,6 +109,91 @@
             <p class="keyboard-hint">Keyboard shortcuts: <kbd>Ctrl+K</kbd> search • <kbd>Ctrl+E</kbd> export • <kbd>Esc</kbd> reset</p>
         </footer>
     </div>
+
+    <style>
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: #1f2937; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb; }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: #4b5563; line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body kbd { background: #f3f4f6; border: 1px solid #d1d5db; border-radius: 4px; padding: 2px 6px; font-size: 0.8rem; font-family: monospace; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: #f9fafb; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: #374151; }
+    </style>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>NACHA File Viewer Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The NACHA File Viewer parses and validates ACH (Automated Clearing House) files used for electronic payments in the US banking system. Upload a NACHA file to instantly view its contents, detect errors, and search through records.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Upload a File</strong> -- Drag and drop your NACHA file onto the upload area, or click to browse. You can also download a sample CCD file to test.</li>
+                <li><strong>Review Structure</strong> -- The viewer displays File Header, Batch Headers, Entry Details, and Control records in a structured, color-coded format.</li>
+                <li><strong>Check for Errors</strong> -- Validation errors are highlighted automatically with descriptions of what's wrong.</li>
+                <li><strong>Search and Filter</strong> -- Use <kbd>Ctrl+K</kbd> to search through records by any field.</li>
+            </ol>
+
+            <h3>Supported Formats</h3>
+            <div class="feature-grid">
+                <div class="feature-item"><strong>CCD:</strong> Cash Concentration/Disbursement</div>
+                <div class="feature-item"><strong>PPD:</strong> Prearranged Payment/Deposit</div>
+            </div>
+
+            <h3>NACHA File Structure</h3>
+            <ul>
+                <li><strong>File Header (1):</strong> Contains file-level info like origin, destination, and creation date.</li>
+                <li><strong>Batch Header (5):</strong> Groups related entries, includes company name and SEC code.</li>
+                <li><strong>Entry Detail (6):</strong> Individual transaction records with routing, account, and amount data.</li>
+                <li><strong>Addenda (7):</strong> Optional additional info for an entry (remittance details, etc.).</li>
+                <li><strong>Batch Control (8):</strong> Totals and hash for the batch.</li>
+                <li><strong>File Control (9):</strong> Summary totals for the entire file.</li>
+            </ul>
+
+            <h3>Keyboard Shortcuts</h3>
+            <ul>
+                <li><kbd>Ctrl+K</kbd> -- Open search</li>
+                <li><kbd>Ctrl+E</kbd> -- Export results</li>
+                <li><kbd>Esc</kbd> -- Reset / close search</li>
+            </ul>
+
+            <div class="help-tip">Tip: The viewer validates field lengths, required values, and control totals. Error messages include the specific field and expected format to help you fix issues quickly.</div>
+
+            <h3>Dark Mode</h3>
+            <p>Click the moon icon to toggle dark mode for easier viewing in low-light environments.</p>
+
+            <div class="help-warning">Note: Your NACHA file never leaves your browser. All parsing and validation happens 100% client-side. No data is uploaded to any server.</div>
+        </div>
+    </div>
+
+    <script>
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) {
+                e.preventDefault();
+                toggleHelp();
+            }
+        });
+    </script>
 
     <script src="nacha-parser.js"></script>
     <script src="nacha-validator.js"></script>

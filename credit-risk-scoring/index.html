@@ -153,6 +153,26 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Help Panel */
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
     </style>
 </head>
 <body>
@@ -161,7 +181,10 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span>⚡ Credit Risk Scoring</span>
         </h1>
-        <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">📥 Export CSV</button>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="toggleHelp()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">? Help</button>
+            <button onclick="exportToCSV()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">Export CSV</button>
+        </div>
     </header>
 
     <div class="container">
@@ -413,6 +436,58 @@
             a.click();
             window.URL.revokeObjectURL(url);
         }
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <!-- Help Panel -->
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Credit Risk Scoring Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Credit Risk Scoring tool assesses the creditworthiness of a loan portfolio using statistical models. It calculates Probability of Default (PD), Loss Given Default (LGD), and provides an overall risk score to help banks make informed lending decisions.</p>
+
+            <h3>Key Metrics Explained</h3>
+            <ul>
+                <li><strong>Overall Risk Score (0-100):</strong> A composite score where higher values indicate lower risk. Scores above 70 are considered low risk, 50-70 moderate, and below 50 high risk.</li>
+                <li><strong>Default Probability (PD):</strong> The estimated likelihood that a borrower will default within 12 months. Industry average is typically 1-5% for commercial portfolios.</li>
+                <li><strong>Portfolio NPL:</strong> Non-Performing Loan ratio, showing the percentage of loans in distress. Below 2% is generally considered healthy.</li>
+                <li><strong>Loan Count:</strong> Total number of active loans being analyzed in the portfolio.</li>
+            </ul>
+
+            <h3>Understanding the Charts</h3>
+            <ul>
+                <li><strong>Default Probability Distribution:</strong> Shows how default risk is distributed across the portfolio. A left-skewed distribution (concentrated at low values) indicates a healthy portfolio.</li>
+                <li><strong>Risk Score vs Portfolio Balance:</strong> Scatter plot revealing the relationship between loan size and risk level. Look for clusters and outliers.</li>
+                <li><strong>Asset Quality Breakdown:</strong> Categorizes loans by quality grade (Pass, Watch, Substandard, Doubtful, Loss) per regulatory classification standards.</li>
+            </ul>
+
+            <h3>Risk Grade Definitions</h3>
+            <ul>
+                <li><strong>Pass:</strong> Loans performing as expected with minimal risk</li>
+                <li><strong>Watch:</strong> Loans showing early signs of potential weakness</li>
+                <li><strong>Substandard:</strong> Loans with well-defined weaknesses that jeopardize repayment</li>
+                <li><strong>Doubtful:</strong> Loans where collection in full is highly questionable</li>
+                <li><strong>Loss:</strong> Loans considered uncollectible</li>
+            </ul>
+
+            <div class="help-tip">Tip: Use the Export CSV button to download the full risk assessment report for regulatory reporting or further analysis in Excel.</div>
+
+            <h3>Regulatory Context</h3>
+            <p>This tool aligns with Basel III/IV regulatory frameworks for credit risk assessment. The scoring methodology incorporates factors consistent with FDIC and OCC examination guidelines.</p>
+
+            <div class="help-warning">Note: This tool provides estimates for analysis purposes. Actual credit decisions should incorporate additional due diligence, market conditions, and regulatory requirements.</div>
+        </div>
+    </div>
 </body>
 </html>

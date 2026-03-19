@@ -865,6 +865,26 @@
                 display: block !important;
             }
         }
+
+        /* Help Panel */
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, var(--primary) 0%, #8b5cf6 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
     </style>
 </head>
 <body>
@@ -875,6 +895,9 @@
             <span>💰 Cash Flow Forecaster Pro</span>
         </h1>
         <div class="header-actions">
+            <button class="btn btn-outline" onclick="toggleHelp()" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: white;">
+                ? Help
+            </button>
             <button class="btn btn-outline" onclick="exportPDF()" style="background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); color: white;">
                 Export PDF
             </button>
@@ -2124,6 +2147,75 @@
         function exportPDF() {
             window.print();
         }
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <!-- Help Panel -->
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Cash Flow Forecaster Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Cash Flow Forecaster Pro generates 13-week rolling cash flow projections to help businesses anticipate shortfalls, plan for growth, and manage working capital. It supports multiple templates tailored to different business types.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Choose a Template</strong> -- Select from Startup, Retail, or SaaS templates to pre-populate relevant categories, or start from scratch.</li>
+                <li><strong>Enter Cash Inflows</strong> -- Add your expected revenue streams (sales, subscriptions, investments, etc.) for each week.</li>
+                <li><strong>Enter Cash Outflows</strong> -- Add expenses like payroll, rent, utilities, and vendor payments per week.</li>
+                <li><strong>Generate Forecast</strong> -- Click the green button to calculate projections and view charts.</li>
+            </ol>
+
+            <h3>Key Features</h3>
+            <div class="feature-grid">
+                <div class="feature-item">13-week projections</div>
+                <div class="feature-item">Burn rate tracking</div>
+                <div class="feature-item">Runway calculations</div>
+                <div class="feature-item">Industry templates</div>
+                <div class="feature-item">Scenario saving</div>
+                <div class="feature-item">Scenario comparison</div>
+                <div class="feature-item">PDF export</div>
+                <div class="feature-item">CSV export</div>
+            </div>
+
+            <h3>Templates</h3>
+            <ul>
+                <li><strong>Startup:</strong> Pre-loaded with common startup expense categories like burn rate, funding rounds, and runway tracking.</li>
+                <li><strong>Retail:</strong> Includes seasonal revenue patterns, inventory costs, and POS-related expenses.</li>
+                <li><strong>SaaS:</strong> Focuses on MRR, churn, CAC, and subscription-based revenue models.</li>
+            </ul>
+
+            <h3>Understanding the Dashboard</h3>
+            <ul>
+                <li><strong>Weekly Balance Chart:</strong> Shows your projected cash position over the 13-week period.</li>
+                <li><strong>Burn Rate:</strong> Average weekly cash consumption, useful for startups tracking runway.</li>
+                <li><strong>Runway:</strong> How many weeks of operation remain at current burn rate.</li>
+                <li><strong>Low Cash Alerts:</strong> Warnings when projected balance drops below safety thresholds.</li>
+            </ul>
+
+            <h3>Scenario Comparison</h3>
+            <p>Save multiple scenarios (optimistic, realistic, pessimistic) and switch to the Comparison view to see them overlaid on the same chart. This helps with planning for best-case and worst-case outcomes.</p>
+
+            <div class="help-tip">Tip: Use the "Save Scenario" button to bookmark your current forecast before making changes. You can save up to 5 scenarios for comparison.</div>
+
+            <h3>Export Options</h3>
+            <ul>
+                <li><strong>PDF:</strong> Print-friendly report with charts and summary data.</li>
+                <li><strong>CSV:</strong> Download raw forecast data for use in spreadsheets.</li>
+            </ul>
+
+            <div class="help-warning">Note: All data is stored locally in your browser. Clearing browser data will remove saved scenarios. Consider exporting important forecasts.</div>
+        </div>
+    </div>
 </body>
 </html>

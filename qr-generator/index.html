@@ -407,6 +407,25 @@
                 border-bottom: 1px solid var(--gray-200);
             }
         }
+
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #ec4899 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
     </style>
 </head>
 <body>
@@ -415,9 +434,10 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span><img src="assets/logo-qr.svg" alt="" style="width: 24px; height: 24px; vertical-align: middle;"> QR Code Generator Pro</span>
         </h1>
-        <div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="toggleHelp()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">? Help</button>
             <button class="btn btn-secondary btn-sm" onclick="toggleBatch()" style="background: rgba(255,255,255,0.2); color: white;">
-                📋 Batch Mode
+                Batch Mode
             </button>
         </div>
     </header>
@@ -1120,6 +1140,63 @@ END:VEVENT`;
 
             alert(`Batch generation of ${urls.length} QR codes coming soon!\n\nFor now, generate them one at a time.`);
         }
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>QR Code Generator Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The QR Code Generator Pro creates high-quality QR codes for 8 different data types. Customize colors, add logos, and export in multiple formats -- all processed locally in your browser.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Select Content Type</strong> -- Choose from URL, Text, WiFi, vCard, Email, SMS, Phone, or Crypto.</li>
+                <li><strong>Enter Your Data</strong> -- Fill in the relevant fields for your selected type.</li>
+                <li><strong>Customize Appearance</strong> -- Set foreground/background colors, error correction level, and add a logo if desired.</li>
+                <li><strong>Download</strong> -- Export your QR code in your preferred format.</li>
+            </ol>
+
+            <h3>Content Types</h3>
+            <div class="feature-grid">
+                <div class="feature-item"><strong>URL:</strong> Website links</div>
+                <div class="feature-item"><strong>Text:</strong> Plain text messages</div>
+                <div class="feature-item"><strong>WiFi:</strong> Network credentials</div>
+                <div class="feature-item"><strong>vCard:</strong> Contact cards</div>
+                <div class="feature-item"><strong>Email:</strong> Pre-filled emails</div>
+                <div class="feature-item"><strong>SMS:</strong> Text messages</div>
+                <div class="feature-item"><strong>Phone:</strong> Phone numbers</div>
+                <div class="feature-item"><strong>Crypto:</strong> Wallet addresses</div>
+            </div>
+
+            <h3>Customization Options</h3>
+            <ul>
+                <li><strong>Colors:</strong> Set any foreground and background color combination. Ensure sufficient contrast for reliable scanning.</li>
+                <li><strong>Error Correction:</strong> Choose from Low (7%), Medium (15%), Quartile (25%), or High (30%). Higher correction allows more damage/obstruction while remaining scannable.</li>
+                <li><strong>Logo Embedding:</strong> Upload a logo to place in the center of the QR code. Use High error correction when adding logos.</li>
+            </ul>
+
+            <h3>Export Formats</h3>
+            <p>Download your QR code as PNG, SVG, JPEG, or other formats. SVG is recommended for print use as it scales without quality loss.</p>
+
+            <div class="help-tip">Tip: When adding a logo to your QR code, always set Error Correction to "High" (30%) to ensure the code remains scannable despite the logo covering part of it.</div>
+
+            <h3>Batch Mode</h3>
+            <p>Generate multiple QR codes at once by entering URLs one per line. Useful for creating QR codes for product catalogs, event tickets, or marketing campaigns.</p>
+
+            <div class="help-warning">Note: All QR code generation happens in your browser. No data is sent to any server. Test your QR codes with a scanner before printing at scale.</div>
+        </div>
+    </div>
 </body>
 </html>

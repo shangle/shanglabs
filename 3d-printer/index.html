@@ -358,6 +358,25 @@
                 grid-template-columns: 1fr;
             }
         }
+
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: var(--gray-800); margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--gray-200); }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: var(--gray-600); line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: var(--gray-50); padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: var(--gray-700); }
     </style>
 </head>
 <body>
@@ -366,6 +385,7 @@
             <a href="../" class="back-link">← Shanglabs</a>
             <span><img src="../assets/logo-3d-printer.svg" alt="" style="width: 24px; height: 24px; vertical-align: middle;"> 3D Connector Builder</span>
         </h1>
+        <button onclick="toggleHelp()" style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem;">? Help</button>
     </header>
 
     <div class="main-container">
@@ -730,6 +750,71 @@
 
         // Initialize when page loads
         window.addEventListener('DOMContentLoaded', init);
+
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
     </script>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>3D Connector Builder Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The 3D Connector Builder generates printable STL files for custom connection adapters. Design pipe connectors, tube adapters, and junction pieces with precise measurements, then download the STL for your 3D printer.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Select Connection Type</strong> -- Choose from Straight, T-Junction, Y-Junction, Cross, Elbow, or Reducer.</li>
+                <li><strong>Set Dimensions</strong> -- Adjust inner diameter, outer diameter, length, and wall thickness.</li>
+                <li><strong>Preview</strong> -- Use the 3D preview to rotate and inspect the connector from all angles.</li>
+                <li><strong>Download STL</strong> -- Click the download button to get the printable STL file.</li>
+            </ol>
+
+            <h3>Connection Types</h3>
+            <div class="feature-grid">
+                <div class="feature-item"><strong>Straight:</strong> Simple tube connector</div>
+                <div class="feature-item"><strong>T-Junction:</strong> 90-degree branch</div>
+                <div class="feature-item"><strong>Y-Junction:</strong> Angled split</div>
+                <div class="feature-item"><strong>Cross:</strong> 4-way intersection</div>
+                <div class="feature-item"><strong>Elbow:</strong> 90-degree bend</div>
+                <div class="feature-item"><strong>Reducer:</strong> Size transition</div>
+            </div>
+
+            <h3>Dimension Parameters</h3>
+            <ul>
+                <li><strong>Inner Diameter:</strong> The inside measurement of the connector. Match this to the outer diameter of the tubes you're connecting.</li>
+                <li><strong>Outer Diameter:</strong> The outside measurement. Determines overall connector size and strength.</li>
+                <li><strong>Length:</strong> How long each arm of the connector extends.</li>
+                <li><strong>Wall Thickness:</strong> Difference between outer and inner diameter. Thicker walls provide more strength.</li>
+            </ul>
+
+            <h3>3D Preview Controls</h3>
+            <ul>
+                <li><strong>Rotate:</strong> Click and drag to rotate the model.</li>
+                <li><strong>Zoom:</strong> Scroll wheel to zoom in/out.</li>
+                <li><strong>Pan:</strong> Right-click and drag to pan.</li>
+            </ul>
+
+            <div class="help-tip">Tip: Always add 0.2-0.5mm tolerance to your inner diameter for a friction fit, depending on your printer's accuracy. Test with a short sample print first.</div>
+
+            <h3>Printing Recommendations</h3>
+            <ul>
+                <li><strong>Layer Height:</strong> 0.2mm for standard, 0.1mm for high precision</li>
+                <li><strong>Infill:</strong> 20-40% for functional parts</li>
+                <li><strong>Material:</strong> PLA for prototypes, PETG or ABS for functional connectors</li>
+                <li><strong>Supports:</strong> May be needed for elbow and Y-junction types</li>
+            </ul>
+
+            <div class="help-warning">Note: The generated STL is a simplified preview geometry. For production or high-stress applications, consider refining the model in a CAD program like Fusion 360 or FreeCAD.</div>
+        </div>
+    </div>
 </body>
 </html>

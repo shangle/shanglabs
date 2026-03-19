@@ -8,10 +8,11 @@
 </head>
 <body>
     <div class="container">
-        <header>
+        <header style="position: relative;">
             <a href="../" class="back-link">← Back to Shanglabs</a>
             <h1><img src="../assets/logo-reconciliation.svg" alt="" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 8px;">Payment Reconciliation Helper</h1>
             <p class="subtitle">Match payments to invoices automatically</p>
+            <button onclick="toggleHelp()" style="position: absolute; top: 16px; right: 16px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: #6366f1; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">? Help</button>
         </header>
 
         <main>
@@ -170,6 +171,83 @@
             <p>💡 Tip: Click headers to sort. Export generates a full reconciliation report.</p>
         </footer>
     </div>
+
+    <style>
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: #1f2937; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb; }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: #4b5563; line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: #f9fafb; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: #374151; }
+    </style>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Payment Reconciliation Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Payment Reconciliation Helper automatically matches incoming payments to outstanding invoices. Upload your payments and invoices data to find matches, identify discrepancies, and resolve unmatched items.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Upload Payments CSV</strong> -- File with payment records including payment ID, amount, date, and reference.</li>
+                <li><strong>Upload Invoices CSV</strong> -- File with invoice records including invoice ID, amount, date, and customer.</li>
+                <li><strong>Configure Matching</strong> -- Set the matching tolerance (how close amounts need to be to auto-match).</li>
+                <li><strong>Run Reconciliation</strong> -- Click "Reconcile" to automatically match payments to invoices.</li>
+            </ol>
+
+            <h3>Matching Methods</h3>
+            <div class="feature-grid">
+                <div class="feature-item"><strong>Exact Match:</strong> Amount and reference match perfectly</div>
+                <div class="feature-item"><strong>Fuzzy Match:</strong> Amounts within tolerance range</div>
+                <div class="feature-item"><strong>Manual Match:</strong> User-driven pairing</div>
+                <div class="feature-item"><strong>Batch Match:</strong> Multiple items at once</div>
+            </div>
+
+            <h3>Understanding Results</h3>
+            <ul>
+                <li><strong>Matched:</strong> Payment successfully paired with an invoice. Green status.</li>
+                <li><strong>Partial Match:</strong> Payment covers only part of an invoice amount. Yellow status.</li>
+                <li><strong>Unmatched Payments:</strong> Payments that don't correspond to any invoice. May be overpayments or advance payments.</li>
+                <li><strong>Unmatched Invoices:</strong> Invoices without a corresponding payment. These are still outstanding.</li>
+            </ul>
+
+            <h3>Manual Matching</h3>
+            <p>For items the auto-matcher can't resolve, use the manual matching interface to pair payments and invoices yourself. This is useful for partial payments, combined payments, or cases where the reference doesn't match exactly.</p>
+
+            <div class="help-tip">Tip: Click column headers in the results table to sort by that column. This makes it easy to group similar items and spot patterns in unmatched records.</div>
+
+            <h3>Export</h3>
+            <p>Export generates a full reconciliation report including matched pairs, unmatched items, and a summary of the reconciliation status. Use this for audit trails and month-end close procedures.</p>
+
+            <div class="help-warning">Note: All matching is done in your browser. No payment or invoice data is sent to any server. Your financial data stays private.</div>
+        </div>
+    </div>
+
+    <script>
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
+    </script>
 
     <script src="app.js"></script>
 </body>

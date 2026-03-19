@@ -8,10 +8,11 @@
 </head>
 <body>
     <div class="container">
-        <header>
+        <header style="position: relative;">
             <a href="../" class="back-link">← Back to Shanglabs</a>
             <h1><img src="../assets/logo-invoice.svg" alt="" style="width: 40px; height: 40px; vertical-align: middle; margin-right: 8px;">Invoice Aging Tracker</h1>
             <p class="subtitle">Track overdue payments by aging period</p>
+            <button onclick="toggleHelp()" style="position: absolute; top: 16px; right: 16px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.3); color: #6366f1; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-size: 0.85rem; font-weight: 500;">? Help</button>
         </header>
 
         <section class="upload-section">
@@ -148,6 +149,86 @@
             </div>
         </section>
     </div>
+
+    <style>
+        .help-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 9998; }
+        .help-overlay.active { display: block; }
+        .help-panel { position: fixed; top: 0; right: -480px; width: 480px; max-width: 90vw; height: 100vh; background: white; z-index: 9999; box-shadow: -4px 0 20px rgba(0,0,0,0.15); transition: right 0.3s ease; overflow-y: auto; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+        .help-panel.active { right: 0; }
+        .help-panel-header { background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); color: white; padding: 24px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1; }
+        .help-panel-header h2 { font-size: 1.2rem; margin: 0; }
+        .help-close { background: rgba(255,255,255,0.2); border: none; color: white; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; }
+        .help-close:hover { background: rgba(255,255,255,0.3); }
+        .help-body { padding: 24px; }
+        .help-body h3 { font-size: 1rem; font-weight: 600; color: #1f2937; margin: 20px 0 10px; padding-bottom: 6px; border-bottom: 1px solid #e5e7eb; }
+        .help-body h3:first-child { margin-top: 0; }
+        .help-body p, .help-body li { font-size: 0.9rem; color: #4b5563; line-height: 1.7; }
+        .help-body ul, .help-body ol { padding-left: 20px; margin: 8px 0; }
+        .help-body li { margin-bottom: 6px; }
+        .help-body .help-tip { background: #eff6ff; border-left: 3px solid #3b82f6; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #1e40af; }
+        .help-body .help-warning { background: #fef3c7; border-left: 3px solid #f59e0b; padding: 12px 16px; border-radius: 0 6px 6px 0; margin: 12px 0; font-size: 0.85rem; color: #92400e; }
+        .help-body .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 10px 0; }
+        .help-body .feature-item { background: #f9fafb; padding: 10px 12px; border-radius: 6px; font-size: 0.85rem; color: #374151; }
+    </style>
+
+    <div class="help-overlay" id="helpOverlay" onclick="toggleHelp()"></div>
+    <div class="help-panel" id="helpPanel">
+        <div class="help-panel-header">
+            <h2>Invoice Aging Tracker Help</h2>
+            <button class="help-close" onclick="toggleHelp()">&times;</button>
+        </div>
+        <div class="help-body">
+            <h3>What Is This Tool?</h3>
+            <p>The Invoice Aging Tracker categorizes outstanding invoices by how long they've been overdue. Upload your invoice data to see a summary by aging bucket, identify high-risk overdue accounts, and generate collection reports.</p>
+
+            <h3>Getting Started</h3>
+            <ol>
+                <li><strong>Prepare Your CSV</strong> -- Your file should include columns for Invoice #, Amount, Due Date, and Customer Name.</li>
+                <li><strong>Upload the File</strong> -- Drag and drop your CSV onto the upload area or click to browse.</li>
+                <li><strong>Review Aging Summary</strong> -- See total outstanding amounts broken down by aging period.</li>
+                <li><strong>Export Report</strong> -- Download the aging report for your records or collection team.</li>
+            </ol>
+
+            <h3>Aging Buckets</h3>
+            <div class="feature-grid">
+                <div class="feature-item"><strong>Current:</strong> 0-30 days</div>
+                <div class="feature-item"><strong>31-60 Days:</strong> Mildly overdue</div>
+                <div class="feature-item"><strong>61-90 Days:</strong> Moderately overdue</div>
+                <div class="feature-item"><strong>90+ Days:</strong> Seriously overdue</div>
+            </div>
+
+            <h3>CSV File Format</h3>
+            <p>Your CSV should contain these columns (headers required):</p>
+            <ul>
+                <li><strong>Invoice #:</strong> Unique invoice identifier</li>
+                <li><strong>Amount:</strong> Dollar amount owed (numeric, no currency symbol needed)</li>
+                <li><strong>Due Date:</strong> When payment was/is due (YYYY-MM-DD or MM/DD/YYYY)</li>
+                <li><strong>Customer Name:</strong> Name of the customer/company</li>
+            </ul>
+
+            <div class="help-tip">Tip: Focus collection efforts on the 61-90 and 90+ day buckets first. These accounts have the highest risk of becoming uncollectible, and early intervention improves recovery rates.</div>
+
+            <h3>Best Practices</h3>
+            <ul>
+                <li>Review aging reports weekly to catch overdue invoices early.</li>
+                <li>Automate reminder emails for invoices entering the 31-60 day bucket.</li>
+                <li>Consider offering early payment discounts to reduce aging.</li>
+                <li>Escalate 90+ day accounts to a collections specialist.</li>
+            </ul>
+
+            <div class="help-warning">Note: All data stays in your browser. No invoice data is transmitted to any server.</div>
+        </div>
+    </div>
+
+    <script>
+        function toggleHelp() {
+            document.getElementById('helpPanel').classList.toggle('active');
+            document.getElementById('helpOverlay').classList.toggle('active');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && document.getElementById('helpPanel').classList.contains('active')) toggleHelp();
+        });
+    </script>
 
     <script src="app.js"></script>
 </body>
